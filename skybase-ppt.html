@@ -34,7 +34,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 40px 60px;
+            padding: 30px 50px;
             box-sizing: border-box;
             background: var(--bg-void);
             position: relative;
@@ -62,21 +62,21 @@
             z-index: 1;
         }
 
-        h1 { font-size: 56px; color: var(--accent-neon); margin-bottom: 20px; text-shadow: 0 0 30px var(--glow-neon); }
-        h2 { font-size: 42px; color: var(--accent-neon); margin-bottom: 25px; text-shadow: 0 0 20px var(--glow-neon); }
-        h3 { font-size: 28px; color: var(--accent-neon); margin-bottom: 15px; }
-        p { color: var(--text-secondary); line-height: 1.8; font-size: 20px; margin-bottom: 12px; }
+        h1 { font-size: 42px; color: var(--accent-neon); margin-bottom: 15px; text-shadow: 0 0 30px var(--glow-neon); }
+        h2 { font-size: 32px; color: var(--accent-neon); margin-bottom: 20px; text-shadow: 0 0 20px var(--glow-neon); }
+        h3 { font-size: 22px; color: var(--accent-neon); margin-bottom: 12px; }
+        p { color: var(--text-secondary); line-height: 1.7; font-size: 16px; margin-bottom: 10px; }
 
         .tag {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 8px 16px;
             background: rgba(0, 245, 255, 0.1);
             border: 1px solid rgba(0, 245, 255, 0.3);
-            border-radius: 6px;
-            font-size: 18px;
+            border-radius: 5px;
+            font-size: 14px;
             color: var(--accent-neon);
-            margin-right: 12px;
-            margin-bottom: 8px;
+            margin-right: 10px;
+            margin-bottom: 6px;
         }
 
         .tag.plasma { background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3); color: var(--accent-plasma); }
@@ -88,17 +88,17 @@
         .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 25px; }
         .card { background: rgba(18,18,31,0.8); border: 1px solid rgba(0,245,255,0.2); border-radius: 16px; padding: 25px; transition: all 0.3s; }
         .card:hover { border-color: var(--accent-neon); transform: translateY(-5px); box-shadow: 0 10px 40px rgba(0,245,255,0.2); }
-        .card h3 { font-size: 22px; margin-bottom: 12px; }
-        .card p { font-size: 16px; }
+        .card h3 { font-size: 18px; margin-bottom: 10px; }
+        .card p { font-size: 14px; }
 
         .code-block {
             background: rgba(8, 8, 18, 0.95);
             border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 16px;
             font-family: 'Courier New', monospace;
-            font-size: 18px;
-            line-height: 1.8;
+            font-size: 15px;
+            line-height: 1.7;
             overflow-x: auto;
             white-space: pre;
             margin-top: 15px;
@@ -163,9 +163,9 @@
 
         @media (max-width: 900px) {
             .two-col, .three-col, .card-grid { grid-template-columns: 1fr; }
-            h1 { font-size: 36px; }
-            h2 { font-size: 28px; }
-            .slide { padding: 30px; }
+            h1 { font-size: 28px; }
+            h2 { font-size: 22px; }
+            .slide { padding: 20px; }
         }
     </style>
 </head>
@@ -179,7 +179,7 @@
         <div class="slide-content" style="text-align: center;">
             <p class="tag">JavaScript 工具库</p>
             <h1>Mee<span class="highlight">ko</span></h1>
-            <p style="margin-top: 25px; font-size: 26px;">强大、优雅、实用的 JavaScript 工具集</p>
+            <p style="margin-top: 20px; font-size: 20px;">强大、优雅、实用的 JavaScript 工具集</p>
             <div style="margin-top: 40px;">
                 <span class="tag">工具函数</span>
                 <span class="tag plasma">数据处理</span>
@@ -208,7 +208,7 @@
     <section class="slide" id="slide-3">
         <div class="slide-content">
             <h2>Meeko 是什么？</h2>
-            <p style="font-size: 24px; margin-bottom: 30px;">JavaScript 工具函数库，提供丰富的基础功能</p>
+            <p style="font-size: 18px; margin-bottom: 20px;">JavaScript 工具函数库，提供丰富的基础功能</p>
             <div class="card-grid">
                 <div class="card"><h3>数值计算</h3><p>随机数、格式化、数学运算、序列生成</p></div>
                 <div class="card"><h3>字符串</h3><p>截断、脱敏、模板替换、命名转换</p></div>
@@ -957,14 +957,14 @@ const loadMore = $.throttle(() => {
     <section class="slide" id="slide-30">
         <div class="slide-content" style="text-align: center;">
             <h1>Mee<span class="highlight">ko</span></h1>
-            <p style="margin-top: 30px; font-size: 28px;">让 JavaScript 开发更优雅</p>
-            <div style="margin-top: 50px;">
+            <p style="margin-top: 20px; font-size: 22px;">让 JavaScript 开发更优雅</p>
+            <div style="margin-top: 30px;">
                 <span class="tag">工具函数</span>
                 <span class="tag plasma">数据处理</span>
                 <span class="tag aurora">类型校验</span>
                 <span class="tag cosmic">机器学习</span>
             </div>
-            <p style="margin-top: 50px; color: var(--accent-neon); font-size: 24px;">感谢观看</p>
+            <p style="margin-top: 30px; color: var(--accent-neon); font-size: 18px;">感谢观看</p>
         </div>
     </section>
 
