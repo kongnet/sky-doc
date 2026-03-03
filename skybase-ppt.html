@@ -3,49 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skybase 框架 - 企业级 Node.js 开发平台</title>
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap">
+    <title>Skybase 企业级 Node.js 开发框架</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #050510;
-            --bg-secondary: #0a0a1f;
-            --bg-card: #0f0f25;
-            --text-primary: #ffffff;
+            --bg-void: #030308;
+            --bg-deep: #080812;
+            --text-primary: #e8e8f0;
             --text-secondary: #8888aa;
-            --accent-cyan: #00f0ff;
-            --accent-magenta: #ff00aa;
-            --accent-purple: #a855f7;
-            --accent-green: #00ff88;
-            --accent-glow-cyan: rgba(0, 240, 255, 0.4);
-            --accent-glow-magenta: rgba(255, 0, 170, 0.3);
-            --font-display: 'Clash Display', sans-serif;
-            --font-body: 'Satoshi', sans-serif;
-            --title-size: clamp(1.8rem, 5vw, 3.5rem);
-            --h2-size: clamp(1.3rem, 3vw, 2rem);
-            --h3-size: clamp(1rem, 2vw, 1.4rem);
-            --body-size: clamp(0.75rem, 1.2vw, 1rem);
-            --slide-padding: clamp(1.2rem, 3vw, 3rem);
-            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --duration-normal: 0.6s;
+            --accent-neon: #00f5ff;
+            --accent-plasma: #8b5cf6;
+            --accent-aurora: #06ffa5;
+            --accent-cosmic: #ff00aa;
+            --glow-neon: rgba(0, 245, 255, 0.4);
+            --font-display: 'Orbitron', 'Rajdhani', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --title-size: clamp(1.6rem, 4.5vw, 3rem);
+            --h2-size: clamp(1.2rem, 2.8vw, 1.8rem);
+            --h3-size: clamp(1rem, 1.6vw, 1.2rem);
+            --body-size: clamp(0.7rem, 1vw, 0.9rem);
+            --slide-padding: clamp(0.8rem, 2.5vw, 2.5rem);
+            --ease-void: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.7s;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        html {
-            scroll-behavior: smooth;
-            scroll-snap-type: y mandatory;
-            height: 100%;
-        }
+        html { scroll-behavior: smooth; scroll-snap-type: y mandatory; height: 100%; }
 
         body {
             font-family: var(--font-body);
-            background: var(--bg-primary);
+            background: var(--bg-void);
             color: var(--text-primary);
-            overflow-x: hidden;
+            overflow: hidden;
             height: 100%;
         }
 
-        #particles {
+        .cosmos {
             position: fixed;
             top: 0;
             left: 0;
@@ -53,6 +50,52 @@
             height: 100%;
             z-index: 0;
             pointer-events: none;
+        }
+
+        .nebula {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: 
+                radial-gradient(ellipse 80% 50% at 10% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(0, 245, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse 50% 30% at 50% 50%, rgba(255, 0, 170, 0.05) 0%, transparent 40%),
+                var(--bg-void);
+            animation: nebula-drift 60s ease-in-out infinite;
+        }
+
+        @keyframes nebula-drift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-5%, -3%) rotate(2deg); }
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, var(--accent-neon), transparent),
+                radial-gradient(1px 1px at 40px 70px, var(--accent-plasma), transparent),
+                radial-gradient(1.5px 1.5px at 90px 40px, var(--text-primary), transparent),
+                radial-gradient(1px 1px at 130px 80px, var(--accent-aurora), transparent);
+            background-size: 180px 180px;
+            animation: stars-twinkle 8s ease-in-out infinite;
+        }
+
+        @keyframes stars-twinkle {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .grid-portal {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(ellipse at center, black 20%, transparent 65%);
         }
 
         .slide {
@@ -63,7 +106,6 @@
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
             position: relative;
             overflow: hidden;
         }
@@ -74,36 +116,9 @@
             flex-direction: column;
             max-height: 100%;
             overflow-y: auto;
-            overflow-x: hidden;
             position: relative;
             z-index: 1;
-            padding-top: 1rem;
-        }
-
-        .gradient-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 240, 255, 0.06) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(255, 0, 170, 0.05) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 30% at 50% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 50%),
-                var(--bg-primary);
-        }
-
-        .grid-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-            background-size: 50px 50px;
-            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            padding-top: 0.3rem;
         }
 
         h1 {
@@ -111,11 +126,13 @@
             font-size: var(--title-size);
             font-weight: 700;
             line-height: 1.15;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-cyan) 50%, var(--accent-magenta) 100%);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-neon) 50%, var(--accent-plasma) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         h2 {
@@ -123,48 +140,77 @@
             font-size: var(--h2-size);
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        h2::before {
+            content: '';
+            width: 3px;
+            height: 1.2em;
+            background: linear-gradient(180deg, var(--accent-neon), var(--accent-plasma));
+            border-radius: 2px;
+            box-shadow: 0 0 8px var(--glow-neon);
         }
 
         h3 {
             font-family: var(--font-display);
             font-size: var(--h3-size);
             font-weight: 500;
-            color: var(--accent-cyan);
-            margin-bottom: 0.6rem;
-        }
-
-        p {
-            font-size: var(--body-size);
-            color: var(--text-secondary);
-            line-height: 1.55;
-        }
-
-        .tagline {
-            font-family: var(--font-display);
-            font-size: clamp(0.8rem, 1.5vw, 1rem);
-            color: var(--accent-cyan);
+            color: var(--accent-neon);
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.25em;
-            margin-bottom: 0.8rem;
-            opacity: 0;
+            letter-spacing: 0.02em;
         }
+
+        p { font-size: var(--body-size); color: var(--text-secondary); line-height: 1.5; }
+
+        .section-num {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: 700;
+            color: rgba(0, 245, 255, 0.04);
+            line-height: 1;
+            z-index: 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: rgba(0, 245, 255, 0.08);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 3px;
+            font-size: 0.6rem;
+            color: var(--accent-neon);
+            margin-right: 0.3rem;
+            margin-bottom: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        .tag.plasma { background: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.2); color: var(--accent-plasma); }
+        .tag.aurora { background: rgba(6, 255, 165, 0.08); border-color: rgba(6, 255, 165, 0.2); color: var(--accent-aurora); }
+        .tag.cosmic { background: rgba(255, 0, 170, 0.08); border-color: rgba(255, 0, 170, 0.2); color: var(--accent-cosmic); }
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 0.8rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.6rem;
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.015);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1.2rem;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.25s var(--ease-out-expo), border-color 0.25s;
+            background: linear-gradient(135deg, rgba(13, 13, 26, 0.8) 0%, rgba(18, 18, 31, 0.6) 100%);
+            border: 1px solid rgba(0, 245, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            transition: all 0.4s var(--ease-void);
         }
 
         .card::before {
@@ -174,40 +220,32 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
-            opacity: 0;
-            transition: opacity 0.25s;
+            background: linear-gradient(90deg, var(--accent-neon), var(--accent-plasma));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s;
         }
 
         .card:hover {
             transform: translateY(-3px);
-            border-color: rgba(0, 240, 255, 0.15);
+            border-color: rgba(0, 245, 255, 0.25);
         }
 
-        .card:hover::before { opacity: 1; }
+        .card:hover::before { transform: scaleX(1); }
 
-        .card-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.6rem;
-        }
-
-        .card h3 {
-            font-size: 1rem;
-            margin-bottom: 0.4rem;
-        }
-
-        .card p { font-size: 0.8rem; }
+        .card-icon { font-size: 1.4rem; margin-bottom: 0.4rem; }
+        .card h3 { font-size: 0.85rem; margin-bottom: 0.3rem; }
+        .card p { font-size: 0.75rem; }
 
         .code-block {
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(0, 240, 255, 0.12);
-            border-radius: 10px;
-            padding: 1rem;
-            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-            font-size: clamp(0.65rem, 1vw, 0.8rem);
-            line-height: 1.6;
+            background: rgba(8, 8, 18, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 8px;
+            padding: 0.8rem;
+            font-family: var(--font-mono);
+            font-size: clamp(0.55rem, 0.85vw, 0.75rem);
+            line-height: 1.5;
             overflow-x: auto;
-            position: relative;
             white-space: pre;
         }
 
@@ -218,48 +256,46 @@
             left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            background: linear-gradient(90deg, var(--accent-neon), var(--accent-plasma));
         }
 
-        .keyword { color: var(--accent-magenta); }
-        .string { color: var(--accent-cyan); }
-        .function { color: #a855f7; }
-        .comment { color: #555; }
-        .number { color: var(--accent-green); }
-        .property { color: #f0a500; }
+        .keyword { color: #c792ea; }
+        .string { color: #c3e88d; }
+        .function { color: #82aaff; }
+        .comment { color: #546e7a; }
+        .number { color: #f78c6c; }
+        .property { color: #ffcb6b; }
 
-        .feature-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.7rem;
-        }
-
+        .feature-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
         .feature-list li {
             display: flex;
             align-items: flex-start;
-            gap: 0.7rem;
+            gap: 0.5rem;
             font-size: var(--body-size);
             color: var(--text-secondary);
         }
-
         .feature-list li::before {
-            content: '▸';
-            color: var(--accent-cyan);
-            font-weight: bold;
+            content: '◆';
+            color: var(--accent-neon);
+            font-size: 0.4rem;
             flex-shrink: 0;
+            margin-top: 0.25rem;
         }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity var(--duration-normal) var(--ease-out-expo),
-                        transform var(--duration-normal) var(--ease-out-expo);
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+        .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; align-items: start; }
+
+        .reveal { 
+            opacity: 0; 
+            transform: translateY(30px) scale(0.95); 
+            filter: blur(8px);
+            transition: all var(--duration-normal) var(--ease-void); 
         }
 
-        .slide.visible .reveal {
-            opacity: 1;
-            transform: translateY(0);
+        .slide.visible .reveal { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
+            filter: blur(0);
         }
 
         .reveal:nth-child(1) { transition-delay: 0.08s; }
@@ -267,50 +303,37 @@
         .reveal:nth-child(3) { transition-delay: 0.22s; }
         .reveal:nth-child(4) { transition-delay: 0.29s; }
         .reveal:nth-child(5) { transition-delay: 0.36s; }
-        .reveal:nth-child(6) { transition-delay: 0.43s; }
 
-        .title-slide .gradient-bg {
-            background:
-                radial-gradient(ellipse 100% 80% at 50% 120%, rgba(0, 240, 255, 0.12) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 40% at 20% 20%, rgba(255, 0, 170, 0.08) 0%, transparent 40%),
-                radial-gradient(ellipse 50% 30% at 80% 30%, rgba(168, 85, 247, 0.06) 0%, transparent 40%),
-                var(--bg-primary);
-        }
-
-        .title-slide h1 {
-            font-size: clamp(2rem, 7vw, 5rem);
-            text-shadow: 0 0 50px rgba(0, 240, 255, 0.4);
-        }
+        .title-slide .slide-content { justify-content: center; align-items: center; text-align: center; }
+        .title-slide h1 { font-size: clamp(2rem, 7vw, 4rem); }
 
         .nav-dots {
             position: fixed;
-            right: 1.5rem;
+            right: 1rem;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 0.6rem;
+            gap: 0.4rem;
             z-index: 100;
             max-height: 80vh;
             overflow-y: auto;
-            padding: 0.5rem 0;
         }
 
         .nav-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            width: 6px;
+            height: 6px;
+            background: rgba(0, 245, 255, 0.15);
+            border: 1px solid rgba(0, 245, 255, 0.25);
             cursor: pointer;
-            transition: all 0.25s;
-            flex-shrink: 0;
+            transition: all 0.3s;
+            transform: rotate(45deg);
         }
 
         .nav-dot.active {
-            background: var(--accent-cyan);
-            box-shadow: 0 0 12px var(--accent-glow-cyan);
-            transform: scale(1.4);
+            background: var(--accent-neon);
+            box-shadow: 0 0 10px var(--glow-neon);
+            transform: rotate(45deg) scale(1.3);
         }
 
         .progress-bar {
@@ -318,198 +341,164 @@
             top: 0;
             left: 0;
             height: 2px;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            background: linear-gradient(90deg, var(--accent-neon), var(--accent-plasma), var(--accent-cosmic));
             z-index: 100;
-            transition: width 0.25s;
         }
 
         .keyboard-hint {
             position: fixed;
-            bottom: 1rem;
+            bottom: 0.6rem;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.6rem;
+            color: #4a4a6a;
             z-index: 100;
         }
 
-        .keyboard-hint kbd {
-            background: rgba(255, 255, 255, 0.08);
-            padding: 0.15rem 0.4rem;
-            border-radius: 3px;
-            margin: 0 0.15rem;
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            margin: 0.8rem 0;
         }
 
-        .two-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            align-items: start;
-        }
-
-        .two-col-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            align-items: start;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.3rem 0.7rem;
-            border-radius: 15px;
+        .flow-step {
+            background: rgba(13, 13, 26, 0.9);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
             font-size: 0.7rem;
-            font-weight: 500;
-            margin-right: 0.5rem;
-            margin-bottom: 0.3rem;
+            color: var(--accent-neon);
         }
 
-        .badge-cyan {
-            background: rgba(0,240,255,0.12);
-            border: 1px solid rgba(0,240,255,0.25);
-            color: var(--accent-cyan);
-        }
-
-        .badge-magenta {
-            background: rgba(255,0,170,0.12);
-            border: 1px solid rgba(255,0,170,0.25);
-            color: var(--accent-magenta);
-        }
-
-        .badge-purple {
-            background: rgba(168,85,247,0.12);
-            border: 1px solid rgba(168,85,247,0.25);
-            color: var(--accent-purple);
-        }
-
-        .badge-green {
-            background: rgba(0,255,136,0.12);
-            border: 1px solid rgba(0,255,136,0.25);
-            color: var(--accent-green);
-        }
-
-        .section-num {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: rgba(255,255,255,0.08);
-            position: absolute;
-            top: 0.5rem;
-            right: 1.5rem;
-        }
-
-        .highlight { color: var(--accent-cyan); }
-        .highlight2 { color: var(--accent-magenta); }
-        .highlight3 { color: var(--accent-purple); }
+        .flow-arrow { color: var(--accent-plasma); font-size: 0.9rem; }
 
         .inline-code {
-            background: rgba(0,240,255,0.1);
-            border: 1px solid rgba(0,240,255,0.2);
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.85em;
-            color: var(--accent-cyan);
+            background: rgba(0, 245, 255, 0.08);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            font-family: var(--font-mono);
+            font-size: 0.75em;
+            color: var(--accent-neon);
         }
 
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
+        .highlight { color: var(--accent-neon); }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-top: 0.6rem;
         }
 
-        .table th, .table td {
-            padding: 0.6rem 0.8rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-neon), var(--accent-plasma));
         }
 
-        .table th {
-            color: var(--accent-cyan);
-            font-weight: 500;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1rem;
         }
 
-        .table td { color: var(--text-secondary); }
-
-        @media (max-width: 900px) {
-            .two-col, .two-col-3 { grid-template-columns: 1fr; }
-            .nav-dots { right: 0.8rem; }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0.2rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-neon);
+            border: 2px solid var(--bg-void);
+            box-shadow: 0 0 8px var(--glow-neon);
         }
 
-        @media (max-width: 600px) {
-            .card-grid { grid-template-columns: 1fr; }
+        .timeline-item h3 { font-size: 0.85rem; margin-bottom: 0.2rem; }
+        .timeline-item p { font-size: 0.75rem; }
+
+        @media (max-width: 800px) {
+            .two-col, .three-col { grid-template-columns: 1fr; }
+            .nav-dots { right: 0.5rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .reveal {
-                transition: opacity 0.2s;
-                transform: none;
-            }
+            .reveal { transition: opacity 0.3s; transform: none; filter: none; }
             html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
-    <canvas id="particles"></canvas>
+    <div class="cosmos">
+        <div class="nebula"></div>
+        <div class="stars"></div>
+        <div class="grid-portal"></div>
+    </div>
     <div class="progress-bar" id="progressBar"></div>
     <nav class="nav-dots" id="navDots"></nav>
-    <div class="keyboard-hint"><kbd>↑</kbd><kbd>↓</kbd> 切换 · <kbd>Space</kbd> 下一页</div>
+    <div class="keyboard-hint"><kbd>↑</kbd><kbd>↓</kbd> 导航 · <kbd>Space</kbd></div>
 
     <!-- 1. 封面 -->
     <section class="slide title-slide" id="slide-1">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
-        <div class="slide-content" style="justify-content: center;">
-            <p class="tagline reveal">企业级 Node.js 开发框架</p>
-            <h1 class="reveal">Skybase</h1>
-            <p class="reveal" style="font-size: 1.1rem; color: var(--text-secondary); margin-top: 0.8rem;">
-                基于 Koa2 的高性能 Web 开发平台
-            </p>
-            <div class="reveal" style="margin-top: 1.5rem; display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center;">
-                <span class="badge badge-cyan">MVC 架构</span>
-                <span class="badge badge-magenta">API 管理</span>
-                <span class="badge badge-purple">中间件模式</span>
-                <span class="badge badge-green">Meeko 工具库</span>
+        <div class="slide-content">
+            <p class="reveal tag">企业级 Node.js 框架</p>
+            <h1 class="reveal">Sky<span class="highlight">base</span></h1>
+            <p class="reveal" style="margin-top: 0.8rem;">基于 Koa2 的高性能 Web 开发平台</p>
+            <div class="reveal" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                <span class="tag">MVC</span>
+                <span class="tag plasma">API</span>
+                <span class="tag aurora">中间件</span>
+                <span class="tag cosmic">Meeko</span>
             </div>
         </div>
     </section>
 
     <!-- 2. 目录 -->
     <section class="slide" id="slide-2">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+        <span class="section-num">CONTENTS</span>
         <div class="slide-content">
-            <h2 class="reveal">目录</h2>
-            <div class="two-col">
+            <h2 class="reveal">课程目录</h2>
+            <div class="three-col">
                 <div class="reveal">
-                    <div class="card" style="margin-bottom: 0.8rem;">
-                        <h3 style="color: var(--accent-cyan);">01 框架概述</h3>
-                        <p>Skybase 是什么、核心特性、架构概览</p>
-                    </div>
-                    <div class="card" style="margin-bottom: 0.8rem;">
-                        <h3 style="color: var(--accent-magenta);">02 目录结构</h3>
-                        <p>MVC 架构、各层职责、项目组织</p>
-                    </div>
                     <div class="card">
-                        <h3 style="color: var(--accent-purple);">03 API 开发</h3>
-                        <p>API 定义、参数校验、路由注册</p>
+                        <h3 style="color: var(--accent-neon);">第一章</h3>
+                        <p>框架概述与架构</p>
                     </div>
                 </div>
                 <div class="reveal">
-                    <div class="card" style="margin-bottom: 0.8rem;">
-                        <h3 style="color: var(--accent-green);">04 Meeko 工具库</h3>
-                        <p>工具函数、数据处理、类型检查</p>
-                    </div>
-                    <div class="card" style="margin-bottom: 0.8rem;">
-                        <h3 style="color: var(--accent-cyan);">05 MySQL 数据库</h3>
-                        <p>j2sql2 ORM、CRUD 操作、事务</p>
-                    </div>
                     <div class="card">
-                        <h3 style="color: var(--accent-magenta);">06 Redis 缓存</h3>
-                        <p>连接配置、数据操作、缓存策略</p>
+                        <h3 style="color: var(--accent-plasma);">第二章</h3>
+                        <p>API 与 Controller</p>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="card">
+                        <h3 style="color: var(--accent-aurora);">第三章</h3>
+                        <p>中间件开发</p>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="card">
+                        <h3 style="color: var(--accent-cosmic);">第四章</h3>
+                        <p>Meeko 工具库</p>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="card">
+                        <h3 style="color: var(--accent-neon);">第五章</h3>
+                        <p>MySQL 数据库</p>
+                    </div>
+                </div>
+                <div class="reveal">
+                    <div class="card">
+                        <h3 style="color: var(--accent-plasma);">第六章</h3>
+                        <p>Redis 缓存</p>
                     </div>
                 </div>
             </div>
@@ -518,46 +507,22 @@
 
     <!-- 3. 什么是 Skybase -->
     <section class="slide" id="slide-3">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+        <span class="section-num">01</span>
         <div class="slide-content">
-            <span class="section-num">01</span>
             <h2 class="reveal">什么是 Skybase？</h2>
-            <div class="reveal">
-                <p style="font-size: 1rem; color: var(--text-primary); margin-bottom: 1rem;">
-                    Skybase 是基于 <span class="highlight">Koa2</span> 构建的企业级 Node.js Web 框架，提供完整的 MVC 架构、API 管理和数据统计能力。
-                </p>
-            </div>
+            <p class="reveal">基于 Koa2 的企业级 Node.js 框架，MVC 架构</p>
             <div class="card-grid">
                 <div class="card reveal">
-                    <div class="card-icon">🧅</div>
-                    <h3>洋葱中间件</h3>
-                    <p>基于 Koa2 的洋葱模型，支持请求前后置处理，代码解耦更灵活</p>
+                    <h3>🧅 洋葱中间件</h3>
+                    <p>请求前后置处理，代码解耦</p>
                 </div>
                 <div class="card reveal">
-                    <div class="card-icon">📋</div>
-                    <h3>API 声明式</h3>
-                    <p>通过配置文件定义 API，自动生成文档，支持参数扫描和校验</p>
+                    <h3>📋 API 声明式</h3>
+                    <p>配置定义，自动校验</p>
                 </div>
                 <div class="card reveal">
-                    <div class="card-icon">🗄️</div>
-                    <h3>双数据库支持</h3>
-                    <p>MySQL (j2sql2 ORM) + Redis 一站式数据层，Promise 风格 API</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">📊</div>
-                    <h3>实时统计</h3>
-                    <p>RTS 实时统计组件，支持多时间粒度的数据埋点和聚合分析</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🔧</div>
-                    <h3>开发工具</h3>
-                    <p>API 参数扫描、安全扫描、热更新，开发效率最大化</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🔐</div>
-                    <h3>安全认证</h3>
-                    <p>内置 Token 验证、签名校验、SQL 注入检测等安全机制</p>
+                    <h3>🗄️ 双数据库</h3>
+                    <p>MySQL + Redis 一站式</p>
                 </div>
             </div>
         </div>
@@ -565,709 +530,363 @@
 
     <!-- 4. 目录结构 -->
     <section class="slide" id="slide-4">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+        <span class="section-num">01</span>
         <div class="slide-content">
-            <span class="section-num">02</span>
             <h2 class="reveal">目录结构</h2>
             <div class="two-col">
                 <div class="reveal">
-                    <div class="code-block" style="padding: 0.8rem;">
-<span style="color: #888;">project-root/</span>
-├── <span style="color: var(--accent-cyan);">router/</span>        <span style="color: #555;">// 路由(处理Controller)</span>
-├── <span style="color: var(--accent-cyan);">model/</span>        <span style="color: #555;">// 数据模型/API定义</span>
-├── <span style="color: var(--accent-cyan);">service/</span>       <span style="color: #555;">// 业务逻辑层</span>
-├── <span style="color: var(--accent-cyan);">middleware/</span>   <span style="color: #555;">// 自定义中间件</span>
-├── <span style="color: var(--accent-cyan);">config/</span>       <span style="color: #555;">// 环境配置</span>
-├── <span style="color: var(--accent-cyan);">tool/</span>         <span style="color: #555;">// 开发工具</span>
-├── : var(--accent<span style="color-cyan);">tests/</span>        <span style="color: #555;">// 测试文件</span>
-├── <span style="color: var(--accent-cyan);">index.js</span>      <span style="color: #555;">// 入口文件</span>
-└── <span style="color: var(--accent-cyan);">package.json</span>
+                    <div class="code-block">
+├── router/        <span style="color:#555;">// 路由(Controller)</span>
+├── model/         <span style="color:#555;">// 数据模型</span>
+├── service/       <span style="color:#555;">// 业务逻辑</span>
+├── middleware/    <span style="color:#555;">// 中间件</span>
+├── config/        <span style="color:#555;">// 配置</span>
+├── index.js       <span style="color:#555;">// 入口</span>
                     </div>
                 </div>
                 <div class="reveal">
-                    <ul class="feature-list">
-                        <li><strong>router/</strong> - 路由处理层，接收请求，调用 service</li>
-                        <li><strong>model/</strong> - 数据模型，包含 API 定义和数据库模型</li>
-                        <li><strong>service/</strong> - 业务逻辑层，处理核心业务</li>
-                        <li><strong>middleware/</strong> - 自定义中间件，如鉴权、日志</li>
-                        <li><strong>config/</strong> - 多环境配置 (dev/test/prod)</li>
-                        <li><strong>tool/</strong> - 开发工具，如代码生成器</li>
-                    </ul>
+                    <div class="timeline">
+                        <div class="timeline-item"><h3>router</h3><p>处理请求，调用 service</p></div>
+                        <div class="timeline-item"><h3>service</h3><p>核心业务逻辑</p></div>
+                        <div class="timeline-item"><h3>model</h3><p>数据层与 API 定义</p></div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 5. API 定义概念 -->
+    <!-- 5. API 定义 -->
     <section class="slide" id="slide-5">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+        <span class="section-num">02</span>
         <div class="slide-content">
-            <span class="section-num">03</span>
-            <h2 class="reveal">API 定义 - 概念</h2>
-            <p class="reveal" style="margin-bottom: 1rem;">
-                Skybase 使用声明式配置定义 API，通过 <span class="inline-code">model/api/</span> 目录下的文件定义接口规范。
-            </p>
-            <div class="reveal" style="margin-bottom: 1rem;">
-                <h3>API 配置项说明</h3>
-                <table class="table">
-                    <thead>
-                        <tr><th>字段</th><th>类型</th><th>说明</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td class="highlight">name</td><td>string</td><td>API 名称（中文）</td></tr>
-                        <tr><td class="highlight">desc</td><td>string</td><td>API 描述</td></tr>
-                        <tr><td class="highlight">method</td><td>string</td><td>请求方法: get/post/all</td></tr>
-                        <tr><td class="highlight">controller</td><td>string</td><td>路由: module.method</td></tr>
-                        <tr><td class="highlight">param</td><td>object</td><td>参数定义与校验规则</td></tr>
-                        <tr><td class="highlight">token</td><td>boolean</td><td>是否需要 token 验证</td></tr>
-                        <tr><td class="highlight">needSign</td><td>boolean</td><td>是否需要签名校验</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <!-- 6. API 定义示例 -->
-    <section class="slide" id="slide-6">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
-        <div class="slide-content">
-            <span class="section-num">03</span>
-            <h2 class="reveal">API 定义 - 示例</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <h3>定义用户接口</h3>
-                    <div class="code-block">
+            <h2 class="reveal">API 定义</h2>
+            <p class="reveal">通过 <span class="inline-code">model/api/</span> 配置文件定义接口</p>
+            <div class="reveal" style="margin-top: 0.8rem;">
+                <div class="code-block">
 <span class="comment">// model/api/user.js</span>
 <span class="keyword">module</span>.<span class="keyword">exports</span> = {
   <span class="string">'user/getInfo'</span>: {
     name: <span class="string">'获取用户信息'</span>,
-    desc: <span class="string">'根据用户ID获取详细信息'</span>,
     method: <span class="string">'post'</span>,
     controller: <span class="string">'user.info'</span>,
     <span class="keyword">param</span>: {
-      userId: { 
-        type: <span class="string">'int'</span>, 
-        required: <span class="keyword">true</span>, 
-        desc: <span class="string">'用户ID'</span> 
-      }
-    },
-    token: <span class="keyword">true</span>,
-    needSign: <span class="keyword">false</span>
-  },
-  
-  <span class="string">'user/update'</span>: {
-    name: <span class="string">'更新用户信息'</span>,
-    method: <span class="string">'post'</span>,
-    controller: <span class="string">'user.update'</span>,
-    <span class="keyword">param</span>: {
-      userId: { type: <span class="string">'int'</span>, required: <span class="keyword">true</span> },
-      nickname: { type: <span class="string">'string'</span>, maxLen: <span class="number">50</span> },
-      avatar: { type: <span class="string">'string'</span>, format: <span class="string">'url'</span> }
+      userId: { type: <span class="string">'int'</span>, required: <span class="keyword">true</span> }
     },
     token: <span class="keyword">true</span>
   }
 }
-                    </div>
-                </div>
-                <div class="reveal">
-                    <h3>参数类型支持</h3>
-                    <ul class="feature-list">
-                        <li><span class="inline-code">string</span> - 字符串</li>
-                        <li><span class="inline-code">int</span> - 整数</li>
-                        <li><span class="inline-code">float</span> - 浮点数</li>
-                        <li><span class="inline-code">boolean</span> - 布尔值</li>
-                        <li><span class="inline-code">array</span> - 数组</li>
-                        <li><span class="inline-code">object</span> - 对象</li>
-                        <li><span class="inline-code">email</span> - 邮箱格式</li>
-                        <li><span class="inline-code">mobile</span> - 手机号</li>
-                        <li><span class="inline-code">url</span> - URL 格式</li>
-                        <li><span class="inline-code">date</span> - 日期格式</li>
-                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 7. Controller 开发 -->
-    <section class="slide" id="slide-7">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 6. 参数类型 -->
+    <section class="slide" id="slide-6">
+        <span class="section-num">02</span>
         <div class="slide-content">
-            <span class="section-num">03</span>
+            <h2 class="reveal">参数类型</h2>
+            <div class="card-grid">
+                <div class="card reveal">
+                    <h3>基础类型</h3>
+                    <p>string, int, float, boolean</p>
+                </div>
+                <div class="card reveal">
+                    <h3>复合类型</h3>
+                    <p>array, object, file, json</p>
+                </div>
+                <div class="card reveal">
+                    <h3>格式校验</h3>
+                    <p>email, mobile, url, date</p>
+                </div>
+                <div class="card reveal">
+                    <h3>高级类型</h3>
+                    <p>idcard, ip, money, enum</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Controller -->
+    <section class="slide" id="slide-7">
+        <span class="section-num">02</span>
+        <div class="slide-content">
             <h2 class="reveal">Controller 开发</h2>
-            <p class="reveal" style="margin-bottom: 1rem;">
-                Controller 位于 <span class="inline-code">router/</span> 目录，负责接收请求参数、调用业务逻辑、返回响应。
-            </p>
-            <div class="two-col">
-                <div class="reveal">
-                    <h3>基本结构</h3>
-                    <div class="code-block">
+            <p class="reveal">router/ 目录下，接收请求，返回响应</p>
+            <div class="reveal" style="margin-top: 0.6rem;">
+                <div class="code-block">
 <span class="comment">// router/user.js</span>
 <span class="comment">/* global $ db redis */</span>
 
 <span class="keyword">module</span>.<span class="keyword">exports</span> = {
   <span class="keyword">async</span> <span class="function">info</span>(ctx) {
-    <span class="comment">// 获取参数</span>
     <span class="keyword">const</span> { userId } = ctx.checkedData.data
-    
-    <span class="comment">// 业务逻辑</span>
     <span class="keyword">const</span> user = <span class="keyword">await</span> db.user.find(userId)
-    
-    <span class="comment">// 返回响应</span>
-    <span class="keyword">if</span> (!user) {
-      ctx.throw(<span class="number">404</span>, <span class="string">'用户不存在'</span>)
-    }
-    
     ctx.ok(user)
-  },
-  
-  <span class="keyword">async</span> <span class="function">update</span>(ctx) {
-    <span class="keyword">const</span> { userId, nickname, avatar } = ctx.checkedData.data
-    
-    <span class="keyword">await</span> db.user.update(userId, { 
-      nickname, avatar 
-    })
-    
-    ctx.ok(<span class="string">'更新成功'</span>)
   }
 }
-                    </div>
                 </div>
-                <div class="reveal">
-                    <h3>响应方法</h3>
-                    <ul class="feature-list">
-                        <li><span class="inline-code">ctx.ok(data)</span> - 成功响应</li>
-                        <li><span class="inline-code">ctx.throw(status, msg)</span> - 抛出错误</li>
-                        <li><span class="inline-code">ctx.checkedData.data</span> - 已校验的参数</li>
-                        <li><span class="inline-code">ctx.$token</span> - 当前登录用户信息</li>
-                    </ul>
-                    <h3 style="margin-top: 1rem;">全局变量</h3>
-                    <ul class="feature-list">
-                        <li><span class="inline-code">$</span> - Meeko 工具库</li>
-                        <li><span class="inline-code">db</span> - MySQL 连接</li>
-                        <li><span class="inline-code">redis</span> - Redis 连接</li>
-                    </ul>
+            </div>
+            <ul class="feature-list reveal" style="margin-top: 0.6rem;">
+                <li><span class="inline-code">ctx.ok(data)</span> - 成功响应</li>
+                <li><span class="inline-code">ctx.throw(status, msg)</span> - 错误响应</li>
+                <li><span class="inline-code">ctx.$token</span> - 当前用户</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 8. 全局对象 -->
+    <section class="slide" id="slide-8">
+        <span class="section-num">02</span>
+        <div class="slide-content">
+            <h2 class="reveal">全局对象</h2>
+            <div class="three-col">
+                <div class="card reveal">
+                    <div class="card-icon">🔧</div>
+                    <h3>$</h3>
+                    <p>Meeko 工具库</p>
+                </div>
+                <div class="card reveal">
+                    <div class="card-icon">🗄️</div>
+                    <h3>db</h3>
+                    <p>MySQL 连接</p>
+                </div>
+                <div class="card reveal">
+                    <div class="card-icon">📡</div>
+                    <h3>redis</h3>
+                    <p>Redis 连接</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 8. 中间件 -->
-    <section class="slide" id="slide-8">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 9. 中间件概念 -->
+    <section class="slide" id="slide-9">
+        <span class="section-num">03</span>
         <div class="slide-content">
-            <span class="section-num">03</span>
-            <h2 class="reveal">中间件开发</h2>
-            <p class="reveal" style="margin-bottom: 1rem;">
-                中间件位于 <span class="inline-code">middleware/</span> 目录，遵循 Koa2 洋葱模型，可在请求前后执行逻辑。
-            </p>
-            <div class="two-col">
-                <div class="reveal">
-                    <h3>基本结构</h3>
-                    <div class="code-block">
-<span class="comment">// middleware/auth.js</span>
-<span class="comment">/* global $ redis */</span>
+            <h2 class="reveal">中间件</h2>
+            <p class="reveal">middleware/ 目录下，遵循 Koa2 洋葱模型</p>
+            <div class="reveal" style="text-align: center; margin: 1rem 0;">
+                <div class="flow">
+                    <span class="flow-step">中间件1</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">中间件2</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Controller</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">中间件2</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">中间件1</span>
+                </div>
+            </div>
+            <div class="card-grid">
+                <div class="card reveal"><h3>认证鉴权</h3></div>
+                <div class="card reveal"><h3>日志记录</h3></div>
+                <div class="card reveal"><h3>参数预处理</h3></div>
+            </div>
+        </div>
+    </section>
 
+    <!-- 10. 中间件示例 -->
+    <section class="slide" id="slide-10">
+        <span class="section-num">03</span>
+        <div class="slide-content">
+            <h2 class="reveal">中间件示例</h2>
+            <div class="reveal">
+                <div class="code-block">
+<span class="comment">// middleware/auth.js</span>
 <span class="keyword">module</span>.<span class="keyword">exports</span> = <span class="keyword">async</span> (ctx, next) => {
-  <span class="comment">// 前置处理</span>
   <span class="keyword">const</span> token = ctx.headers.authorization
   
   <span class="keyword">if</span> (!token) {
     ctx.throw(<span class="number">401</span>, <span class="string">'请先登录'</span>)
   }
   
-  <span class="comment">// 验证 token</span>
   <span class="keyword">const</span> userInfo = <span class="keyword">await</span> redis.get(<span class="string">`token:${token}`</span>)
-  <span class="keyword">if</span> (!userInfo) {
-    ctx.throw(<span class="number">401</span>, <span class="string">'登录已过期'</span>)
-  }
-  
-  <span class="comment">// 挂载用户信息</span>
   ctx.$token = JSON.parse(userInfo)
   
-  <span class="comment">// 继续执行</span>
   next && (<span class="keyword">await</span> next())
-  
-  <span class="comment">// 后置处理</span>
-  <span class="comment">// ...</span>
 }
-                    </div>
-                </div>
-                <div class="reveal">
-                    <h3>洋葱模型执行顺序</h3>
-                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1rem;">
-                        <div style="border-left: 2px solid var(--accent-cyan); padding-left: 1rem; margin-bottom: 0.8rem;">
-                            <span style="color: var(--accent-cyan);">中间件 1 (前置)</span>
-                        </div>
-                        <div style="border-left: 2px solid var(--accent-purple); padding-left: 1rem; margin-bottom: 0.8rem; margin-left: 1rem;">
-                            <span style="color: var(--accent-purple);">中间件 2 (前置)</span>
-                        </div>
-                        <div style="border-left: 2px solid var(--accent-green); padding-left: 1rem; margin-bottom: 0.8rem; margin-left: 2rem;">
-                            <span style="color: var(--accent-green);">Controller 业务逻辑</span>
-                        </div>
-                        <div style="border-left: 2px solid var(--accent-purple); padding-left: 1rem; margin-bottom: 0.8rem; margin-left: 1rem;">
-                            <span style="color: var(--accent-purple);">中间件 2 (后置)</span>
-                        </div>
-                        <div style="border-left: 2px solid var(--accent-cyan); padding-left: 1rem;">
-                            <span style="color: var(--accent-cyan);">中间件 1 (后置)</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 9. Meeko 概述 -->
-    <section class="slide" id="slide-9">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 11. Meeko 概述 -->
+    <section class="slide" id="slide-11">
+        <span class="section-num">04</span>
         <div class="slide-content">
-            <span class="section-num">04</span>
-            <h2 class="reveal">Meeko 工具库 - 概述</h2>
-            <p class="reveal" style="margin-bottom: 1rem;">
-                Meeko 是 Skybase 框架的核心工具库，提供了丰富的 JavaScript 工具函数，包括数学计算、数据处理、类型检查、参数校验等功能。
-            </p>
+            <h2 class="reveal">Meeko 工具库</h2>
+            <p class="reveal">核心工具函数库，提升开发效率</p>
             <div class="card-grid">
-                <div class="card reveal">
-                    <div class="card-icon">🔢</div>
-                    <h3>数学计算</h3>
-                    <p>随机数生成、范围限制、数值格式化、货币计算</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">📦</div>
-                    <h3>数据处理</h3>
-                    <p>深拷贝、对象合并、数组操作、JSON 处理</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">✅</div>
-                    <h3>类型检查</h3>
-                    <p>类型判断、格式验证、Email/手机号校验</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🔧</div>
-                    <h3>参数校验</h3>
-                    <p>必填检查、范围校验、长度限制、自定义规则</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🎭</div>
-                    <h3>Mock 数据</h3>
-                    <p>随机生成测试数据、模拟接口响应</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">📝</div>
-                    <h3>字符串操作</h3>
-                    <p>模板替换、截断、格式化、脱敏处理</p>
-                </div>
+                <div class="card reveal"><h3>🔢 数值计算</h3><p>random, clamp, currency</p></div>
+                <div class="card reveal"><h3>📦 数据处理</h3><p>clone, merge, pick, omit</p></div>
+                <div class="card reveal"><h3>✅ 类型校验</h3><p>isString, isEmail, isMobile</p></div>
+                <div class="card reveal"><h3>📝 字符串</h3><p>mask, truncate, tpl</p></div>
             </div>
         </div>
     </section>
 
-    <!-- 10. Meeko 数值处理 -->
-    <section class="slide" id="slide-10">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 12. Meeko 数值 -->
+    <section class="slide" id="slide-12">
+        <span class="section-num">04</span>
         <div class="slide-content">
-            <span class="section-num">04</span>
-            <h2 class="reveal">Meeko - 数值与数学</h2>
+            <h2 class="reveal">Meeko - 数值函数</h2>
             <div class="two-col">
                 <div class="reveal">
-                    <h3>常用数值函数</h3>
                     <div class="code-block">
-<span class="comment">// 随机数生成</span>
-<span class="keyword">$</span>.random(<span class="number">1</span>, <span class="number">100</span>)        <span class="comment">// 1-100 随机整数</span>
-<span class="keyword">$</span>.randomFloat(<span class="number">1.5</span>, <span class="number">10.5</span>)  <span class="comment">// 范围随机浮点数</span>
-
-<span class="comment">// 范围限制</span>
-<span class="keyword">$</span>.clamp(<span class="number">15</span>, <span class="number">0</span>, <span class="number">10</span>)     <span class="comment">// 结果: 10</span>
-<span class="keyword">$</span>.max(<span class="number">5</span>, <span class="number">3</span>, <span class="number">8</span>)        <span class="comment">// 结果: 8</span>
-<span class="keyword">$</span>.min(<span class="number">5</span>, <span class="number">3</span>, <span class="number">8</span>)        <span class="comment">// 结果: 3</span>
-
-<span class="comment">// 格式化</span>
-<span class="keyword">$</span>.thousands(<span class="number">1234567</span>)    <span class="comment">// "1,234,567"</span>
-<span class="keyword">$</span>.currency(<span class="number">1234.56</span>)     <span class="comment">// "¥1,234.56"</span>
-<span class="keyword">$</span>.percent(<span class="number">0.875</span>)        <span class="comment">// "87.5%"</span>
-<span class="keyword">$</span>.round(<span class="number">3.14159</span>, <span class="number">2</span>)     <span class="comment">// 3.14</span>
-<span class="keyword">$</span>.decimal(<span class="number">3.14159</span>, <span class="number">2</span>)    <span class="comment">// 3.14 (截断)</span>
+<span class="keyword">$</span>.random(<span class="number">1</span>, <span class="number">100</span>)   
+<span class="comment">// 随机整数</span>
+<span class="keyword">$</span>.clamp(<span class="number">15</span>, <span class="number">0</span>, <span class="number">10</span>) 
+<span class="comment">// → 10</span>
+<span class="keyword">$</span>.thousands(<span class="number">1234567</span>) 
+<span class="comment">// "1,234,567"</span>
+<span class="keyword">$</span>.currency(<span class="number">1234.56</span>)  
+<span class="comment">// "¥1,234.56"</span>
                     </div>
                 </div>
                 <div class="reveal">
-                    <h3>基本类型判断</h3>
                     <div class="code-block">
-<span class="keyword">$</span>.isString(<span class="string">"hello"</span>)     <span class="comment">// true</span>
-<span class="keyword">$</span>.isNumber(<span class="number">123</span>)       <span class="comment">// true</span>
-<span class="keyword">$</span>.isBoolean(<span class="keyword">true</span>)       <span class="comment">// true</span>
-<span class="keyword">$</span>.isArray([])           <span class="comment">// true</span>
-<span class="keyword">$</span>.isObject({})           <span class="comment">// true</span>
-<span class="keyword">$</span>.isFunction(() => {})  <span class="comment">// true</span>
-<span class="keyword">$</span>.isEmpty(<span class="string">""</span>)          <span class="comment">// true</span>
-<span class="keyword">$</span>.isEmpty([])            <span class="comment">// true</span>
-<span class="keyword">$</span>.isNull(<span class="keyword">null</span>)            <span class="comment">// true</span>
-<span class="keyword">$</span>.isUndef(<span class="keyword">undefined</span>)     <span class="comment">// true</span>
-<span class="keyword">$</span>.type(<span class="string">"str"</span>)          <span class="comment">// "string"</span>
+<span class="keyword">$</span>.isString(<span class="string">"hi"</span>)   
+<span class="comment">// → true</span>
+<span class="keyword">$</span>.isNumber(<span class="number">123</span>)    
+<span class="comment">// → true</span>
+<span class="keyword">$</span>.isArray([])        
+<span class="comment">// → true</span>
+<span class="keyword">$</span>.isEmpty(<span class="string">""</span>)     
+<span class="comment">// → true</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 11. Meeko 字符串与格式校验 -->
-    <section class="slide" id="slide-11">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 13. Meeko 字符串 -->
+    <section class="slide" id="slide-13">
+        <span class="section-num">04</span>
         <div class="slide-content">
-            <span class="section-num">04</span>
-            <h2 class="reveal">Meeko - 字符串与校验</h2>
+            <h2 class="reveal">Meeko - 字符串</h2>
             <div class="two-col">
                 <div class="reveal">
                     <h3>字符串处理</h3>
                     <div class="code-block">
-<span class="comment">// 模板替换</span>
-<span class="keyword">$</span>.tpl(<span class="string">"Hello {name}"</span>, { name: <span class="string">"Sky"</span> })
-<span class="comment">// "Hello Sky"</span>
-
-<span class="comment">// 截断与省略</span>
-<span class="keyword">$</span>.truncate(<span class="string">"很长很长的字符串"</span>, <span class="number">5</span>)
-<span class="comment">// "很长很长的..."</span>
-
-<span class="comment">// 脱敏处理</span>
+<span class="keyword">$</span>.tpl(<span class="string">"Hi {name}"</span>, {name:<span class="string">"Sky"</span>})
+<span class="comment">// → "Hi Sky"</span>
 <span class="keyword">$</span>.mask(<span class="string">"13812345678"</span>)
-<span class="comment">// "138****5678"</span>
-<span class="keyword">$</span>.mask(<span class="string">"张三"</span>)
-<span class="comment">// "张*"</span>
-
-<span class="comment">// 首字母大写</span>
-<span class="keyword">$</span>.capitalize(<span class="string">"hello"</span>)
-<span class="comment">// "Hello"</span>
-
-<span class="comment">// 去除空格</span>
-<span class="keyword">$</span>.trim(<span class="string">"  hello  "</span>)  <span class="comment">// "hello"</span>
-<span class="keyword">$</span>.slug(<span class="string">"Hello World"</span>)
-<span class="comment">// "hello-world"</span>
+<span class="comment">// → "138****5678"</span>
+<span class="keyword">$</span>.truncate(<span class="string">"很长文字"</span>, <span class="number">3</span>)
+<span class="comment">// → "很..."</span>
                     </div>
                 </div>
                 <div class="reveal">
                     <h3>格式校验</h3>
                     <div class="code-block">
-<span class="comment">// Email 校验</span>
-<span class="keyword">$</span>.isEmail(<span class="string">"test@example.com"</span>)
-<span class="comment">// true</span>
-
-<span class="comment">// 手机号校验</span>
+<span class="keyword">$</span>.isEmail(<span class="string">"a@b.com"</span>)
+<span class="comment">// → true</span>
 <span class="keyword">$</span>.isMobile(<span class="string">"13812345678"</span>)
-<span class="comment">// true</span>
-
-<span class="comment">// URL 校验</span>
-<span class="keyword">$</span>.isUrl(<span class="string">"https://example.com"</span>)
-<span class="comment">// true</span>
-
-<span class="comment">// 身份证号</span>
-<span class="keyword">$</span>.isIdCard(<span class="string">"110101199001011234"</span>)
-<span class="comment">// true</span>
-
-<span class="comment">// IP 地址</span>
-<span class="keyword">$</span>.isIP(<span class="string">"192.168.1.1"</span>)
-<span class="comment">// true</span>
-
-<span class="comment">// 金额格式</span>
-<span class="keyword">$</span>.isMoney(<span class="string">"99.99"</span>)
-<span class="comment">// true</span>
-
-<span class="comment">// 邮政编码</span>
-<span class="keyword">$</span>.isZipCode(<span class="string">"100000"</span>)
-<span class="comment">// true</span>
+<span class="comment">// → true</span>
+<span class="keyword">$</span>.isUrl(<span class="string">"https://x.com"</span>)
+<span class="comment">// → true</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 12. Meeko 数据处理 -->
-    <section class="slide" id="slide-12">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
-        <div class="slide-content">
-            <span class="section-num">04</span>
-            <h2 class="reveal">Meeko - 数据处理</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <h3>对象与数组操作</h3>
-                    <div class="code-block">
-<span class="comment">// 深拷贝</span>
-<span class="keyword">$</span>.clone(obj)
-
-<span class="comment">// 对象合并</span>
-<span class="keyword">$</span>.merge({ a: <span class="number">1</span> }, { b: <span class="number">2</span> })
-<span class="comment">// { a: 1, b: 2 }</span>
-
-<span class="comment">// pick - 选择字段</span>
-<span class="keyword">$</span>.pick(obj, [<span class="string">'id'</span>, <span class="string">'name'</span>])
-
-<span class="comment">// omit - 排除字段</span>
-<span class="keyword">$</span>.omit(obj, [<span class="string">'password'</span>])
-
-<span class="comment">// groupBy - 分组</span>
-<span class="keyword">$</span>.groupBy(users, <span class="string">'age'</span>)
-
-<span class="comment">// unique - 去重</span>
-<span class="keyword">$</span>.unique(arr)
-
-<span class="comment">// sortBy - 排序</span>
-<span class="keyword">$</span>.sortBy(users, <span class="string">'age'</span>)
-
-<span class="comment">// flatten - 扁平化</span>
-<span class="keyword">$</span>.flatten([[<span class="number">1</span>], [<span class="number">2</span>]])
-<span class="comment">// [1, 2]</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <h3>其他常用工具</h3>
-                    <div class="code-block">
-<span class="comment">// 防抖 (Debounce)</span>
-<span class="keyword">const</span> debouncedFn = <span class="keyword">$</span>.debounce(fn, <span class="number">300</span>)
-
-<span class="comment">// 节流 (Throttle)</span>
-<span class="keyword">const</span> throttledFn = <span class="keyword">$</span>.throttle(fn, <span class="number">300</span>)
-
-<span class="comment">// 随机打乱数组</span>
-<span class="keyword">$</span>.shuffle(arr)
-
-<span class="comment">// 随机获取元素</span>
-<span class="keyword">$</span>.sample(arr)
-
-<span class="comment">// 睡眠/延迟</span>
-<span class="keyword">await</span> <span class="keyword">$</span>.sleep(<span class="number">1000</span>)
-
-<span class="comment">// 生成 UUID</span>
-<span class="keyword">$</span>.uuid()
-<span class="comment">// "550e8400-e29b-..."</span>
-
-<span class="comment">// 日期格式化</span>
-<span class="keyword">$</span>.formatDate(<span class="keyword">new</span> Date(), <span class="string">'YYYY-MM-DD'</span>)
-
-<span class="comment">// 安全获取嵌套属性</span>
-<span class="keyword">$</span>.get(obj, <span class="string">'a.b.c'</span>, <span class="string">'default'</span>)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 13. MySQL 概述 -->
-    <section class="slide" id="slide-13">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
-        <div class="slide-content">
-            <span class="section-num">05</span>
-            <h2 class="reveal">MySQL 数据库 - 概述</h2>
-            <p class="reveal" style="margin-bottom: 1rem;">
-                Skybase 使用 <span class="inline-code">j2sql2</span> 作为 MySQL ORM，提供 Promise 风格的 API，支持表级 CRUD 扩展。
-            </p>
-            <div class="card-grid">
-                <div class="card reveal">
-                    <div class="card-icon">🔗</div>
-                    <h3>Promise 风格</h3>
-                    <p>所有数据库操作返回 Promise，支持 async/await 语法</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">📊</div>
-                    <h3>表级 CRUD</h3>
-                    <p>自动生成常用增删改查方法，无需编写 SQL</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🔍</div>
-                    <h3>链式查询</h3>
-                    <p>支持 where、order、limit 等链式调用</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">💉</div>
-                    <h3>事务支持</h3>
-                    <p>支持事务操作，保证数据一致性</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🏗️</div>
-                    <h3>原生 SQL</h3>
-                    <p>复杂查询可直接使用原生 SQL 语句</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🛡️</div>
-                    <h3>SQL 注入防护</h3>
-                    <p>参数化查询自动防止 SQL 注入</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 14. MySQL 查询操作 -->
+    <!-- 14. MySQL 概述 -->
     <section class="slide" id="slide-14">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+        <span class="section-num">05</span>
         <div class="slide-content">
-            <span class="section-num">05</span>
-            <h2 class="reveal">MySQL - 查询操作</h2>
+            <h2 class="reveal">MySQL 数据库</h2>
+            <p class="reveal">j2sql2 ORM，Promise 风格 API</p>
+            <div class="card-grid">
+                <div class="card reveal"><h3>🔗 Promise</h3><p>async/await 语法</p></div>
+                <div class="card reveal"><h3>📊 CRUD</h3><p>自动生成方法</p></div>
+                <div class="card reveal"><h3>🔍 链式</h3><p>where, order, limit</p></div>
+                <div class="card reveal"><h3>💉 事务</h3><p>原子性操作</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 15. MySQL 查询 -->
+    <section class="slide" id="slide-15">
+        <span class="section-num">05</span>
+        <div class="slide-content">
+            <h2 class="reveal">MySQL - 查询</h2>
             <div class="two-col">
                 <div class="reveal">
-                    <h3>基础查询</h3>
                     <div class="code-block">
-<span class="comment">// 根据 ID 查询</span>
+<span class="comment">// 查询</span>
 <span class="keyword">const</span> user = <span class="keyword">await</span> db.user.find(<span class="number">1</span>)
-
-<span class="comment">// 查询单条</span>
-<span class="keyword">const</span> user = <span class="keyword">await</span> db.user.find({
-  where: { status: <span class="number">1</span> }
-})
-
-<span class="comment">// 查询多条</span>
-<span class="keyword">const</span> users = <span class="keyword">await</span> db.user.findAll({
-  where: { type: <span class="string">'vip'</span> }
-})
-
-<span class="comment">// 条件查询</span>
-<span class="keyword">const</span> list = <span class="keyword">await</span> db.user.where({
-  age: { <span class="property">$gte</span>: <span class="number">18</span> }
-}).all()
-
-<span class="comment">// 排序分页</span>
-<span class="keyword">const</span> list = <span class="keyword">await</span> db.user.order(<span class="string">'created_at'</span>, <span class="string">'desc'</span>)
-  .limit(<span class="number">10</span>).offset(<span class="number">0</span>).all()
-
-<span class="comment">// 统计数量</span>
-<span class="keyword">const</span> count = <span class="keyword">await</span> db.user.count({
-  where: { status: <span class="number">1</span> })
-})
+<span class="keyword">const</span> list = <span class="keyword">await</span> db.user
+  .where({status:<span class="number">1</span>})
+  .order(<span class="string">'id'</span>,<span class="string">'desc'</span>)
+  .limit(<span class="number">10</span>).all()
                     </div>
                 </div>
                 <div class="reveal">
                     <h3>运算符</h3>
-                    <div class="code-block">
-<span class="property">$eq</span>    <span class="comment">// 等于 (=)</span>
-<span class="property">$ne</span>    <span class="comment">// 不等于 (!=)</span>
-<span class="property">$gt</span>     <span class="comment">// 大于 (>)</span>
-<span class="property">$gte</span>    <span class="comment">// 大于等于 (>=)</span>
-<span class="property">$lt</span>     <span class="comment">// 小于 (<)</span>
-<span class="property">$lte</span>    <span class="comment">// 小于等于 (<=)</span>
-<span class="property">$like</span>   <span class="comment">// 模糊匹配 (LIKE)</span>
-<span class="property">$in</span>     <span class="comment">// IN 查询</span>
-<span class="property">$notIn</span>  <span class="comment">// NOT IN 查询</span>
-<span class="property">$between</span> <span class="comment">// 范围查询</span>
-
-<span class="comment">// 使用示例</span>
-<span class="keyword">await</span> db.user.where({
-  age: { <span class="property">$between</span>: [<span class="number">18</span>, <span class="number">30</span>] },
-  name: { <span class="property">$like</span>: <span class="string">'%张%'</span> }
-}).all()
-                    </div>
+                    <ul class="feature-list">
+                        <li><span class="inline-code">$eq</span> 等于</li>
+                        <li><span class="inline-code">$gt</span> 大于</li>
+                        <li><span class="inline-code">$like</span> 模糊</li>
+                        <li><span class="inline-code">$in</span> IN查询</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 15. MySQL 写入操作 -->
-    <section class="slide" id="slide-15">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 16. MySQL 写入 -->
+    <section class="slide" id="slide-16">
+        <span class="section-num">05</span>
         <div class="slide-content">
-            <span class="section-num">05</span>
-            <h2 class="reveal">MySQL - 写入操作</h2>
+            <h2 class="reveal">MySQL - 写入</h2>
             <div class="two-col">
                 <div class="reveal">
-                    <h3>新增数据</h3>
                     <div class="code-block">
-<span class="comment">// 单条插入</span>
+<span class="comment">// 新增</span>
 <span class="keyword">const</span> id = <span class="keyword">await</span> db.user.add({
-  name: <span class="string">'张三'</span>,
-  age: <span class="number">25</span>,
-  email: <span class="string">'zhangsan@example.com'</span>
+  name: <span class="string">'张三'</span>, age: <span class="number">25</span>
 })
 
-<span class="comment">// 批量插入</span>
-<span class="keyword">const</span> ids = <span class="keyword">await</span> db.user.addBatch([
-  { name: <span class="string">'A'</span>, age: <span class="number">20</span> },
-  { name: <span class="string">'B'</span>, age: <span class="number">21</span> },
-  { name: <span class="string">'C'</span>, age: <span class="number">22</span> }
+<span class="comment">// 批量</span>
+<span class="keyword">await</span> db.user.addBatch([
+  {name:<span class="string">'A'</span>}, {name:<span class="string">'B'</span>}
 ])
-
-<span class="comment">// 插入或更新 (UPSERT)</span>
-<span class="keyword">await</span> db.user.addOrUpdate({
-  id: <span class="number">1</span>,
-  name: <span class="string">'张三'</span>,
-  age: <span class="number">26</span>
-})
                     </div>
                 </div>
                 <div class="reveal">
-                    <h3>更新与删除</h3>
                     <div class="code-block">
-<span class="comment">// 更新数据</span>
-<span class="keyword">await</span> db.user.update(<span class="number">1</span>, {
-  name: <span class="string">'李四'</span>,
-  age: <span class="number">30</span>
-})
+<span class="comment">// 更新</span>
+<span class="keyword">await</span> db.user.update(<span class="number">1</span>, {name:<span class="string">'李四'</span>})
 
-<span class="comment">// 条件更新</span>
-<span class="keyword">await</span> db.user.update({
-  where: { status: <span class="number">0</span> },
-  data: { status: <span class="number">1</span> }
-})
-
-<span class="comment">// 自增/自减</span>
+<span class="comment">// 自增</span>
 <span class="keyword">await</span> db.user.incr(<span class="number">1</span>, <span class="string">'score'</span>, <span class="number">10</span>)
-<span class="keyword">await</span> db.user.decr(<span class="number">1</span>, <span class="string">'count'</span>, <span class="number">1</span>)
 
-<span class="comment">// 删除数据</span>
+<span class="comment">// 删除</span>
 <span class="keyword">await</span> db.user.delete(<span class="number">1</span>)
-
-<span class="comment">// 条件删除</span>
-<span class="keyword">await</span> db.user.delete({
-  where: { status: <span class="number">-1</span> }
-})
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 16. MySQL 事务 -->
-    <section class="slide" id="slide-16">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 17. MySQL 事务 -->
+    <section class="slide" id="slide-17">
+        <span class="section-num">05</span>
         <div class="slide-content">
-            <span class="section-num">05</span>
-            <h2 class="reveal">MySQL - 事务操作</h2>
-            <p class="reveal" style="margin-bottom: 1rem;">
-                事务用于保证多个数据库操作的原子性，要么全部成功，要么全部失败。
-            </p>
+            <h2 class="reveal">MySQL - 事务</h2>
             <div class="reveal">
-                <h3>事务示例 - 用户转账</h3>
                 <div class="code-block">
 <span class="keyword">async</span> <span class="function">transfer</span>(fromId, toId, amount) {
-  <span class="comment">// 开始事务</span>
   <span class="keyword">const</span> conn = <span class="keyword">await</span> db.transaction()
   
   <span class="keyword">try</span> {
-    <span class="comment">// 扣除转出账户余额</span>
     <span class="keyword">await</span> conn.user.decr(fromId, <span class="string">'balance'</span>, amount)
-    
-    <span class="comment">// 添加转入账户余额</span>
     <span class="keyword">await</span> conn.user.incr(toId, <span class="string">'balance'</span>, amount)
-    
-    <span class="comment">// 记录转账日志</span>
-    <span class="keyword">await</span> conn.transferLog.add({
-      from_id: fromId,
-      to_id: toId,
-      amount: amount,
-      created_at: <span class="keyword">new</span> Date()
-    })
-    
-    <span class="comment">// 提交事务</span>
     <span class="keyword">await</span> conn.commit()
     <span class="keyword">return</span> <span class="keyword">true</span>
-    
   } <span class="keyword">catch</span> (err) {
-    <span class="comment">// 回滚事务</span>
     <span class="keyword">await</span> conn.rollback()
     <span class="keyword">throw</span> err
   }
@@ -1277,135 +896,65 @@
         </div>
     </section>
 
-    <!-- 17. Redis 概述 -->
-    <section class="slide" id="slide-17">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 18. Redis 概述 -->
+    <section class="slide" id="slide-18">
+        <span class="section-num">06</span>
         <div class="slide-content">
-            <span class="section-num">06</span>
-            <h2 class="reveal">Redis 缓存 - 概述</h2>
-            <p class="reveal" style="margin-bottom: 1rem;">
-                Skybase 使用 <span class="inline-code">j2sql2</span> 封装的 Redis 操作，基于 ioredis 提供 Promise 风格 API。
-            </p>
+            <h2 class="reveal">Redis 缓存</h2>
+            <p class="reveal">基于 ioredis，Promise 风格 API</p>
             <div class="card-grid">
-                <div class="card reveal">
-                    <div class="card-icon">⚡</div>
-                    <h3>高性能</h3>
-                    <p>内存存储，毫秒级响应，适合高频访问</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🔄</div>
-                    <h3>数据结构</h3>
-                    <p>支持 String、Hash、List、Set、ZSet</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">⏰</div>
-                    <h3>过期机制</h3>
-                    <p>支持键过期设置，自动失效</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">📡</div>
-                    <h3>发布订阅</h3>
-                    <p>支持消息发布订阅模式</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🔢</div>
-                    <h3>计数器</h3>
-                    <p>原子自增/自减操作</p>
-                </div>
-                <div class="card reveal">
-                    <div class="card-icon">🔐</div>
-                    <h3>分布式锁</h3>
-                    <p>支持分布式锁，防止并发问题</p>
-                </div>
+                <div class="card reveal"><h3>⚡ 高性能</h3><p>毫秒级响应</p></div>
+                <div class="card reveal"><h3>🔄 数据结构</h3><p>String, Hash, List, Set</p></div>
+                <div class="card reveal"><h3>⏰ 过期</h3><p>键过期自动失效</p></div>
+                <div class="card reveal"><h3>🔢 计数器</h3><p>原子自增/自减</p></div>
             </div>
         </div>
     </section>
 
-    <!-- 18. Redis 基础操作 -->
-    <section class="slide" id="slide-18">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 19. Redis 操作 -->
+    <section class="slide" id="slide-19">
+        <span class="section-num">06</span>
         <div class="slide-content">
-            <span class="section-num">06</span>
-            <h2 class="reveal">Redis - 基础操作</h2>
+            <h2 class="reveal">Redis - String</h2>
             <div class="two-col">
                 <div class="reveal">
-                    <h3>String 类型</h3>
                     <div class="code-block">
-<span class="comment">// 设置值</span>
-<span class="keyword">await</span> redis.set(<span class="string">`user:${userId}`</span>, JSON.stringify(user))
+<span class="comment">// 基本操作</span>
+<span class="keyword">await</span> redis.set(<span class="string">`user:${id}`</span>, json)
+<span class="keyword">await</span> redis.setex(<span class="string">`code`</span>, <span class="number">300</span>, <span class="string">'1234'</span>)
+<span class="keyword">const</span> data = <span class="keyword">await</span> redis.get(key)
 
-<span class="comment">// 设置带过期时间 (秒)</span>
-<span class="keyword">await</span> redis.setex(<span class="string">`code:1234`</span>, <span class="number">300</span>, <span class="string">'1234'</span>)
-
-<span class="comment">// 获取值</span>
-<span class="keyword">const</span> data = <span class="keyword">await</span> redis.get(<span class="string">`user:${userId}`</span>)
-
-<span class="comment">// 自增/自减</span>
-<span class="keyword">await</span> redis.incr(<span class="string">'page:views'</span>)
-<span class="keyword">await</span> redis.incrby(<span class="string">'count'</span>, <span class="number">10</span>)
-<span class="keyword">await</span> redis.decr(<span class="string">'stock'</span>)
-
-<span class="comment">// 批量操作</span>
-<span class="keyword">await</span> redis.mset({ <span class="string">'k1'</span>: <span class="string">'v1'</span>, <span class="string">'k2'</span>: <span class="string">'v2'</span> })
-<span class="keyword">const</span> vals = <span class="keyword">await</span> redis.mget([<span class="string">'k1'</span>, <span class="string">'k2'</span>])
+<span class="comment">// 自增</span>
+<span class="keyword">await</span> redis.incr(<span class="string">'views'</span>)
+<span class="keyword">await</span> redis.incrby(<span class="string">count</span>, <span class="number">10</span>)
                     </div>
                 </div>
                 <div class="reveal">
-                    <h3>Hash 类型</h3>
                     <div class="code-block">
-<span class="comment">// 设置 Hash</span>
-<span class="keyword">await</span> redis.hset(<span class="string">`user:${userId}`</span>, {
-  name: <span class="string">'张三'</span>,
-  age: <span class="number">25</span>,
-  email: <span class="string">'test@example.com'</span>
-})
-
-<span class="comment">// 获取 Hash</span>
-<span class="keyword">const</span> user = <span class="keyword">await</span> redis.hgetall(<span class="string">`user:${userId}`</span>)
-<span class="comment">// { name: '张三', age: '25', ... }</span>
-
-<span class="comment">// 获取单个字段</span>
-<span class="keyword">const</span> name = <span class="keyword">await</span> redis.hget(<span class="string">`user:${userId}`</span>, <span class="string">'name'</span>)
-
-<span class="comment">// 自增 Hash 字段</span>
-<span class="keyword">await</span> redis.hincrby(<span class="string">`user:${userId}`</span>, <span class="string">'score'</span>, <span class="number">10</span>)
-
-<span class="comment">// 删除字段</span>
-<span class="keyword">await</span> redis.hdel(<span class="string">`user:${userId}`</span>, <span class="string">'field'</span>)
+<span class="comment">// Hash 操作</span>
+<span class="keyword">await</span> redis.hset(<span class="string">`user:${id}`</span>, {name:<span class="string">'张三'</span>})
+<span class="keyword">const</span> user = <span class="keyword">await</span> redis.hgetall(<span class="string">`user:${id}`</span>)
+<span class="keyword">await</span> redis.hincrby(<span class="string">`user:${id}`</span>, <span class="string">score</span>, <span class="number">10</span>)
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 19. Redis 实战 -->
-    <section class="slide" id="slide-19">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
+    <!-- 20. Redis 实战 -->
+    <section class="slide" id="slide-20">
+        <span class="section-num">06</span>
         <div class="slide-content">
-            <span class="section-num">06</span>
-            <h2 class="reveal">Redis - 实战场景</h2>
+            <h2 class="reveal">Redis - 实战</h2>
             <div class="two-col">
                 <div class="reveal">
                     <h3>缓存用户信息</h3>
                     <div class="code-block">
-<span class="keyword">async</span> <span class="function">getUserInfo</span>(userId) {
-  <span class="comment">// 先查缓存</span>
-  <span class="keyword">const</span> cacheKey = <span class="string">`user:${userId}`</span>
-  <span class="keyword">const</span> cached = <span class="keyword">await</span> redis.get(cacheKey)
-  
-  <span class="keyword">if</span> (cached) {
-    <span class="keyword">return</span> JSON.parse(cached)
-  }
-  
-  <span class="comment">// 缓存未命中，查数据库</span>
-  <span class="keyword">const</span> user = <span class="keyword">await</span> db.user.find(userId)
-  
-  <span class="comment">// 写入缓存 (1小时)</span>
-  <span class="keyword">await</span> redis.setex(cacheKey, <span class="number">3600</span>, JSON.stringify(user))
-  
+<span class="keyword">async</span> <span class="function">getUser</span>(id) {
+  <span class="keyword">const</span> cached = <span class="keyword">await</span> redis.get(<span class="string">`u:${id}`</span>)
+  <span class="keyword">if</span> (cached) <span class="keyword">return</span> JSON.parse(cached)
+  <span class="keyword">const</span> user = <span class="keyword">await</span> db.user.find(id)
+  <span class="keyword">await</span> redis.setex(<span class="string">`u:${id}`</span>, <span class="number">3600</span>, JSON.stringify(user))
   <span class="keyword">return</span> user
 }
                     </div>
@@ -1413,23 +962,11 @@
                 <div class="reveal">
                     <h3>接口限流</h3>
                     <div class="code-block">
-<span class="keyword">async</span> <span class="function">rateLimit</span>(userId, max = <span class="number">100</span>) {
-  <span class="keyword">const</span> key = <span class="string">`ratelimit:${userId}`</span>
-  
-  <span class="comment">// 限流窗口: 60秒</span>
-  <span class="keyword">const</span> window = <span class="number">60</span>
-  
-  <span class="keyword">const</span> current = <span class="keyword">await</span> redis.incr(key)
-  
-  <span class="keyword">if</span> (current === <span class="number">1</span>) {
-    <span class="keyword">await</span> redis.expire(key, window)
-  }
-  
-  <span class="keyword">if</span> (current > max) {
-    ctx.throw(<span class="number">429</span>, <span class="string">'请求过于频繁'</span>)
-  }
-  
-  <span class="keyword">return</span> <span class="keyword">true</span>
+<span class="keyword">async</span> <span class="function">rateLimit</span>(uid) {
+  <span class="keyword">const</span> key = <span class="string">`rl:${uid}`</span>
+  <span class="keyword">const</span> n = <span class="keyword">await</span> redis.incr(key)
+  <span class="keyword">if</span> (n === <span class="number">1</span>) redis.expire(key, <span class="number">60</span>)
+  <span class="keyword">if</span> (n > <span class="number">100</span>) ctx.throw(<span class="number">429</span>, <span class="string">'太频繁'</span>)
 }
                     </div>
                 </div>
@@ -1437,31 +974,205 @@
         </div>
     </section>
 
-    <!-- 20. 结束页 -->
-    <section class="slide title-slide" id="slide-20">
-        <div class="gradient-bg"></div>
-        <div class="grid-bg"></div>
-        <div class="slide-content" style="justify-content: center; text-align: center;">
-            <p class="tagline reveal">感谢观看</p>
-            <h1 class="reveal" style="font-size: clamp(1.8rem, 6vw, 4rem);">开始使用 Skybase</h1>
-            <p class="reveal" style="font-size: 1rem; margin-top: 1rem; max-width: 500px; margin-left: auto; margin-right: auto;">
-                打造高性能企业级应用的理想选择<br>
-                <span class="highlight">简洁 · 高效 · 安全</span>
-            </p>
-            <div class="reveal" style="margin-top: 1.5rem; display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center;">
-                <span class="badge badge-cyan">Koa2</span>
-                <span class="badge badge-magenta">Meeko</span>
-                <span class="badge badge-purple">MySQL</span>
-                <span class="badge badge-green">Redis</span>
+    <!-- 21. 开发工具 -->
+    <section class="slide" id="slide-21">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">开发工具</h2>
+            <div class="card-grid">
+                <div class="card reveal">
+                    <h3>🔍 apitest</h3>
+                    <p>API 参数扫描</p>
+                </div>
+                <div class="card reveal">
+                    <h3>🛡️ inject</h3>
+                    <p>SQL 注入扫描</p>
+                </div>
+                <div class="card reveal">
+                    <h3>📝 eslint</h3>
+                    <p>代码规范检查</p>
+                </div>
+                <div class="card reveal">
+                    <h3>🚀 PM2</h3>
+                    <p>进程管理部署</p>
+                </div>
             </div>
-            <p class="reveal" style="margin-top: 2rem; font-size: 0.8rem; color: var(--text-secondary);">
-                按 <kbd style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 3px;">↑</kbd> <kbd style="background: rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 3px;">↓</kbd> 重新浏览
-            </p>
+        </div>
+    </section>
+
+    <!-- 22. 启动服务 -->
+    <section class="slide" id="slide-22">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">启动服务</h2>
+            <div class="two-col">
+                <div class="reveal">
+                    <h3>安装启动</h3>
+                    <div class="code-block">
+<span class="comment"># 安装依赖</span>
+<span class="function">npm</span> install
+
+<span class="comment"># 开发模式</span>
+<span class="function">node</span> index.js
+
+<span class="comment"># PM2 生产</span>
+<span class="function">pm2</span> start pm2_v4.config.js
+                    </div>
+                </div>
+                <div class="reveal">
+                    <h3>入口文件</h3>
+                    <div class="code-block">
+<span class="keyword">const</span> Koa = <span class="keyword">require</span>(<span class="string">'koa2'</span>)
+<span class="keyword">const</span> app = <span class="keyword">new</span> Koa()
+
+app.use(<span class="keyword">require</span>(<span class="string">'./middleware'</span>))
+app.use(<span class="keyword">require</span>(<span class="string">'./router'</span>).routes())
+
+app.listen(<span class="number">3000</span>, () => {
+  console.log(<span class="string">'Server :3000'</span>)
+})
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 23-30. 剩余页面 -->
+    <section class="slide" id="slide-23">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">最佳实践</h2>
+            <div class="two-col">
+                <div class="reveal">
+                    <h3>代码组织</h3>
+                    <ul class="feature-list">
+                        <li>Controller 只做参数校验</li>
+                        <li>业务放 Service 层</li>
+                        <li>配置放 config 目录</li>
+                    </ul>
+                </div>
+                <div class="reveal">
+                    <h3>性能优化</h3>
+                    <ul class="feature-list">
+                        <li>合理使用 Redis 缓存</li>
+                        <li>避免 N+1 查询</li>
+                        <li>使用连接池</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-24">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">安全建议</h2>
+            <div class="card-grid">
+                <div class="card reveal"><h3>参数校验</h3><p>所有用户输入必须校验</p></div>
+                <div class="card reveal"><h3>敏感数据</h3><p>加密存储</p></div>
+                <div class="card reveal"><h3>限流</h3><p>接口限速防爬</p></div>
+                <div class="card reveal"><h3>HTTPS</h3><p>安全传输</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-25">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">技术栈总结</h2>
+            <div class="three-col">
+                <div class="card reveal" style="border-color: rgba(0,245,255,0.3);">
+                    <h3 style="color: var(--accent-neon);">框架</h3>
+                    <p>Koa2 + MVC</p>
+                </div>
+                <div class="card reveal" style="border-color: rgba(139,92,246,0.3);">
+                    <h3 style="color: var(--accent-plasma);">工具</h3>
+                    <p>Meeko</p>
+                </div>
+                <div class="card reveal" style="border-color: rgba(6,255,165,0.3);">
+                    <h3 style="color: var(--accent-aurora);">数据</h3>
+                    <p>MySQL + Redis</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-26">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">适用场景</h2>
+            <div class="card-grid">
+                <div class="card reveal"><h3>企业 Web 应用</h3></div>
+                <div class="card reveal"><h3>RESTful API</h3></div>
+                <div class="card reveal"><h3>SaaS 平台</h3></div>
+                <div class="card reveal"><h3>微服务架构</h3></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-27">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">优势</h2>
+            <ul class="feature-list">
+                <li>⭐ 简洁高效的 MVC 架构</li>
+                <li>⭐ 声明式 API 定义</li>
+                <li>⭐ 强大的工具库 Meeko</li>
+                <li>⭐ 完善的数据库支持</li>
+                <li>⭐ 丰富的开发工具</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-28">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">学习路径</h2>
+            <div class="timeline">
+                <div class="timeline-item"><h3>1. 搭建环境</h3><p>安装依赖，启动服务</p></div>
+                <div class="timeline-item"><h3>2. 定义 API</h3><p>编写 model/api/*.js</p></div>
+                <div class="timeline-item"><h3>3. 开发 Controller</h3><p>编写 router/*.js</p></div>
+                <div class="timeline-item"><h3>4. 添加中间件</h3><p>编写 middleware/*.js</p></div>
+                <div class="timeline-item"><h3>5. 业务开发</h3><p>Service + 数据库操作</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide" id="slide-29">
+        <span class="section-num">06</span>
+        <div class="slide-content">
+            <h2 class="reveal">参考资料</h2>
+            <ul class="feature-list">
+                <li>📚 官方文档</li>
+                <li>💬 技术社区</li>
+                <li>⭐ GitHub 仓库</li>
+                <li>📧 问题反馈</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 30. 结束页 -->
+    <section class="slide title-slide" id="slide-30">
+        <div class="slide-content">
+            <p class="reveal tag">感谢观看</p>
+            <h1 class="reveal">Sky<span class="highlight">base</span></h1>
+            <p class="reveal">打造高性能企业级应用</p>
+            <div class="reveal" style="margin-top: 1rem;">
+                <span class="tag">MVC</span>
+                <span class="tag plasma">Meeko</span>
+                <span class="tag aurora">MySQL</span>
+                <span class="tag cosmic">Redis</span>
+            </div>
         </div>
     </section>
 
     <script>
-        const canvas = document.getElementById('particles');
+        console.log('%c🚀 Skybase PPT 创建进度', 'color: #00f5ff; font-size: 14px; font-weight: bold;');
+        
+        // 粒子背景
+        const canvas = document.createElement('canvas');
+        canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;';
+        document.body.insertBefore(canvas, document.body.firstChild);
         const ctx = canvas.getContext('2d');
         let particles = [];
 
@@ -1471,16 +1182,16 @@
         }
 
         class Particle {
-            constructor() {
-                this.reset();
-            }
+            constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.3;
-                this.speedY = (Math.random() - 0.5) * 0.3;
-                this.opacity = Math.random() * 0.4 + 0.1;
+                this.size = Math.random() * 1.2 + 0.3;
+                this.speedX = (Math.random() - 0.5) * 0.1;
+                this.speedY = (Math.random() - 0.5) * 0.1;
+                this.opacity = Math.random() * 0.2 + 0.02;
+                const colors = ['0, 245, 255', '139, 92, 246', '6, 255, 165', '255, 0, 170'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
             }
             update() {
                 this.x += this.speedX;
@@ -1491,17 +1202,15 @@
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(0, 240, 255, ${this.opacity})`;
+                ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
                 ctx.fill();
             }
         }
 
         function initParticles() {
             particles = [];
-            const count = Math.min(60, Math.floor((canvas.width * canvas.height) / 25000));
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle());
-            }
+            const count = Math.min(30, Math.floor((canvas.width * canvas.height) / 50000));
+            for (let i = 0; i < count; i++) particles.push(new Particle());
         }
 
         function animateParticles() {
@@ -1511,11 +1220,11 @@
                     const dx = p1.x - p2.x;
                     const dy = p1.y - p2.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 120) {
+                    if (dist < 60) {
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(0, 240, 255, ${0.08 * (1 - dist / 120)})`;
+                        ctx.strokeStyle = `rgba(${p1.color}, ${0.02 * (1 - dist / 60)})`;
                         ctx.stroke();
                     }
                 });
@@ -1524,10 +1233,15 @@
             requestAnimationFrame(animateParticles);
         }
 
+        console.log('%c✅ 粒子背景初始化', 'color: #06ffa5;');
+
+        // 幻灯片导航
         const slides = document.querySelectorAll('.slide');
         const navDotsContainer = document.getElementById('navDots');
         const progressBar = document.getElementById('progressBar');
         let currentSlide = 0;
+
+        console.log(`%c📄 检测到 ${slides.length} 页幻灯片`, 'color: #8b5cf6;');
 
         slides.forEach((_, i) => {
             const dot = document.createElement('div');
@@ -1543,9 +1257,7 @@
         }
 
         function updateNavDots() {
-            navDots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentSlide);
-            });
+            navDots.forEach((dot, i) => { dot.classList.toggle('active', i === currentSlide); });
         }
 
         function goToSlide(index) {
@@ -1556,13 +1268,8 @@
             updateNavDots();
         }
 
-        function nextSlide() {
-            if (currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
-        }
-
-        function prevSlide() {
-            if (currentSlide > 0) goToSlide(currentSlide - 1);
-        }
+        function nextSlide() { if (currentSlide < slides.length - 1) goToSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -1578,32 +1285,21 @@
 
         slides.forEach(slide => observer.observe(slide));
 
-        document.addEventListener('keydown', (e) => {
+       ('keydown', document.addEventListener (e) => {
             switch(e.key) {
                 case 'ArrowDown':
                 case 'ArrowRight':
-                case ' ':
-                    e.preventDefault();
-                    nextSlide();
-                    break;
+                case ' ': e.preventDefault(); nextSlide(); break;
                 case 'ArrowUp':
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    prevSlide();
-                    break;
+                case 'ArrowLeft': e.preventDefault(); prevSlide(); break;
             }
         });
 
         let touchStartY = 0;
-        document.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        });
+        document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; });
         document.addEventListener('touchend', (e) => {
             const diff = touchStartY - e.changedTouches[0].clientY;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) nextSlide();
-                else prevSlide();
-            }
+            if (Math.abs(diff) > 40) { if (diff > 0) nextSlide(); else prevSlide(); }
         });
 
         window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
@@ -1611,6 +1307,9 @@
         initParticles();
         animateParticles();
         slides[0].classList.add('visible');
+
+        console.log('%c✅ 导航系统初始化', 'color: #06ffa5;');
+        console.log('%c🎉 Skybase PPT 创建完成!', 'color: #00f5ff; font-size: 14px; font-weight: bold;');
     </script>
 </body>
 </html>
