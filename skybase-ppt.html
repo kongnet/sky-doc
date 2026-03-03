@@ -316,8 +316,6 @@
             flex-direction: column;
             gap: 0.4rem;
             z-index: 100;
-            max-height: 80vh;
-            overflow-y: auto;
         }
 
         .nav-dot {
@@ -1285,7 +1283,7 @@ app.listen(<span class="number">3000</span>, () => {
 
         slides.forEach(slide => observer.observe(slide));
 
-       ('keydown', document.addEventListener (e) => {
+        document.addEventListener('keydown', (e) => {
             switch(e.key) {
                 case 'ArrowDown':
                 case 'ArrowRight':
