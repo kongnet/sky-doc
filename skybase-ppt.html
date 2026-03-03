@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meeko 工具库 - 深度指南</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-void: #030308;
@@ -16,2088 +13,1053 @@
             --accent-plasma: #8b5cf6;
             --accent-aurora: #06ffa5;
             --accent-cosmic: #ff00ca;
-            --glow-neon: rgba(0, 245, 255, 0.4);
-            --font-display: 'Orbitron', 'Rajdhani', sans-serif;
-            --font-body: 'Rajdhani', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --title-size: clamp(1.8rem, 5vw, 3.2rem);
-            --h2-size: clamp(1.4rem, 3vw, 2rem);
-            --h3-size: clamp(1.1rem, 2vw, 1.4rem);
-            --body-size: clamp(0.8rem, 1.2vw, 1rem);
-            --slide-padding: clamp(1rem, 3vw, 3rem);
-            --ease-void: cubic-bezier(0.16, 1, 0.3, 1);
-            --duration-normal: 0.7s;
+            --glow-neon: rgba(0, 245, 255, 0.5);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        html { scroll-behavior: smooth; scroll-snap-type: y mandatory; height: 100%; }
+        html { scroll-snap-type: y mandatory; height: 100%; }
 
-        body {
-            font-family: var(--font-body);
-            background: var(--bg-void);
-            color: var(--text-primary);
-            overflow: hidden;
-            height: 100%;
-        }
-
-        .cosmos { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-
-        .nebula {
-            position: absolute;
-            width: 150%;
-            height: 150%;
-            background: 
-                radial-gradient(ellipse 80% 50% at 10% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
-                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(0, 245, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(ellipse 50% 30% at 50% 50%, rgba(255, 0, 202, 0.05) 0%, transparent 40%),
-                var(--bg-void);
-            animation: nebula-drift 60s ease-in-out infinite;
-        }
-
-        @keyframes nebula-drift {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-5%, -3%) rotate(2deg); }
-        }
-
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(1px 1px at 20px 30px, var(--accent-neon), transparent),
-                radial-gradient(1px 1px at 40px 70px, var(--accent-plasma), transparent),
-                radial-gradient(1.5px 1.5px at 90px 40px, var(--text-primary), transparent),
-                radial-gradient(1px 1px at 130px 80px, var(--accent-aurora), transparent);
-            background-size: 180px 180px;
-            animation: stars-twinkle 8s ease-in-out infinite;
-        }
-
-        @keyframes stars-twinkle {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-
-        .grid-portal {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 245, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 245, 255, 0.02) 1px, transparent 1px);
-            background-size: 50px 50px;
-            mask-image: radial-gradient(ellipse at center, black 20%, transparent 65%);
+        body { 
+            font-family: Arial, sans-serif; 
+            background: var(--bg-void); 
+            color: var(--text-primary); 
+            height: 100%; 
         }
 
         .slide {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            padding: var(--slide-padding);
+            width: 100%;
+            min-height: 100vh;
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            padding: 40px 60px;
+            box-sizing: border-box;
+            background: var(--bg-void);
             position: relative;
             overflow: hidden;
         }
 
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 245, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
         .slide-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-height: 100%;
-            overflow-y: auto;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
             position: relative;
             z-index: 1;
-            padding-top: 0.5rem;
         }
 
-        h1 {
-            font-family: var(--font-display);
-            font-size: var(--title-size);
-            font-weight: 700;
-            line-height: 1.15;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-neon) 50%, var(--accent-plasma) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        h2 {
-            font-family: var(--font-display);
-            font-size: var(--h2-size);
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-        }
-
-        h2::before {
-            content: '';
-            width: 4px;
-            height: 1.3em;
-            background: linear-gradient(180deg, var(--accent-neon), var(--accent-plasma));
-            border-radius: 2px;
-            box-shadow: 0 0 10px var(--glow-neon);
-        }
-
-        h3 {
-            font-family: var(--font-display);
-            font-size: var(--h3-size);
-            font-weight: 500;
-            color: var(--accent-neon);
-            margin-bottom: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-        }
-
-        p { font-size: var(--body-size); color: var(--text-secondary); line-height: 1.6; }
-
-        .section-num {
-            position: absolute;
-            top: 0.8rem;
-            right: 1.5rem;
-            font-family: var(--font-display);
-            font-size: 5rem;
-            font-weight: 700;
-            color: rgba(0, 245, 255, 0.04);
-            line-height: 1;
-            z-index: 0;
-        }
+        h1 { font-size: 56px; color: var(--accent-neon); margin-bottom: 20px; text-shadow: 0 0 30px var(--glow-neon); }
+        h2 { font-size: 42px; color: var(--accent-neon); margin-bottom: 25px; text-shadow: 0 0 20px var(--glow-neon); }
+        h3 { font-size: 28px; color: var(--accent-neon); margin-bottom: 15px; }
+        p { color: var(--text-secondary); line-height: 1.8; font-size: 20px; margin-bottom: 12px; }
 
         .tag {
             display: inline-block;
-            padding: 0.25rem 0.6rem;
-            background: rgba(0, 245, 255, 0.08);
-            border: 1px solid rgba(0, 245, 255, 0.2);
-            border-radius: 4px;
-            font-size: 0.7rem;
+            padding: 10px 20px;
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            border-radius: 6px;
+            font-size: 18px;
             color: var(--accent-neon);
-            margin-right: 0.4rem;
-            margin-bottom: 0.3rem;
-            text-transform: uppercase;
+            margin-right: 12px;
+            margin-bottom: 8px;
         }
 
-        .tag.plasma { background: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.2); color: var(--accent-plasma); }
-        .tag.aurora { background: rgba(6, 255, 165, 0.08); border-color: rgba(6, 255, 165, 0.2); color: var(--accent-aurora); }
-        .tag.cosmic { background: rgba(255, 0, 202, 0.08); border-color: rgba(255, 0, 202, 0.2); color: var(--accent-cosmic); }
+        .tag.plasma { background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3); color: var(--accent-plasma); }
+        .tag.aurora { background: rgba(6, 255, 165, 0.1); border-color: rgba(6, 255, 165, 0.3); color: var(--accent-aurora); }
+        .tag.cosmic { background: rgba(255, 0, 202, 0.1); border-color: rgba(255, 0, 202, 0.3); color: var(--accent-cosmic); }
 
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 0.8rem; }
+        .highlight { color: var(--accent-neon); text-shadow: 0 0 15px var(--glow-neon); }
 
-        .card {
-            background: linear-gradient(135deg, rgba(13, 13, 26, 0.8) 0%, rgba(18, 18, 31, 0.6) 100%);
-            border: 1px solid rgba(0, 245, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.2rem;
-            transition: all 0.4s var(--ease-void);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent-neon), var(--accent-plasma));
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s;
-        }
-
-        .card:hover { transform: translateY(-4px); border-color: rgba(0, 245, 255, 0.25); }
-        .card:hover::before { transform: scaleX(1); }
-
-        .card h3 { font-size: 1rem; margin-bottom: 0.4rem; }
-        .card p { font-size: 0.85rem; }
+        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 25px; }
+        .card { background: rgba(18,18,31,0.8); border: 1px solid rgba(0,245,255,0.2); border-radius: 16px; padding: 25px; transition: all 0.3s; }
+        .card:hover { border-color: var(--accent-neon); transform: translateY(-5px); box-shadow: 0 10px 40px rgba(0,245,255,0.2); }
+        .card h3 { font-size: 22px; margin-bottom: 12px; }
+        .card p { font-size: 16px; }
 
         .code-block {
-            background: rgba(8, 8, 18, 0.9);
-            border: 1px solid rgba(139, 92, 246, 0.15);
-            border-radius: 10px;
-            padding: 1rem;
-            font-family: var(--font-mono);
-            font-size: clamp(0.6rem, 1vw, 0.85rem);
-            line-height: 1.6;
+            background: rgba(8, 8, 18, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            line-height: 1.8;
             overflow-x: auto;
             white-space: pre;
-            margin-top: 0.8rem;
-        }
-
-        .code-block::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent-neon), var(--accent-plasma));
+            margin-top: 15px;
+            color: #e8e8f0;
         }
 
         .keyword { color: #c792ea; }
         .string { color: #c3e88d; }
-        .function { color: #82aaff; }
-        .comment { color: #546e7a; }
         .number { color: #f78c6c; }
-        .property { color: #ffcb6b; }
+        .comment { color: #546e7a; }
 
-        .feature-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
-        .feature-list li {
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+
+        .nav-dots {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
-            align-items: flex-start;
-            gap: 0.6rem;
-            font-size: var(--body-size);
-            color: var(--text-secondary);
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
         }
-        .feature-list li::before {
-            content: '◆';
-            color: var(--accent-neon);
-            font-size: 0.5rem;
-            flex-shrink: 0;
-            margin-top: 0.3rem;
-        }
-
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
-        .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; align-items: start; }
-
-        .reveal { 
-            opacity: 0; 
-            transform: translateY(35px) scale(0.95); 
-            filter: blur(8px);
-            transition: all var(--duration-normal) var(--ease-void); 
-        }
-
-        .slide.visible .reveal { 
-            opacity: 1; 
-            transform: translateY(0) scale(1); 
-            filter: blur(0);
-        }
-
-        .reveal:nth-child(1) { transition-delay: 0.08s; }
-        .reveal:nth-child(2) { transition-delay: 0.15s; }
-        .reveal:nth-child(3) { transition-delay: 0.22s; }
-        .reveal:nth-child(4) { transition-delay: 0.29s; }
-        .reveal:nth-child(5) { transition-delay: 0.36s; }
-
-        .title-slide .slide-content { justify-content: center; align-items: center; text-align: center; }
-        .title-slide h1 { font-size: clamp(2.2rem, 7vw, 4.5rem); }
-
-        .nav-dots { position: fixed; right: 1rem; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 0.5rem; z-index: 100; }
 
         .nav-dot {
-            width: 8px;
-            height: 8px;
-            background: rgba(0, 245, 255, 0.15);
-            border: 1px solid rgba(0, 245, 255, 0.25);
+            width: 12px;
+            height: 12px;
+            background: rgba(0, 245, 255, 0.2);
+            border: 1px solid rgba(0, 245, 255, 0.4);
             cursor: pointer;
+            border-radius: 3px;
             transition: all 0.3s;
-            transform: rotate(45deg);
         }
 
-        .nav-dot.active {
+        .nav-dot:hover, .nav-dot.active {
             background: var(--accent-neon);
-            box-shadow: 0 0 12px var(--glow-neon);
-            transform: rotate(45deg) scale(1.4);
+            box-shadow: 0 0 15px var(--glow-neon);
+            transform: scale(1.3);
         }
 
-        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--accent-neon), var(--accent-plasma), var(--accent-cosmic)); z-index: 100; }
-
-        .keyboard-hint { position: fixed; bottom: 0.8rem; left: 50%; transform: translateX(-50%); font-size: 0.65rem; color: #4a4a6a; z-index: 100; }
-
-        .flow { display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex-wrap: wrap; margin: 1rem 0; }
-
-        .flow-step {
-            background: rgba(13, 13, 26, 0.9);
-            border: 1px solid rgba(0, 245, 255, 0.2);
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--accent-neon);
-        }
-
-        .flow-arrow { color: var(--accent-plasma); font-size: 1.1rem; }
-
-        .inline-code {
-            background: rgba(0, 245, 255, 0.1);
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            font-size: 0.85em;
-            color: var(--accent-neon);
-        }
-
-        .highlight { color: var(--accent-neon); }
-        .highlight2 { color: var(--accent-plasma); }
-        .highlight3 { color: var(--accent-cosmic); }
-
-        .timeline { position: relative; padding-left: 1.8rem; margin-top: 0.8rem; }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
+        .progress-bar {
+            position: fixed;
             top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(180deg, var(--accent-neon), var(--accent-plasma));
-        }
-
-        .timeline-item { position: relative; padding-bottom: 1.2rem; }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -1.8rem;
-            top: 0.3rem;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--accent-neon);
-            border: 2px solid var(--bg-void);
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-neon), var(--accent-plasma), var(--accent-cosmic));
+            z-index: 100;
+            transition: width 0.3s;
             box-shadow: 0 0 10px var(--glow-neon);
         }
 
-        .timeline-item h3 { font-size: 0.95rem; margin-bottom: 0.3rem; }
-        .timeline-item p { font-size: 0.8rem; }
-
-        @media (max-width: 900px) {
-            .two-col, .three-col { grid-template-columns: 1fr; }
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #4a4a6a;
+            z-index: 100;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            .reveal { transition: opacity 0.3s; transform: none; filter: none; }
-            html { scroll-behavior: auto; }
+        @media (max-width: 900px) {
+            .two-col, .three-col, .card-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 36px; }
+            h2 { font-size: 28px; }
+            .slide { padding: 30px; }
         }
     </style>
 </head>
 <body>
-    <div class="cosmos">
-        <div class="nebula"></div>
-        <div class="stars"></div>
-        <div class="grid-portal"></div>
-    </div>
-    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-bar" id="progress" style="width: 3.3%;"></div>
     <nav class="nav-dots" id="navDots"></nav>
-    <div class="keyboard-hint"><kbd>↑</kbd><kbd>↓</kbd> 导航 · <kbd>Space</kbd></div>
+    <div class="keyboard-hint">↑↓ 导航 · Space</div>
 
     <!-- 1. 封面 -->
     <section class="slide title-slide" id="slide-1">
-        <div class="slide-content">
-            <p class="reveal tag">JavaScript 工具库</p>
-            <h1 class="reveal">Mee<span class="highlight">ko</span></h1>
-            <p class="reveal" style="margin-top: 1rem; font-size: 1.1rem;">强大、优雅、实用的 JavaScript 工具集</p>
-            <div class="reveal" style="margin-top: 1.5rem;">
+        <div class="slide-content" style="text-align: center;">
+            <p class="tag">JavaScript 工具库</p>
+            <h1>Mee<span class="highlight">ko</span></h1>
+            <p style="margin-top: 25px; font-size: 26px;">强大、优雅、实用的 JavaScript 工具集</p>
+            <div style="margin-top: 40px;">
                 <span class="tag">工具函数</span>
                 <span class="tag plasma">数据处理</span>
                 <span class="tag aurora">类型校验</span>
-                <span class="tag cosmic">Mock</span>
+                <span class="tag cosmic">智能算法</span>
             </div>
         </div>
     </section>
 
     <!-- 2. 目录 -->
     <section class="slide" id="slide-2">
-        <span class="section-num">CONTENTS</span>
         <div class="slide-content">
-            <h2 class="reveal">内容概览</h2>
-            <div class="three-col">
-                <div class="reveal"><div class="card"><h3 style="color:var(--accent-neon)">第一章</h3><p>数值与数学</p></div></div>
-                <div class="reveal"><div class="card"><h3 style="color:var(--accent-plasma)">第二章</h3><p>字符串处理</p></div></div>
-                <div class="reveal"><div class="card"><h3 style="color:var(--accent-aurora)">第三章</h3><p>类型判断</p></div></div>
-                <div class="reveal"><div class="card"><h3 style="color:var(--accent-cosmic)">第四章</h3><p>对象操作</p></div></div>
-                <div class="reveal"><div class="card"><h3 style="color:var(--accent-neon)">第五章</h3><p>数组处理</p></div></div>
-                <div class="reveal"><div class="card"><h3 style="color:var(--accent-plasma)">第六章</h3><p>实用工具</p></div></div>
+            <h2>内容概览</h2>
+            <div class="card-grid">
+                <div class="card"><h3 style="color:var(--accent-neon)">第一章</h3><p>数值与数学计算</p></div>
+                <div class="card"><h3 style="color:var(--accent-plasma)">第二章</h3><p>字符串与脱敏</p></div>
+                <div class="card"><h3 style="color:var(--accent-aurora)">第三章</h3><p>类型判断与校验</p></div>
+                <div class="card"><h3 style="color:var(--accent-cosmic)">第四章</h3><p>对象与数组操作</p></div>
+                <div class="card"><h3 style="color:var(--accent-neon)">第五章</h3><p>函数式编程</p></div>
+                <div class="card"><h3 style="color:var(--accent-plasma)">第六章</h3><p>机器学习算法</p></div>
             </div>
         </div>
     </section>
 
     <!-- 3. 概述 -->
     <section class="slide" id="slide-3">
-        <span class="section-num">01</span>
         <div class="slide-content">
-            <h2 class="reveal">Meeko 是什么？</h2>
-            <p class="reveal lead">JavaScript 工具函数库，提供丰富的基础功能</p>
+            <h2>Meeko 是什么？</h2>
+            <p style="font-size: 24px; margin-bottom: 30px;">JavaScript 工具函数库，提供丰富的基础功能</p>
             <div class="card-grid">
-                <div class="reveal card"><h3>🔢 数值计算</h3><p>随机数、格式化、数学运算</p></div>
-                <div class="reveal card"><h3>📝 字符串</h3><p>截断、脱敏、模板替换</p></div>
-                <div class="reveal card"><h3>✅ 类型判断</h3><p>类型检查、格式校验</p></div>
-                <div class="reveal card"><h3>📦 对象数组</h3><p>深拷贝、合并、映射</p></div>
+                <div class="card"><h3>数值计算</h3><p>随机数、格式化、数学运算、序列生成</p></div>
+                <div class="card"><h3>字符串</h3><p>截断、脱敏、模板替换、命名转换</p></div>
+                <div class="card"><h3>类型判断</h3><p>类型检查、格式校验、深度比较</p></div>
+                <div class="card"><h3>对象数组</h3><p>深拷贝、合并、映射、分组、排序</p></div>
+                <div class="card"><h3>函数式</h3><p>防抖、节流、柯里化、组合</p></div>
+                <div class="card"><h3>机器学习</h3><p>K-Means聚类、线性回归、统计分析</p></div>
             </div>
         </div>
     </section>
 
-    <!-- 4. 使用方式 -->
+    <!-- 4. 安装 -->
     <section class="slide" id="slide-4">
-        <span class="section-num">01</span>
         <div class="slide-content">
-            <h2 class="reveal">快速开始</h2>
+            <h2>快速开始</h2>
             <div class="two-col">
-                <div class="reveal">
+                <div>
                     <h3>安装</h3>
-                    <div class="code-block">
-<span class="comment"># npm</span>
-<span class="function">npm</span> install meeko
-
-<span class="comment"># yarn</span>
-<span class="function">yarn</span> add meeko
-                    </div>
+                    <div class="code-block">npm install meeko
+# 或
+yarn add meeko</div>
                 </div>
-                <div class="reveal">
+                <div>
                     <h3>使用</h3>
-                    <div class="code-block">
-<span class="keyword">const</span> $ = <span class="keyword">require</span>(<span class="string">'meeko'</span>)
+                    <div class="code-block">const $ = require('meeko')
 
-<span class="comment">// 数值</span>
-<span class="keyword">$</span>.random(<span class="number">1</span>, <span class="number">100</span>)
+// 随机数
+$.random(1, 100)
 
-<span class="comment">// 字符串</span>
-<span class="keyword">$</span>.mask(<span class="string">"13812345678"</span>)
-                    </div>
+// 脱敏
+$.mask("13812345678")</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 5-10. 数值函数 -->
+    <!-- 5. 随机数 -->
     <section class="slide" id="slide-5">
-        <span class="section-num">01</span>
         <div class="slide-content">
-            <h2 class="reveal">$.random 随机数</h2>
+            <h2>$.random 随机数</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 随机整数</span>
-<span class="keyword">$</span>.random(<span class="number">1</span>, <span class="number">100</span>)
-<span class="comment">// → 42 (1-100之间)</span>
+                <div>
+                    <div class="code-block">// 随机整数
+$.random(1, 100)
+// → 42
 
-<span class="comment">// 随机浮点数</span>
-<span class="keyword">$</span>.randomFloat(<span class="number">1.5</span>, <span class="number">10.5</span>)
-<span class="comment">// → 5.23...</span>
+// 随机浮点数
+$.randomFloat(1.5, 10.5)
 
-<span class="comment">// 随机布尔</span>
-<span class="keyword">$</span>.randomBool()
-<span class="comment">// → true / false</span>
-                    </div>
+// 随机布尔
+$.randomBool()</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 随机颜色</span>
-<span class="keyword">$</span>.randomColor()
-<span class="comment">// → "#ff0000"</span>
+                <div>
+                    <div class="code-block">// 随机颜色
+$.randomColor()
+// → "#ff0000"
 
-<span class="comment">// 随机数组元素</span>
-<span class="keyword">$</span>.sample([<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>])
-<span class="comment">// → "b"</span>
+// 随机数组元素
+$.sample(['a','b','c'])
 
-<span class="comment">// 打乱数组</span>
-<span class="keyword">$</span>.shuffle([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])
-<span class="comment">// → [3,1,2]</span>
-                    </div>
+// 打乱数组
+$.shuffle([1,2,3])</div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- 6. 数值处理 -->
     <section class="slide" id="slide-6">
-        <span class="section-num">01</span>
         <div class="slide-content">
-            <h2 class="reveal">$.clamp 范围限制</h2>
+            <h2>$.clamp / $.currency 数值处理</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 限制数值在范围内</span>
-<span class="keyword">$</span>.clamp(<span class="number">15</span>, <span class="number">0</span>, <span class="number">10</span>)
-<span class="comment">// → 10 (超过上限)</span>
+                <div>
+                    <div class="code-block">// 范围限制
+$.clamp(15, 0, 10)
+// → 10
 
-<span class="keyword">$</span>.clamp(<span class="number">-5</span>, <span class="number">0</span>, <span class="number">10</span>)
-<span class="comment">// → 0 (低于下限)</span>
+$.clamp(-5, 0, 10)
+// → 0
 
-<span class="keyword">$</span>.clamp(<span class="number">5</span>, <span class="number">0</span>, <span class="number">10</span>)
-<span class="comment">// → 5 (在范围内)</span>
-                    </div>
+// 四舍五入
+$.round(3.14159, 2)
+// → 3.14</div>
                 </div>
-                <div class="reveal">
-                    <h3>相关函数</h3>
-                    <ul class="feature-list">
-                        <li><span class="inline-code">$.max(a,b,...)</span> 取最大值</li>
-                        <li><span class="inline-code">$.min(a,b,...)</span> 取最小值</li>
-                        <li><span class="inline-code">$.sum(arr)</span> 求和</li>
-                        <li><span class="inline-code">$.avg(arr)</span> 平均值</li>
-                        <li><span class="inline-code">$.median(arr)</span> 中位数</li>
-                    </ul>
+                <div>
+                    <div class="code-block">// 千分位格式化
+$.thousands(1234567)
+// → "1,234,567"
+
+// 货币格式化
+$.currency(1234.56)
+// → "¥1,234.56"
+
+// 百分比
+$.percent(0.875)
+// → "87.5%"</div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- 7. 序列生成 -->
     <section class="slide" id="slide-7">
-        <span class="section-num">01</span>
         <div class="slide-content">
-            <h2 class="reveal">$.round / $.decimal 数值格式化</h2>
+            <h2>$.range / $.seq 序列生成</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 四舍五入</span>
-<span class="keyword">$</span>.round(<span class="number">3.14159</span>, <span class="number">2</span>)
-<span class="comment">// → 3.14</span>
+                <div>
+                    <div class="code-block">// 生成范围数组
+$.range(5)
+// → [0,1,2,3,4]
 
-<span class="comment">// 截断</span>
-<span class="keyword">$</span>.decimal(<span class="number">3.14159</span>, <span class="number">2</span>)
-<span class="comment">// → 3.14</span>
+$.range(1, 5)
+// → [1,2,3,4]
 
-<span class="comment">// 向上取整</span>
-<span class="keyword">$</span>.ceil(<span class="number">3.14</span>)
-<span class="comment">// → 4</span>
-
-<span class="comment">// 向下取整</span>
-<span class="keyword">$</span>.floor(<span class="number">3.14</span>)
-<span class="comment">// → 3</span>
-                    </div>
+$.range(0, 10, 2)
+// → [0,2,4,6,8]</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 千分位格式化</span>
-<span class="keyword">$</span>.thousands(<span class="number">1234567</span>)
-<span class="comment">// → "1,234,567"</span>
+                <div>
+                    <div class="code-block">// 重复数组
+$.repeat('a', 3)
+// → ['a','a','a']
 
-<span class="comment">// 货币格式化</span>
-<span class="keyword">$</span>.currency(<span class="number">1234.56</span>)
-<span class="comment">// → "¥1,234.56"</span>
+// 填充数组
+$.fill(0, 5)
+// → [0,0,0,0,0]
 
-<span class="keyword">$</span>.currency(<span class="number">1234.56</span>, <span class="string">'$'</span>)
-<span class="comment">// → "$1,234.56"</span>
-
-<span class="comment">// 百分比</span>
-<span class="keyword">$</span>.percent(<span class="number">0.875</span>)
-<span class="comment">// → "87.5%"</span>
-                    </div>
+$.fill(() => Math.random(), 3)
+// → [随机,随机,随机]</div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- 8. 脱敏 -->
     <section class="slide" id="slide-8">
-        <span class="section-num">01</span>
         <div class="slide-content">
-            <h2 class="reveal">$.range / $.seq 序列生成</h2>
+            <h2>$.mask 脱敏处理</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 生成范围数组</span>
-<span class="keyword">$</span>.range(<span class="number">5</span>)
-<span class="comment">// → [0,1,2,3,4]</span>
+                <div>
+                    <div class="code-block">// 手机号脱敏
+$.mask("13812345678")
+// → "138****5678"
 
-<span class="keyword">$</span>.range(<span class="number">1</span>, <span class="number">5</span>)
-<span class="comment">// → [1,2,3,4]</span>
+// 姓名脱敏
+$.mask("张三")
+// → "张*"
 
-<span class="keyword">$</span>.range(<span class="number">0</span>, <span class="number">10</span>, <span class="number">2</span>)
-<span class="comment">// → [0,2,4,6,8]</span>
-
-<span class="keyword">$</span>.range(<span class="number">5</span>, <span class="number">0</span>, <span class="number">-1</span>)
-<span class="comment">// → [5,4,3,2,1]</span>
-                    </div>
+// 身份证
+$.mask("110101199001011234")
+// → "110***********1234"</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 重复数组</span>
-<span class="keyword">$</span>.repeat(<span class="string">'a'</span>, <span class="number">3</span>)
-<span class="comment">// → ['a','a','a']</span>
+                <div>
+                    <div class="code-block">// 银行卡
+$.mask("6222021234567890123", 'bank')
+// → "6222 **** **** 0123"
 
-<span class="comment">// 填充数组</span>
-<span class="keyword">$</span>.fill(<span class="number">0</span>, <span class="number">5</span>)
-<span class="comment">// → [0,0,0,0,0]</span>
+// 邮箱
+$.mask("test@example.com", 'email')
+// → "t**t@******.com"
 
-<span class="keyword">$</span>.fill(() => Math.random(), <span class="number">3</span>)
-<span class="comment">// → [随机,随机,随机]</span>
-                    </div>
+// 自定义脱敏
+$.mask("abcdef", 1, 1, '*')
+// → "a*****f"</div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- 9. 字符串 -->
     <section class="slide" id="slide-9">
-        <span class="section-num">01</span>
         <div class="slide-content">
-            <h2 class="reveal">$.hash / $.uuid 生成唯一ID</h2>
+            <h2>$.truncate / $.tpl 字符串</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 生成 UUID</span>
-<span class="keyword">$</span>.uuid()
-<span class="comment">// → "550e8400-e29b-41d4-a716-446655440000"</span>
+                <div>
+                    <div class="code-block">// 字符串截断
+$.truncate("很长很长的字符串", 5)
+// → "很长很..."
 
-<span class="comment">// 简短 UUID</span>
-<span class="keyword">$</span>.uuid(<span class="number">8</span>)
-<span class="comment">// → "a1b2c3d4"</span>
-
-<span class="comment">// Hash 字符串</span>
-<span class="keyword">$</span>.hash(<span class="string">"hello"</span>)
-<span class="comment">// → "2cf24dba5..."</span>
-
-<span class="comment">// 数字 ID</span>
-<span class="keyword">$</span>.nanoid(<span class="number">10</span>)
-<span class="comment">// → "V1StGXR8_Z"</span>
-                    </div>
+// 指定省略符
+$.truncate("很长文字", 3, '……')
+// → "很长……"</div>
                 </div>
-                <div class="reveal">
-                    <h3>应用场景</h3>
-                    <ul class="feature-list">
-                        <li>唯一订单号</li>
-                        <li>用户ID生成</li>
-                        <li>缓存Key</li>
-                        <li>分布式ID</li>
-                    </ul>
+                <div>
+                    <div class="code-block">// 模板替换
+$.tpl("Hello {name}!", {name:"Sky"})
+// → "Hello Sky!"
+
+// 命名转换
+$.camelCase("hello-world")
+// → "helloWorld"
+
+$.kebabCase("helloWorld")
+// → "hello-world"</div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- 10. 类型判断 -->
     <section class="slide" id="slide-10">
-        <span class="section-num">01</span>
         <div class="slide-content">
-            <h2 class="reveal">$.time / $.date 时间处理</h2>
+            <h2>$.isXxx 类型判断</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 时间戳</span>
-<span class="keyword">$</span>.time()
-<span class="comment">// → 1700000000000</span>
-
-<span class="comment">// 格式化日期</span>
-<span class="keyword">$</span>.formatDate(<span class="keyword">new</span> Date(), <span class="string">'YYYY-MM-DD'</span>)
-<span class="comment">// → "2024-01-01"</span>
-
-<span class="keyword">$</span>.formatDate(<span class="string">'2024-01-01'</span>, <span class="string">'YYYY年MM月DD日'</span>)
-<span class="comment">// → "2024年01月01日"</span>
-
-<span class="comment">// 相对时间</span>
-<span class="keyword">$</span>.relative(<span class="string">Date.now()</span> - <span class="number">60000</span>)
-<span class="comment">// → "1分钟前"</span>
-                    </div>
+                <div>
+                    <div class="code-block">$.isString("hi")   // → true
+$.isNumber(123)    // → true
+$.isBoolean(true)  // → true
+$.isArray([])      // → true
+$.isObject({})     // → true
+$.isFunction(()=>{}) // → true</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 日期加减</span>
-<span class="keyword">$</span>.addDays(<span class="string">'2024-01-01'</span>, <span class="number">5</span>)
-<span class="comment">// → "2024-01-06"</span>
-
-<span class="keyword">$</span>.addMonths(<span class="string">'2024-01-01'</span>, <span class="number">1</span>)
-<span class="comment">// → "2024-02-01"</span>
-
-<span class="comment">// 日期差</span>
-<span class="keyword">$</span>.diffDays(<span class="string">'2024-01-10'</span>, <span class="string">'2024-01-01'</span>)
-<span class="comment">// → 9</span>
-
-<span class="comment">// 是否闰年</span>
-<span class="keyword">$</span>.isLeapYear(<span class="number">2024</span>)
-<span class="comment">// → true</span>
-                    </div>
+                <div>
+                    <div class="code-block">$.isEmpty("")       // → true
+$.isEmpty([])     // → true
+$.isEmpty({})     // → true
+$.isNull(null)    // → true
+$.isUndef(undefined) // → true
+$.isNaN(NaN)      // → true</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 11-15. 字符串 -->
+    <!-- 11. 格式校验 -->
     <section class="slide" id="slide-11">
-        <span class="section-num">02</span>
         <div class="slide-content">
-            <h2 class="reveal">$.mask 脱敏处理</h2>
+            <h2>$.isEmail / $.isMobile 格式校验</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 手机号脱敏</span>
-<span class="keyword">$</span>.mask(<span class="string">"13812345678"</span>)
-<span class="comment">// → "138****5678"</span>
-
-<span class="comment">// 姓名脱敏</span>
-<span class="keyword">$</span>.mask(<span class="string">"张三"</span>)
-<span class="comment">// → "张*"</span>
-
-<span class="keyword">$</span>.mask(<span class="string">"李四"</span>, <span class="string">'name'</span>)
-<span class="comment">// → "李*"</span>
-
-<span class="comment">// 身份证</span>
-<span class="keyword">$</span>.mask(<span class="string">"110101199001011234"</span>)
-<span class="comment">// → "110***********1234"</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 银行卡</span>
-<span class="keyword">$</span>.mask(<span class="string">"6222021234567890123"</span>, <span class="string">'bank'</span>)
-<span class="comment">// → "6222 **** **** 0123"</span>
-
-<span class="comment">// 邮箱</span>
-<span class="keyword">$</span>.mask(<span class="string">"test@example.com"</span>, <span class="string">'email'</span>)
-<span class="comment">// → "t**t@******.com"</span>
-
-<span class="comment">// 自定义脱敏</span>
-<span class="keyword">$</span>.mask(<span class="string">"abcdef"</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="string">'*'</span>)
-<span class="comment">// → "a****f"</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-12">
-        <span class="section-num">02</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.truncate / $.ellipsis 截断</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 字符串截断</span>
-<span class="keyword">$</span>.truncate(<span class="string">"这是一个很长的字符串"</span>, <span class="number">5</span>)
-<span class="comment">// → "这是一个很..."</span>
-
-<span class="keyword">$</span>.truncate(<span class="string">"hello world"</span>, <span class="number">5</span>, <span class="string">''</span>)
-<span class="comment">// → "hello"</span>
-
-<span class="comment">// 指定省略符</span>
-<span class="keyword">$</span>.truncate(<span class="string">"很长文字"</span>, <span class="number">3</span>, <span class="string">'……'</span>)
-<span class="comment">// → "很长……"</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <h3>相关函数</h3>
-                    <ul class="feature-list">
-                        <li><span class="inline-code">$.padStart()</span> 左侧补零</li>
-                        <li><span class="inline-code">$.padEnd()</span> 右侧补齐</li>
-                        <li><span class="inline-code">$.repeat()</span> 重复字符串</li>
-                        <li><span class="inline-code">$.reverse()</span> 反转字符串</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-13">
-        <span class="section-num">02</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.tpl 模板替换</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 基本模板替换</span>
-<span class="keyword">$</span>.tpl(<span class="string">"Hello {name}!"</span>, {name:<span class="string">"Sky"</span>})
-<span class="comment">// → "Hello Sky!"</span>
-
-<span class="comment">// 多个变量</span>
-<span class="keyword">$</span>.tpl(<span class="string">"{greet}, {name}!"</span>, {
-  greet: <span class="string">"Hi"</span>,
-  name: <span class="string">"World"</span>
-})
-<span class="comment">// → "Hi, World!"</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 数组循环</span>
-<span class="keyword">$</span>.tpl(<span class="string">"Items: {list}"</span>, {
-  list: [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].join(<span class="string">','</span>)
-})
-<span class="comment">// → "Items: 1,2,3"</span>
-
-<span class="comment">// 函数处理</span>
-<span class="keyword">$</span>.tpl(<span class="string">"Price: {price}"</span>, {
-  price: <span class="keyword">$</span>.currency(<span class="number">99</span>)
-})
-<span class="comment">// → "Price: ¥99.00"</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-14">
-        <span class="section-num">02</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.slug / $.camelCase 命名转换</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 转 slug</span>
-<span class="keyword">$</span>.slug(<span class="string">"Hello World"</span>)
-<span class="comment">// → "hello-world"</span>
-
-<span class="keyword">$</span>.slug(<span class="string">"我的文章标题"</span>)
-<span class="comment">// → "wo-de-wen-zhang-biao-ti"</span>
-
-<span class="comment">// camelCase</span>
-<span class="keyword">$</span>.camelCase(<span class="string">"hello-world"</span>)
-<span class="comment">// → "helloWorld"</span>
-
-<span class="keyword">$</span>.camelCase(<span class="string">"hello_world"</span>)
-<span class="comment">// → "helloWorld"</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// kebab-case</span>
-<span class="keyword">$</span>.kebabCase(<span class="string">"helloWorld"</span>)
-<span class="comment">// → "hello-world"</span>
-
-<span class="comment">// snake_case</span>
-<span class="keyword">$</span>.snakeCase(<span class="string">"helloWorld"</span>)
-<span class="comment">// → "hello_world"</span>
-
-<span class="comment">// PascalCase</span>
-<span class="keyword">$</span>.pascalCase(<span class="string">"hello-world"</span>)
-<span class="comment">// → "HelloWorld"</span>
-
-<span class="comment">// 标题格式</span>
-<span class="keyword">$</span>.startCase(<span class="string">"hello-world"</span>)
-<span class="comment">// → "Hello World"</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-15">
-        <span class="section-num">02</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.trim / $.escape 字符串处理</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 去除空格</span>
-<span class="keyword">$</span>.trim(<span class="string">"  hello  "</span>)
-<span class="comment">// → "hello"</span>
-
-<span class="comment">// 去除所有空格</span>
-<span class="keyword">$</span>.trimAll(<span class="string">"h e l l o"</span>)
-<span class="comment">// → "hello"</span>
-
-<span class="comment">// 转义 HTML</span>
-<span class="keyword">$</span>.escape(<span class="string">"<div>"</span>)
-<span class="comment">// → "&lt;div&gt;"</span>
-
-<span class="comment">// 解义 HTML</span>
-<span class="keyword">$</span>.unescape(<span class="string">"&lt;div&gt;"</span>)
-<span class="comment">// → "<div>"</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// Base64 编码</span>
-<span class="keyword">$</span>.btoa(<span class="string">"hello"</span>)
-<span class="comment">// → "aGVsbG8="</span>
-
-<span class="comment">// Base64 解码</span>
-<span class="keyword">$</span>.atob(<span class="string">"aGVsbG8="</span>)
-<span class="comment">// → "hello"</span>
-
-<span class="comment">// URL 编码</span>
-<span class="keyword">$</span>.encode(<span class="string">"你好 world"</span>)
-<span class="comment">// → "%E4%BD%A0%20world"</span>
-
-<span class="comment">// URL 解码</span>
-<span class="keyword">$</span>.decode(<span class="string">"%E4%BD%A0"</span>)
-<span class="comment">// → "你"</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 16-20. 类型判断 -->
-    <section class="slide" id="slide-16">
-        <span class="section-num">03</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.isXxx 类型判断</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="keyword">$</span>.isString(<span class="string">"hi"</span>)      
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isNumber(<span class="number">123</span>)      
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isBoolean(<span class="keyword">true</span>)      
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isArray([])           
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isObject({})           
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isFunction(()=>{})  
-<span class="comment">// → true</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="keyword">$</span>.isEmpty(<span class="string">""</span>)          
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isEmpty([])            
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isEmpty({})            
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isNull(<span class="keyword">null</span>)            
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isUndef(<span class="keyword">undefined</span>)     
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isNaN(<span class="keyword">NaN</span>)              
-<span class="comment">// → true</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-17">
-        <span class="section-num">03</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.type 获取类型</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="keyword">$</span>.type(<span class="string">"str"</span>)     
-<span class="comment">// → "string"</span>
-<span class="keyword">$</span>.type(<span class="number">123</span>)      
-<span class="comment">// → "number"</span>
-<span class="keyword">$</span>.type(<span class="keyword">true</span>)      
-<span class="comment">// → "boolean"</span>
-<span class="keyword">$</span>.type([])          
-<span class="comment">// → "array"</span>
-<span class="keyword">$</span>.type({})          
-<span class="comment">// → "object"</span>
-<span class="keyword">$</span>.type(<span class="keyword">null</span>)          
-<span class="comment">// → "null"</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="keyword">$</span>.type(()=>{})    
-<span class="comment">// → "function"</span>
-<span class="keyword">$</span>.type(<span class="keyword">new</span> Date) 
-<span class="comment">// → "date"</span>
-<span class="keyword">$</span>.type(<span class="keyword">new</span> Error)
-<span class="comment">// → "error"</span>
-<span class="keyword">$</span>.type(<span class="keyword">/abc/</span>)      
-<span class="comment">// → "regexp"</span>
-<span class="keyword">$</span>.type(Symbol(<span class="string">'id'</span>))
-<span class="comment">// → "symbol"</span>
-<span class="keyword">$</span>.type(<span class="keyword">BigInt(123)</span>)   
-<span class="comment">// → "bigint"</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-18">
-        <span class="section-num">03</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.isEmail / $.isMobile 格式校验</h2>
-            <div class="two-col">
-                <div class="reveal">
+                <div>
                     <h3>邮箱校验</h3>
-                    <div class="code-block">
-<span class="keyword">$</span>.isEmail(<span class="string">"test@example.com"</span>) <span class="comment">// → true</span>
-<span class="keyword">$</span>.isEmail(<span class="string">"test@example"</span>)      <span class="comment">// → false</span>
-<span class="keyword">$</span>.isEmail(<span class="string">"test@.com"</span>)        <span class="comment">// → false</span>
-                    </div>
+                    <div class="code-block">$.isEmail("test@example.com")
+// → true
+$.isEmail("test@example")
+// → false</div>
                 </div>
-                <div class="reveal">
+                <div>
                     <h3>手机号校验</h3>
-                    <div class="code-block">
-<span class="keyword">$</span>.isMobile(<span class="string">"13812345678"</span>)  <span class="comment">// → true</span>
-<span class="keyword">$</span>.isMobile(<span class="string">"19912345678"</span>)  <span class="comment">// → true</span>
-<span class="keyword">$</span>.isMobile(<span class="string">"12345678901"</span>)   <span class="comment">// → false</span>
-<span class="keyword">$</span>.isMobile(<span class="string">"abc"</span>)           <span class="comment">// → false</span>
-                    </div>
+                    <div class="code-block">$.isMobile("13812345678")
+// → true
+$.isMobile("19912345678")
+// → true
+$.isMobile("12345678901")
+// → false</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-19">
-        <span class="section-num">03</span>
+    <!-- 12. 更多校验 -->
+    <section class="slide" id="slide-12">
         <div class="slide-content">
-            <h2 class="reveal">更多格式校验</h2>
+            <h2>更多格式校验</h2>
             <div class="card-grid">
-                <div class="reveal card">
+                <div class="card">
                     <h3>$.isUrl</h3>
-                    <p>URL 地址校验</p>
-                    <div class="code-block" style="margin-top:0.5rem;">
-<span class="keyword">$</span>.isUrl(<span class="string">"https://x.com"</span>)
-<span class="comment">// → true</span>
-                    </div>
+                    <p>URL地址校验</p>
+                    <div class="code-block">$.isUrl("https://x.com")</div>
                 </div>
-                <div class="reveal card">
+                <div class="card">
                     <h3>$.isIdCard</h3>
                     <p>身份证号校验</p>
-                    <div class="code-block" style="margin-top:0.5rem;">
-<span class="keyword">$</span>.isIdCard(<span class="string">"110101199001011234"</span>)
-<span class="comment">// → true</span>
-                    </div>
+                    <div class="code-block">$.isIdCard("110101199001011234")</div>
                 </div>
-                <div class="reveal card">
+                <div class="card">
                     <h3>$.isIP</h3>
-                    <p>IP 地址校验</p>
-                    <div class="code-block" style="margin-top:0.5rem;">
-<span class="keyword">$</span>.isIP(<span class="string">"192.168.1.1"</span>)
-<span class="comment">// → true</span>
-                    </div>
+                    <p>IP地址校验</p>
+                    <div class="code-block">$.isIP("192.168.1.1")</div>
                 </div>
-                <div class="reveal card">
+                <div class="card">
+                    <h3>$.isChinese</h3>
+                    <p>中文校验</p>
+                    <div class="code-block">$.isChinese("你好")</div>
+                </div>
+                <div class="card">
+                    <h3>$.isMoney</h3>
+                    <p>金额校验</p>
+                    <div class="code-block">$.isMoney("99.99")</div>
+                </div>
+                <div class="card">
                     <h3>$.isZipCode</h3>
                     <p>邮政编码校验</p>
-                    <div class="code-block" style="margin-top:0.5rem;">
-<span class="keyword">$</span>.isZipCode(<span class="string">"100000"</span>)
-<span class="comment">// → true</span>
-                    </div>
+                    <div class="code-block">$.isZipCode("100000")</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-20">
-        <span class="section-num">03</span>
+    <!-- 13. 对象操作 -->
+    <section class="slide" id="slide-13">
         <div class="slide-content">
-            <h2 class="reveal">$.isXxx 扩展校验</h2>
+            <h2>$.clone / $.merge 对象操作</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 金额</span>
-<span class="keyword">$</span>.isMoney(<span class="string">"99.99"</span>)   
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isMoney(<span class="string">"99"</span>)      
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isMoney(<span class="string">"-1"</span>)       <span class="comment">// → false</span>
-
-<span class="comment">// 端口</span>
-<span class="keyword">$</span>.isPort(<span class="number">8080</span>)      
-<span class="comment">// → true</span>
-<span class="keyword">$</span>.isPort(<span class="number">70000</span>)      
-<span class="comment">// → false</span>
-
-<span class="comment">// 日期</span>
-<span class="keyword">$</span>.isDate(<span class="string">"2024-01-01"</span>) 
-<span class="comment">// → true</span>
-                    </div>
+                <div>
+                    <div class="code-block">// 深拷贝
+const obj = {a: 1, b: {c: 2}}
+const copy = $.clone(obj)
+copy.b.c = 999
+obj.b.c // → 2 (原对象不变)</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 中文</span>
-<span class="keyword">$</span>.isChinese(<span class="string">"你好"</span>)      
-<span class="comment">// → true</span>
+                <div>
+                    <div class="code-block">// 对象合并
+$.merge({a:1}, {b:2})
+// → {a:1, b:2}
 
-<span class="comment">// 字母</span>
-<span class="keyword">$</span>.isAlpha(<span class="string">"abc"</span>)       
-<span class="comment">// → true</span>
+// 选择字段
+$.pick({a:1,b:2,c:3}, ['a','b'])
+// → {a:1, b:2}
 
-<span class="comment">// 数字</span>
-<span class="keyword">$</span>.isNumeric(<span class="string">"123"</span>)     
-<span class="comment">// → true</span>
-
-<span class="comment">// 字母数字</span>
-<span class="keyword">$</span>.isAlphanumeric(<span class="string">"abc123"</span>) 
-<span class="comment">// → true</span>
-                    </div>
+// 排除字段
+$.omit({a:1,b:2}, ['b'])
+// → {a:1}</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 21-30. 对象操作 -->
-    <section class="slide" id="slide-21">
-        <span class="section-num">04</span>
+    <!-- 14. 嵌套访问 -->
+    <section class="slide" id="slide-14">
         <div class="slide-content">
-            <h2 class="reveal">$.clone 深拷贝</h2>
+            <h2>$.get / $.set / $.has 嵌套访问</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 基本对象拷贝</span>
-<span class="keyword">const</span> obj = {a: <span class="number">1</span>, b: {c: <span class="number">2</span>}}
-<span class="keyword">const</span> copy = <span class="keyword">$</span>.clone(obj)
-copy.b.c = <span class="number">999</span>
-obj.b.c  <span class="comment">// → 2 (原对象不变)</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 数组拷贝</span>
-<span class="keyword">const</span> arr = [{a:<span class="number">1</span>}, {b:<span class="number">2</span>}]
-<span class="keyword">const</span> arrCopy = <span class="keyword">$</span>.clone(arr)
-arrCopy[<span class="number">0</span>].a = <span class="number">999</span>
-arr[<span class="number">0</span>.a  <span class="comment">// → 1</span>
+                <div>
+                    <div class="code-block">// 安全获取嵌套属性
+const obj = {a:{b:{c:1}}}
+$.get(obj, 'a.b.c')
+// → 1
 
-<span class="comment">// 完整深拷贝选项</span>
-<span class="keyword">$</span>.clone(obj, {
-  <span class="property">cloneFunctions</span>: <span class="keyword">true</span>,
-  <span class="property">cloneDate</span>: <span class="keyword">true</span>,
-  <span class="property">cloneRegExp</span>: <span class="keyword">true</span>
-})
-                    </div>
+$.get(obj, 'a.b.d', 'default')
+// → "default"</div>
+                </div>
+                <div>
+                    <div class="code-block">// 设置嵌套属性
+const obj = {}
+$.set(obj, 'a.b.c', 123)
+// → {a:{b:{c:123}}}
+
+// 判断属性存在
+$.has({a:{b:1}}, 'a.b')
+// → true
+$.has({a:{b:1}}, 'a.c')
+// → false</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-22">
-        <span class="section-num">04</span>
+    <!-- 15. 数组操作 -->
+    <section class="slide" id="slide-15">
         <div class="slide-content">
-            <h2 class="reveal">$.merge / $.extend 对象合并</h2>
+            <h2>$.unique / $.flatten 数组操作</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 对象合并</span>
-<span class="keyword">$</span>.merge({a:<span class="number">1</span>}, {b:<span class="number">2</span>})
-<span class="comment">// → {a:1, b:2}</span>
+                <div>
+                    <div class="code-block">// 数组去重
+$.unique([1,2,2,3])
+// → [1,2,3]
 
-<span class="comment">// 深度合并</span>
-<span class="keyword">$</span>.merge({a:{b:<span class="number">1</span>}}, {a:{c:<span class="number">2</span>}})
-<span class="comment">// → {a:{b:1,c:2}}</span>
+// 扁平化
+$.flatten([[1], [2], [3]])
+// → [1,2,3]
 
-<span class="comment">// 覆盖合并</span>
-<span class="keyword">$</span>.merge({a:<span class="number">1</span>}, {a:<span class="number">2</span>})
-<span class="comment">// → {a:2}</span>
-                    </div>
+// 交集
+$.intersection([1,2,3], [2,3,4])
+// → [2,3]</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 选择字段</span>
-<span class="keyword">$</span>.pick({a:<span class="number">1</span>,b:<span class="number">2</span>,c:<span class="number">3</span>}, [<span class="string">'a'</span>,<span class="string">'b'</span>])
-<span class="comment">// → {a:1, b:2}</span>
+                <div>
+                    <div class="code-block">// 并集
+$.union([1,2], [2,3])
+// → [1,2,3]
 
-<span class="comment">// 排除字段</span>
-<span class="keyword">$</span>.omit({a:<span class="number">1</span>,b:<span class="number">2</span>,c:<span class="number">3</span>}, [<span class="string">'b'</span>])
-<span class="comment">// → {a:1, c:3}</span>
+// 差集
+$.difference([1,2,3], [2])
+// → [1,3]
 
-<span class="comment">// 重命名字段</span>
-<span class="keyword">$</span>.rename({a:<span class="number">1</span>,b:<span class="number">2</span>}, {a:<span class="string">'x'</span>})
-<span class="comment">// → {x:1, b:2}</span>
-                    </div>
+// 分块
+$.chunk([1,2,3,4,5], 2)
+// → [[1,2],[3,4],[5]]</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-23">
-        <span class="section-num">04</span>
+    <!-- 16. 分组排序 -->
+    <section class="slide" id="slide-16">
         <div class="slide-content">
-            <h2 class="reveal">$.get / $.set / $.has 嵌套访问</h2>
+            <h2>$.groupBy / $.sortBy 分组排序</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 安全获取嵌套属性</span>
-<span class="keyword">const</span> obj = {a:{b:{c:<span class="number">1</span>}}}
-
-<span class="keyword">$</span>.get(obj, <span class="string">'a.b.c'</span>)
-<span class="comment">// → 1</span>
-
-<span class="keyword">$</span>.get(obj, <span class="string">'a.b.d'</span>, <span class="string">'default'</span>)
-<span class="comment">// → "default"</span>
-
-<span class="keyword">$</span>.get(obj, <span class="string">'a.b.c.d.e'</span>)
-<span class="comment">// → undefined</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 设置嵌套属性</span>
-<span class="keyword">const</span> obj = {}
-<span class="keyword">$</span>.set(obj, <span class="string">'a.b.c'</span>, <span class="number">123</span>)
-<span class="comment">// → {a:{b:{c:123}}}</span>
-
-<span class="comment">// 判断属性存在</span>
-<span class="keyword">$</span>.has({a:{b:<span class="number">1</span>}}, <span class="string">'a.b'</span>)
-<span class="comment">// → true</span>
-
-<span class="keyword">$</span>.has({a:{b:<span class="number">1</span>}}, <span class="string">'a.c'</span>)
-<span class="comment">// → false</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-24">
-        <span class="section-num">04</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.defaults / $.extend 扩展</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 默认值填充</span>
-<span class="keyword">$</span>.defaults({a:<span class="number">1</span>}, {a:<span class="number">10</span>,b:<span class="number">2</span>})
-<span class="comment">// → {a:1, b:2}</span>
-
-<span class="comment">// 第一个对象的值优先</span>
-<span class="keyword">$</span>.defaults({a:<span class="number">1</span>}, {a:<span class="number">10</span>})
-<span class="comment">// → {a:1}</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 浅拷贝</span>
-<span class="keyword">$</span>.assign({a:<span class="number">1</span>}, {b:<span class="number">2</span>})
-<span class="comment">// → {a:1, b:2}</span>
-
-<span class="comment">// 构造实例</span>
-<span class="keyword">$</span>.assign(<span class="keyword">new</span> Date(), {
-  <span class="property">hours</span>: <span class="number">10</span>
-})
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-25">
-        <span class="section-num">04</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.keys / $.values / $.entries</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 获取键</span>
-<span class="keyword">$</span>.keys({a:<span class="number">1</span>,b:<span class="number">2</span>})
-<span class="comment">// → ['a','b']</span>
-
-<span class="comment">// 获取值</span>
-<span class="keyword">$</span>.values({a:<span class="number">1</span>,b:<span class="number">2</span>})
-<span class="comment">// → [1,2]</span>
-
-<span class="comment">// 获取键值对</span>
-<span class="keyword">$</span>.entries({a:<span class="number">1</span>,b:<span class="number">2</span>})
-<span class="comment">// → [['a',1],['b',2]]</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 从键值对创建对象</span>
-<span class="keyword">$</span>.fromEntries([[<span class="string">'a'</span>,<span class="number">1</span>],[<span class="string">'b'</span>,<span class="number">2</span>]])
-<span class="comment">// → {a:1, b:2}</span>
-
-<span class="comment">// 对象转 URL 参数</span>
-<span class="keyword">$</span>.toQuery({a:<span class="number">1</span>,b:<span class="string">'hi'</span>})
-<span class="comment">// → "a=1&b=hi"</span>
-
-<span class="comment">// URL 参数转对象</span>
-<span class="keyword">$</span>.fromQuery(<span class="string">"a=1&b=hi"</span>)
-<span class="comment">// → {a:'1', b:'hi'}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 31-40. 数组处理 -->
-    <section class="slide" id="slide-26">
-        <span class="section-num">05</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.unique / $.flatten 数组操作</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 数组去重</span>
-<span class="keyword">$</span>.unique([<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>])
-<span class="comment">// → [1,2,3]</span>
-
-<span class="keyword">$</span>.unique([<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'a'</span>])
-<span class="comment">// → ['a','b']</span>
-
-<span class="comment">// 扁平化</span>
-<span class="keyword">$</span>.flatten([[<span class="number">1</span>], [<span class="number">2</span>], [<span class="number">3</span>]])
-<span class="comment">// → [1,2,3]</span>
-
-<span class="keyword">$</span>.flatten([[<span class="number">1</span>,[<span class="number">2</span>,[<span class="number">3</span>]]], <span class="keyword">true</span>)
-<span class="comment">// → [1,2,3]</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 交集</span>
-<span class="keyword">$</span>.intersection([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>], [<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>])
-<span class="comment">// → [2,3]</span>
-
-<span class="comment">// 并集</span>
-<span class="keyword">$</span>.union([<span class="number">1</span>,<span class="number">2</span>], [<span class="number">2</span>,<span class="number">3</span>])
-<span class="comment">// → [1,2,3]</span>
-
-<span class="comment">// 差集</span>
-<span class="keyword">$</span>.difference([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>], [<span class="number">2</span>])
-<span class="comment">// → [1,3]</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-27">
-        <span class="section-num">05</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.groupBy / $.partition 分组</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 按字段分组</span>
-<span class="keyword">const</span> users = [
-  {name:<span class="string">'a'</span>, age:<span class="number">20</span>},
-  {name:<span class="string">'b'</span>, age:<span class="number">20</span>},
-  {name:<span class="string">'c'</span>, age:<span class="number">30</span>}
+                <div>
+                    <div class="code-block">// 按字段分组
+const users = [
+  {name:'a', age:20},
+  {name:'b', age:20},
+  {name:'c', age:30}
 ]
-
-<span class="keyword">$</span>.groupBy(users, <span class="string">'age'</span>)
-<span class="comment">// → {20:[a,b], 30:[c]}</span>
-                    </div>
+$.groupBy(users, 'age')
+// → {20:[a,b], 30:[c]}</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 按函数分组</span>
-<span class="keyword">$</span>.groupBy([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>], x => x % <span class="number">2</span>)
-<span class="comment">// → {0:[2,4], 1:[1,3]}</span>
+                <div>
+                    <div class="code-block">// 按函数分组
+$.groupBy([1,2,3,4], x => x % 2)
+// → {0:[2,4], 1:[1,3]}
 
-<span class="comment">// 分区 (满足/不满足)</span>
-<span class="keyword">$</span>.partition([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>], x => x > <span class="number">2</span>)
-<span class="comment">// → [[3,4], [1,2]]</span>
-                    </div>
+// 排序
+$.sortBy([3,1,2])
+// → [1,2,3]
+
+$.sortBy(users, 'age', 'desc')</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-28">
-        <span class="section-num">05</span>
+    <!-- 17. 防抖节流 -->
+    <section class="slide" id="slide-17">
         <div class="slide-content">
-            <h2 class="reveal">$.sortBy / $.order 排序</h2>
+            <h2>$.debounce / $.throttle 防抖节流</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 按字段排序</span>
-<span class="keyword">const</span> users = [
-  {name:<span class="string">'tom'</span>, age:<span class="number">20</span>},
-  {name:<span class="string">'bob'</span>, age:<span class="number">18</span>}
-]
+                <div>
+                    <h3>防抖 - 最后执行</h3>
+                    <div class="code-block">const fn = $.debounce(() => {
+  console.log('执行')
+}, 300)
 
-<span class="keyword">$</span>.sortBy(users, <span class="string">'age'</span>)
-<span class="comment">// → [bob, tom] (按年龄)</span>
-
-<span class="keyword">$</span>.sortBy(users, <span class="string">'name'</span>)
-<span class="comment">// → [bob, tom] (按名字)</span>
-                    </div>
+// 多次调用只在最后执行
+fn(); fn(); fn(); 
+// 只执行一次</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 降序</span>
-<span class="keyword">$</span>.sortBy(users, <span class="string">'age'</span>, <span class="string">'desc'</span>)
+                <div>
+                    <h3>节流 - 间隔执行</h3>
+                    <div class="code-block">const fn = $.throttle(() => {
+  console.log('执行')
+}, 1000)
 
-<span class="comment">// 数字数组排序</span>
-<span class="keyword">$</span>.sortBy([<span class="number">3</span>,<span class="number">1</span>,<span class="number">2</span>])
-<span class="comment">// → [1,2,3]</span>
-
-<span class="comment">// 随机排序</span>
-<span class="keyword">$</span>.shuffle([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])
-<span class="comment">// → [随机顺序]</span>
-                    </div>
+// 第一次立即执行
+fn() // → 立即执行
+fn() // → 忽略</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-29">
-        <span class="section-num">05</span>
+    <!-- 18. 函数式 -->
+    <section class="slide" id="slide-18">
         <div class="slide-content">
-            <h2 class="reveal">$.chunk / $.compact 数组转换</h2>
+            <h2>$.curry / $.compose 函数式</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 数组分块</span>
-<span class="keyword">$</span>.chunk([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>], <span class="number">2</span>)
-<span class="comment">// → [[1,2],[3,4],[5]]</span>
-
-<span class="comment">// 去除假值</span>
-<span class="keyword">$</span>.compact([<span class="number">0</span>,<span class="string">''</span>,<span class="keyword">false</span>,<span class="number">1</span>,<span class="string">'a'</span>])
-<span class="comment">// → [1,'a']</span>
-
-<span class="comment">// 填充数组</span>
-<span class="keyword">$</span>.fill(<span class="number">0</span>, <span class="number">5</span>)
-<span class="comment">// → [0,0,0,0,0]</span>
-                    </div>
+                <div>
+                    <div class="code-block">// 柯里化
+const add = $.curry((a, b, c) => a + b + c)
+add(1)(2)(3)
+// → 6
+add(1, 2)(3)
+// → 6</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 数组头部插入</span>
-<span class="keyword">$</span>.unshift([<span class="number">3</span>,<span class="number">4</span>], <span class="number">1</span>, <span class="number">2</span>)
-<span class="comment">// → [1,2,3,4]</span>
-
-<span class="comment">// 数组尾部插入</span>
-<span class="keyword">$</span>.push([<span class="number">1</span>,<span class="number">2</span>], <span class="number">3</span>, <span class="number">4</span>)
-<span class="comment">// → [1,2,3,4]</span>
-
-<span class="comment">// 数组去头尾</span>
-<span class="keyword">$</span>.tail([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])
-<span class="comment">// → [2,3]</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-30">
-        <span class="section-num">05</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.reduce / $.map 数组聚合</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 求和</span>
-<span class="keyword">$</span>.reduce([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>], (s, n) => s + n, <span class="number">0</span>)
-<span class="comment">// → 6</span>
-
-<span class="comment">// 转对象</span>
-<span class="keyword">$</span>.reduce([<span class="string">'a'</span>,<span class="string">'b'</span>], (o, v, i) => ({...o, [v]: i}), {})
-<span class="comment">// → {a:0, b:1}</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 映射对象</span>
-<span class="keyword">$</span>.map({a:<span class="number">1</span>,b:<span class="number">2</span>}, (v,k) => v * <span class="number">2</span>)
-<span class="comment">// → {a:2, b:4}</span>
-
-<span class="comment">// 过滤索引</span>
-<span class="keyword">$</span>.mapValues({a:<span class="number">1</span>,b:<span class="number">2</span>}, v => v + <span class="number">10</span>)
-<span class="comment">// → {a:11, b:12}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 41-48. 实用工具 -->
-    <section class="slide" id="slide-31">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.debounce / $.throttle 防抖节流</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <h3>$.debounce 防抖</h3>
-                    <div class="code-block">
-<span class="comment">// 等待 delay 后执行</span>
-<span class="keyword">const</span> fn = <span class="keyword">$</span>.debounce(() => {
-  console.log(<span class="string">'执行'</span>)
-}, <span class="number">300</span>)
-
-<span class="comment">// 多次调用只在最后执行</span>
-fn(); fn(); fn();  <span class="comment">// 只执行一次</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <h3>$.throttle 节流</h3>
-                    <div class="code-block">
-<span class="comment">// 每隔 delay 执行一次</span>
-<span class="keyword">const</span> fn = <span class="keyword">$</span>.throttle(() => {
-  console.log(<span class="string">'执行'</span>)
-}, <span class="number">1000</span>)
-
-<span class="comment">// 第一次立即执行</span>
-fn()  <span class="comment">// → 立即执行</span>
-fn()  <span class="comment">// → 忽略</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-32">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.sleep / $.wait 延迟</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 延迟执行</span>
-<span class="keyword">async</span> <span class="function">test</span>() {
-  console.log(<span class="string">'开始'</span>)
-  <span class="keyword">await</span> <span class="keyword">$</span>.sleep(<span class="number">1000</span>)
-  console.log(<span class="string">'1秒后'</span>)
-}
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 等待条件满足</span>
-<span class="keyword">await</span> <span class="keyword">$</span>.wait(() => count > <span class="number">10</span>, <span class="number">3000</span>)
-<span class="comment">// 等待 count > 10，超时3秒</span>
-
-<span class="comment">// 等待多个 Promise</span>
-<span class="keyword">await</span> <span class="keyword">$</span>.waitAll([
-  promise1,
-  promise2
-])
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-33">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.retry / $.timeout 重试超时</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 重试</span>
-<span class="keyword">const</span> result = <span class="keyword">await</span> <span class="keyword">$</span>.retry(fn, {
-  <span class="property">times</span>: <span class="number">3</span>,       <span class="comment">// 重试3次</span>
-  <span class="property">delay</span>: <span class="number">1000</span>,    <span class="comment">// 间隔1秒</span>
-  <span class="property">backoff</span>: <span class="keyword">true</span>   <span class="comment">// 指数退避</span>
-})
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 超时控制</span>
-<span class="keyword">const</span> result = <span class="keyword">await</span> <span class="keyword">$</span>.timeout(fn(<span class="number">5000</span>)
-<span class="comment">// 5秒超时，超时抛错</span>
-
-<span class="comment">// 带默认值的超时</span>
-<span class="keyword">await</span> <span class="keyword">$</span>.timeout(fn, <span class="number">3000</span>, <span class="string">'default'</span>)
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-34">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.once / $.memoize 缓存函数</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 只执行一次</span>
-<span class="keyword">const</span> fn = <span class="keyword">$</span>.once(() => {
-  console.log(<span class="string">'只执行一次'</span>)
-  <span class="keyword">return</span> Math.random()
-})
-
-fn()  <span class="comment">// → 执行</span>
-fn()  <span class="comment">// → 返回第一次结果</span>
-fn()  <span class="comment">// → 返回第一次结果</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 记忆化缓存</span>
-<span class="keyword">const</span> fib = <span class="keyword">$</span>.memoize(n => {
-  <span class="keyword">if</span> (n <= <span class="number">1</span>) <span class="keyword">return</span> n
-  <span class="keyword">return</span> fib(n-<span class="number">1</span>) + fib(n-<span class="number">2</span>)
-})
-
-fib(<span class="number">40</span>)  <span class="comment">// 快速返回</span>
-fib(<span class="number">40</span>)  <span class="comment">// 使用缓存</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-35">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">$.curry / $.compose 函数式</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 柯里化</span>
-<span class="keyword">const</span> add = <span class="keyword">$</span>.curry((a, b, c) => a + b + c)
-add(<span class="number">1</span>)(<span class="number">2</span>)(<span class="number">3</span>)  <span class="comment">// → 6</span>
-add(<span class="number">1</span>, <span class="number">2</span>)(<span class="number">3</span>)  <span class="comment">// → 6</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 函数组合</span>
-<span class="keyword">const</span> fn = <span class="keyword">$</span>.compose(
-  x => x + <span class="number">1</span>,
-  x => x * <span class="number">2</span>,
-  x => x - <span class="number">1</span>
+                <div>
+                    <div class="code-block">// 函数组合
+const fn = $.compose(
+  x => x + 1,
+  x => x * 2,
+  x => x - 1
 )
-
-fn(<span class="number">5</span>)  <span class="comment">// → (5-1)*2+1 = 9</span>
-                    </div>
+fn(5)
+// → (5-1)*2+1 = 9</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 39-45. 浏览器/Node -->
-    <section class="slide" id="slide-36">
-        <span class="section-num">06</span>
+    <!-- 19. 机器学习 - 聚类 -->
+    <section class="slide" id="slide-19">
         <div class="slide-content">
-            <h2 class="reveal">$.cookie / $.storage 本地存储</h2>
+            <h2>$.cluster K-Means 聚类</h2>
+            <p>智能聚类算法，自动将数据分组</p>
             <div class="two-col">
-                <div class="reveal">
-                    <h3>Cookie</h3>
-                    <div class="code-block">
-<span class="keyword">$</span>.cookie.set(<span class="string">'key'</span>, <span class="string">'value'</span>)
-<span class="keyword">$</span>.cookie.get(<span class="string">'key'</span>)
-<span class="keyword">$</span>.cookie.remove(<span class="string">'key'</span>)
-                    </div>
+                <div>
+                    <div class="code-block">// 数据聚类
+const data = [
+  [1, 2], [1, 4],
+  [1, 0], [10, 2],
+  [10, 4], [10, 0]
+]
+
+$.cluster(data, 2)
+// → [[1,2,1,4,1,0], [10,2,10,4,10,0]]</div>
                 </div>
-                <div class="reveal">
-                    <h3>LocalStorage</h3>
-                    <div class="code-block">
-<span class="keyword">$</span>.storage.set(<span class="string">'key'</span>, obj)
-<span class="keyword">$</span>.storage.get(<span class="string">'key'</span>)
-<span class="keyword">$</span>.storage.remove(<span class="string">'key'</span>)
-<span class="keyword">$</span>.storage.clear()
-                    </div>
+                <div>
+                    <h3>应用场景</h3>
+                    <p>• 用户分群分析</p>
+                    <p>• 异常值检测</p>
+                    <p>• 数据降维预处理</p>
+                    <p>• 图像分割</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-37">
-        <span class="section-num">06</span>
+    <!-- 20. 机器学习 - 聚类2 -->
+    <section class="slide" id="slide-20">
         <div class="slide-content">
-            <h2 class="reveal">$.url / $.query URL处理</h2>
+            <h2>$.cluster 聚类算法详解</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// URL 解析</span>
-<span class="keyword">const</span> url = <span class="keyword">$</span>.url(<span class="string">"https://x.com/a?b=1#c"</span>)
-url.host    <span class="comment">→ "x.com"</span>
-url.path   <span class="comment">→ "/a"</span>
-url.query  <span class="comment">→ {b:'1'}</span>
-url.hash   <span class="comment">→ "c"</span>
-                    </div>
-                </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 构建 URL</span>
-<span class="keyword">$</span>.url({
-  <span class="property">host</span>: <span class="string">'x.com'</span>,
-  <span class="property">path</span>: <span class="string">'/api'</span>,
-  <span class="property">query</span>: {a:<span class="number">1</span>}
+                <div>
+                    <div class="code-block">// 自定义距离函数
+$.cluster(data, 3, {
+  distance: 'manhattan'
 })
-<span class="comment">// → "https://x.com/api?a=1"</span>
-                    </div>
+
+// 指定初始中心点
+$.cluster(data, 2, {
+  centers: [[0,0], [10,10]]
+})</div>
+                </div>
+                <div>
+                    <h3>算法参数</h3>
+                    <p>• k: 聚类数量</p>
+                    <p>• distance: 距离度量</p>
+                    <p>• centers: 初始中心点</p>
+                    <p>• maxIter: 最大迭代次数</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-38">
-        <span class="section-num">06</span>
+    <!-- 21. 机器学习 - 回归 -->
+    <section class="slide" id="slide-21">
         <div class="slide-content">
-            <h2 class="reveal">$.randomStr 随机字符串</h2>
+            <h2>$.regress 线性回归</h2>
+            <p>简单线性回归，预测数值趋势</p>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 随机字符串</span>
-<span class="keyword">$</span>.randomStr(<span class="number">16</span>)
-<span class="comment">// → "Xk9mP2nLq4rT..."</span>
+                <div>
+                    <div class="code-block">// 线性回归预测
+const x = [1,2,3,4,5]
+const y = [2,4,5,4,5]
 
-<span class="comment">// 指定字符集</span>
-<span class="keyword">$</span>.randomStr(<span class="number">10</span>, <span class="string">'abc'</span>)
-<span class="comment">// → "abccbaacba"</span>
+const result = $.regress(x, y)
+// → { slope, intercept, predict, r2 }
 
-<span class="comment">// 数字</span>
-<span class="keyword">$</span>.randomStr(<span class="number">6</span>, <span class="string">'0123456789'</span>)
-<span class="comment">// → "482910"</span>
-                    </div>
+result.predict(6)
+// → 预测值</div>
                 </div>
-                <div class="reveal">
-                    <h3>常用配置</h3>
-                    <ul class="feature-list">
-                        <li><span class="inline-code">numeric</span> 数字 0-9</li>
-                        <li><span class="inline-code">alpha</span> 字母 a-z</li>
-                        <li><span class="inline-code">ALPHA</span> 字母 A-Z</li>
-                        <li><span class="inline-code">hex</span> 十六进制</li>
-                        <li><span class="inline-code">all</span> 全部字符</li>
-                    </ul>
+                <div>
+                    <h3>返回结果</h3>
+                    <p>• slope: 斜率</p>
+                    <p>• intercept: 截距</p>
+                    <p>• predict(x): 预测函数</p>
+                    <p>• r2: 拟合度 R²</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-39">
-        <span class="section-num">06</span>
+    <!-- 22. 机器学习 - 回归2 -->
+    <section class="slide" id="slide-22">
         <div class="slide-content">
-            <h2 class="reveal">$.load / $.ajax 网络请求</h2>
+            <h2>$.regress 多元回归</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// GET 请求</span>
-<span class="keyword">const</span> data = <span class="keyword">await</span> <span class="keyword">$</span>.get(<span class="string">'/api/user'</span>)
+                <div>
+                    <div class="code-block">// 多元线性回归
+const x = [[1,2], [2,3], [3,5], [4,7]]
+const y = [3, 5, 8, 11]
 
-<span class="comment">// POST 请求</span>
-<span class="keyword">const</span> res = <span class="keyword">await</span> <span class="keyword">$</span>.post(<span class="string">'/api/login'</span>, {
-  username: <span class="string">'admin'</span>,
-  password: <span class="string">'123456'</span>
-})
-                    </div>
+const result = $.regress(x, y)
+result.predict([5, 9])
+// → 预测值
+
+// 多项式回归
+$.regress(x, y, { degree: 2 })</div>
                 </div>
-                <div class="reveal">
-                    <div class="code-block">
-<span class="comment">// 通用请求</span>
-<span class="keyword">$</span>.ajax({
-  <span class="property">url</span>: <span class="string">'/api'</span>,
-  <span class="property">method</span>: <span class="string">'POST'</span>,
-  <span class="property">data</span>: {a:<span class="number">1</span>},
-  <span class="property">headers</span>: {token: <span class="string">'xxx'</span>},
-  <span class="property">timeout</span>: <span class="number">5000</span>
-})
-                    </div>
+                <div>
+                    <h3>应用场景</h3>
+                    <p>• 销售预测</p>
+                    <p>• 房价预测</p>
+                    <p>• 趋势分析</p>
+                    <p>• 风险评估</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 46-49. 实战 -->
-    <section class="slide" id="slide-40">
-        <span class="section-num">06</span>
+    <!-- 23. 机器学习 - 统计 -->
+    <section class="slide" id="slide-23">
         <div class="slide-content">
-            <h2 class="reveal">实战：表单验证</h2>
-            <div class="reveal">
-                <div class="code-block">
-<span class="keyword">const</span> validate = (data) => {
-  <span class="keyword">const</span> errors = {}
-  
-  <span class="keyword">if</span> (!<span class="keyword">$</span>.isEmail(data.email)) 
-    errors.email = <span class="string">'邮箱格式错误'</span>
-  
-  <span class="keyword">if</span> (!<span class="keyword">$</span>.isMobile(data.phone)) 
-    errors.phone = <span class="string">'手机号格式错误'</span>
-  
-  <span class="keyword">if</span> (!<span class="keyword">$</span>.between(data.age, <span class="number">18</span>, <span class="number">100</span>)) 
-    errors.age = <span class="string">'年龄需在18-100之间'</span>
-  
-  <span class="keyword">if</span> (data.password.length < <span class="number">6</span>) 
-    errors.password = <span class="string">'密码至少6位'</span>
-  
-  <span class="keyword">return</span> errors
-}
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-41">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">实战：数据格式化</h2>
+            <h2>$.stat 统计分析</h2>
             <div class="two-col">
-                <div class="reveal">
-                    <h3>用户信息脱敏</h3>
-                    <div class="code-block">
-<span class="keyword">const</span> formatUser = (user) => ({
+                <div>
+                    <div class="code-block">// 基础统计
+$.stat.mean([1,2,3,4,5])
+// → 3 (平均值)
+
+$.stat.median([1,2,3,4,5])
+// → 3 (中位数)
+
+$.stat.std([2,4,4,4,5])
+// → 1.2 (标准差)</div>
+                </div>
+                <div>
+                    <div class="code-block">// 更多统计
+$.stat.variance([2,4,4])
+// → 方差
+
+$.stat.correlation(x, y)
+// → 相关系数
+
+$.stat.percentile(data, 0.75)
+// → 75分位数</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 24. 机器学习 - 分类 -->
+    <section class="slide" id="slide-24">
+        <div class="slide-content">
+            <h2>$.knn K近邻分类</h2>
+            <p>K-Nearest Neighbors 分类算法</p>
+            <div class="two-col">
+                <div>
+                    <div class="code-block">// KNN 分类
+const data = [
+  { features: [1, 2], label: 'A' },
+  { features: [2, 3], label: 'A' },
+  { features: [8, 9], label: 'B' },
+  { features: [9, 10], label: 'B' }
+]
+
+$.knn(data, [3, 4], 3)
+// → 'A' (最近的3个邻居多数为A)</div>
+                </div>
+                <div>
+                    <h3>算法特点</h3>
+                    <p>• 无需训练过程</p>
+                    <p>• 适用于非线性数据</p>
+                    <p>• k值决定决策边界</p>
+                    <p>• 适合小数据集</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 25. 机器学习 - 决策树 -->
+    <section class="slide" id="slide-25">
+        <div class="slide-content">
+            <h2>$.dtree 决策树</h2>
+            <p>Decision Tree 分类与回归</p>
+            <div class="two-col">
+                <div>
+                    <div class="code-block">// 训练决策树
+const data = [
+  { age: 25, income: 'high', buy: true },
+  { age: 30, income: 'low', buy: false },
+  // ...
+]
+
+const tree = $.dtree.train(data, 'buy')
+tree.predict({ age: 28, income: 'high' })
+// → true/false</div>
+                </div>
+                <div>
+                    <h3>应用场景</h3>
+                    <p>• 信用评估</p>
+                    <p>• 客户流失预测</p>
+                    <p>• 疾病诊断</p>
+                    <p>• 推荐系统</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 26. 实战 - 表单验证 -->
+    <section class="slide" id="slide-26">
+        <div class="slide-content">
+            <h2>实战：表单验证</h2>
+            <div class="code-block">const validate = (data) => {
+  const errors = {}
+  
+  if (!$.isEmail(data.email))
+    errors.email = '邮箱格式错误'
+    
+  if (!$.isMobile(data.phone))
+    errors.phone = '手机号格式错误'
+    
+  if (!$.between(data.age, 18, 100))
+    errors.age = '年龄需在18-100'
+    
+  return errors
+}</div>
+        </div>
+    </section>
+
+    <!-- 27. 实战 - 数据处理 -->
+    <section class="slide" id="slide-27">
+        <div class="slide-content">
+            <h2>实战：用户数据处理</h2>
+            <div class="code-block">// 用户信息脱敏
+const formatUser = (user) => ({
   ...user,
-  phone: <span class="keyword">$</span>.mask(user.phone, <span class="string">'phone'</span>),
-  idCard: <span class="keyword">$</span>.mask(user.idCard, <span class="string">'idcard'</span>),
-  email: <span class="keyword">$</span>.mask(user.email, <span class="string">'email'</span>),
-  name: <span class="keyword">$</span>.mask(user.name, <span class="string">'name'</span>)
+  phone: $.mask(user.phone, 'phone'),
+  idCard: $.mask(user.idCard, 'idcard'),
+  email: $.mask(user.email, 'email'),
+  name: $.mask(user.name, 'name')
 })
-                    </div>
-                </div>
-                <div class="reveal">
-                    <h3>列表数据处理</h3>
-                    <div class="code-block">
-<span class="keyword">const</span> processList = (list) => 
-  list
-    .filter(x => x.status === <span class="number">1</span>)
-    .sortBy(<span class="string">'createdAt'</span>, <span class="string">'desc'</span>)
-    .groupBy(<span class="string">'category'</span>)
-    .mapValues(items => 
-      items.map(item => ({
-        ...item,
-        title: <span class="keyword">$</span>.truncate(item.title, <span class="number">20</span>),
-        price: <span class="keyword">$</span>.currency(item.price)
-      }))
-    )
-                    </div>
-                </div>
-            </div>
+
+// 列表处理
+const processList = (list) => list
+  .filter(x => x.status === 1)
+  .sortBy('createdAt', 'desc')
+  .groupBy('category')</div>
         </div>
     </section>
 
-    <section class="slide" id="slide-42">
-        <span class="section-num">06</span>
+    <!-- 28. 实战 - 搜索 -->
+    <section class="slide" id="slide-28">
         <div class="slide-content">
-            <h2 class="reveal">实战：防抖搜索</h2>
-            <div class="reveal">
-                <div class="code-block">
-<span class="comment">// 搜索框防抖</span>
-<span class="keyword">const</span> search = <span class="keyword">$</span>.debounce(async (keyword) => {
-  <span class="keyword">const</span> results = <span class="keyword">await</span> <span class="keyword">$</span>.get(<span class="string">`/api/search?q=${keyword}`</span>)
+            <h2>实战：防抖搜索</h2>
+            <div class="code-block">// 搜索框防抖
+const search = $.debounce(async (keyword) => {
+  const results = await $.get(`/api/search?q=${keyword}`)
   render(results)
-}, <span class="number">300</span>)
+}, 300)
 
-<span class="comment">// 输入时调用</span>
-input.addEventListener(<span class="string">'input'</span>, (e) => {
+// 输入时调用
+input.addEventListener('input', (e) => {
   search(e.target.value)
 })
-                </div>
-            </div>
+
+// 无限滚动节流
+const loadMore = $.throttle(() => {
+  fetchNextPage()
+}, 1000)</div>
         </div>
     </section>
 
-    <!-- 48-50. 总结 -->
-    <section class="slide" id="slide-43">
-        <span class="section-num">06</span>
+    <!-- 29. 设计原则 -->
+    <section class="slide" id="slide-29">
         <div class="slide-content">
-            <h2 class="reveal">功能模块总结</h2>
-            <div class="three-col">
-                <div class="reveal card"><h3 style="color:var(--accent-neon)">数值</h3><p>random, clamp, round, currency</p></div>
-                <div class="reveal card"><h3 style="color:var(--accent-plasma)">字符串</h3><p>mask, truncate, tpl, slug</p></div>
-                <div class="reveal card"><h3 style="color:var(--accent-aurora)">类型</h3><p>isString, isEmail, isMobile</p></div>
-                <div class="reveal card"><h3 style="color:var(--accent-cosmic)">对象</h3><p>clone, merge, pick, get</p></div>
-                <div class="reveal card"><h3 style="color:var(--accent-neon)">数组</h3><p>unique, groupBy, sortBy</p></div>
-                <div class="reveal card"><h3 style="color:var(--accent-plasma)">函数</h3><p>debounce, throttle, curry</p></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-44">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">设计原则</h2>
+            <h2>设计原则</h2>
             <div class="card-grid">
-                <div class="reveal card"><h3>简洁</h3><p>API 简洁直观</p></div>
-                <div class="reveal card"><h3>可靠</h3><p>完善的边界处理</p></div>
-                <div class="reveal card"><h3>高效</h3><p>零依赖高性能</p></div>
-                <div class="reveal card"><h3>实用</h3><p>专注业务场景</p></div>
+                <div class="card"><h3>简洁</h3><p>API 简洁直观，易于使用</p></div>
+                <div class="card"><h3>可靠</h3><p>完善的边界处理，健壮性强</p></div>
+                <div class="card"><h3>高效</h3><p>零依赖高性能，执行速度快</p></div>
+                <div class="card"><h3>实用</h3><p>专注业务场景，解决实际问题</p></div>
             </div>
         </div>
     </section>
 
-    <section class="slide" id="slide-45">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">适用场景</h2>
-            <div class="two-col">
-                <div class="reveal">
-                    <h3>前端开发</h3>
-                    <ul class="feature-list">
-                        <li>表单验证与数据处理</li>
-                        <li>UI 交互优化</li>
-                        <li>本地存储管理</li>
-                        <li>网络请求封装</li>
-                    </ul>
-                </div>
-                <div class="reveal">
-                    <h3>Node.js 服务</h3>
-                    <ul class="feature-list">
-                        <li>后端工具函数</li>
-                        <li>数据格式化</li>
-                        <li>函数式编程</li>
-                        <li>异步流程控制</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-46">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">学习资源</h2>
-            <div class="card-grid">
-                <div class="reveal card"><h3>📚 官方文档</h3><p>完整 API 参考</p></div>
-                <div class="reveal card"><h3>💻 GitHub</h3><p>源码与示例</p></div>
-                <div class="reveal card"><h3>💬 技术社区</h3><p>问题交流</p></div>
-                <div class="reveal card"><h3>⭐ 贡献代码</h3><p>欢迎 PR</p></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="slide" id="slide-47">
-        <span class="section-num">06</span>
-        <div class="slide-content">
-            <h2 class="reveal">为什么选择 Meeko？</h2>
-            <ul class="feature-list" style="margin-top:1rem;">
-                <li>✨ 统一的工具接口，无需引入多个库</li>
-                <li>🎯 专注实用功能，解决实际问题</li>
-                <li>📦 轻量级，无多余依赖</li>
-                <li>🔧 TypeScript 支持，类型友好</li>
-                <li>🌐 浏览器/Node 双环境支持</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- 50. 结束 -->
-    <section class="slide title-slide" id="slide-48">
-        <div class="slide-content">
-            <p class="reveal tag">感谢观看</p>
-            <h1 class="reveal">Me<span class="highlight">ko</span></h1>
-            <p class="reveal" style="margin-top:1rem;">让 JavaScript 开发更优雅</p>
-            <div class="reveal" style="margin-top:1.5rem;">
+    <!-- 30. 总结 -->
+    <section class="slide" id="slide-30">
+        <div class="slide-content" style="text-align: center;">
+            <h1>Mee<span class="highlight">ko</span></h1>
+            <p style="margin-top: 30px; font-size: 28px;">让 JavaScript 开发更优雅</p>
+            <div style="margin-top: 50px;">
                 <span class="tag">工具函数</span>
                 <span class="tag plasma">数据处理</span>
                 <span class="tag aurora">类型校验</span>
+                <span class="tag cosmic">机器学习</span>
             </div>
-        </div>
-    </section>
-
-    <section class="slide title-slide" id="slide-49">
-        <div class="slide-content">
-            <h1 class="reveal">Q & A</h1>
-            <p class="reveal" style="margin-top:1rem;">有问题？一起来探讨！</p>
-        </div>
-    </section>
-
-    <section class="slide title-slide" id="slide-50">
-        <div class="slide-content">
-            <h1 class="reveal">End</h1>
-            <p class="reveal" style="margin-top:1rem;">Thanks!</p>
+            <p style="margin-top: 50px; color: var(--accent-neon); font-size: 24px;">感谢观看</p>
         </div>
     </section>
 
     <script>
-        console.log('%c🚀 Meeko PPT 创建进度', 'color: #00f5ff; font-size: 14px;');
-        
-        const canvas = document.createElement('canvas');
-        canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;';
-        document.body.insertBefore(canvas, document.body.firstChild);
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.2 + 0.3;
-                this.speedX = (Math.random() - 0.5) * 0.1;
-                this.speedY = (Math.random() - 0.5) * 0.1;
-                this.opacity = Math.random() * 0.2 + 0.02;
-                const colors = ['0, 245, 255', '139, 92, 246', '6, 255, 165', '255, 0, 202'];
-                this.color = colors[Math.floor(Math.random() * colors.length)];
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide')
+                this.totalSlides = this.slides.length
+                this.currentSlide = 0
+                this.init()
             }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+
+            init() {
+                this.createNavDots()
+                this.bindEvents()
+                this.setupObserver()
+                this.updateSlide(0)
             }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
-                ctx.fill();
-            }
-        }
 
-        function initParticles() {
-            particles = [];
-            const count = Math.min(30, Math.floor((canvas.width * canvas.height) / 50000));
-            for (let i = 0; i < count; i++) particles.push(new Particle());
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((p1, i) => {
-                particles.slice(i + 1).forEach(p2 => {
-                    const dx = p1.x - p2.x;
-                    const dy = p1.y - p2.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 60) {
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(${p1.color}, ${0.02 * (1 - dist / 60)})`;
-                        ctx.stroke();
-                    }
-                });
-            });
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animateParticles);
-        }
-
-        console.log('%c✅ 粒子背景初始化', 'color: #06ffa5;');
-
-        const slides = document.querySelectorAll('.slide');
-        const navDotsContainer = document.getElementById('navDots');
-        const progressBar = document.getElementById('progressBar');
-        let currentSlide = 0;
-
-        console.log(`%c📄 检测到 ${slides.length} 页幻灯片`, 'color: #8b5cf6;');
-
-        slides.forEach((_, i) => {
-            const dot = document.createElement('div');
-            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-            dot.addEventListener('click', () => goToSlide(i));
-            navDotsContainer.appendChild(dot);
-        });
-
-        const navDots = document.querySelectorAll('.nav-dot');
-
-        function updateProgress() {
-            progressBar.style.width = ((currentSlide + 1) / slides.length) * 100 + '%';
-        }
-
-        function updateNavDots() {
-            navDots.forEach((dot, i) => { dot.classList.toggle('active', i === currentSlide); });
-        }
-
-        function goToSlide(index) {
-            if (index < 0 || index >= slides.length) return;
-            currentSlide = index;
-            slides[index].scrollIntoView({ behavior: 'smooth' });
-            updateProgress();
-            updateNavDots();
-        }
-
-        function nextSlide() { if (currentSlide < slides.length - 1) goToSlide(currentSlide + 1); }
-        function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const index = Array.from(slides).indexOf(entry.target);
-                    currentSlide = index;
-                    entry.target.classList.add('visible');
-                    updateNavDots();
-                    updateProgress();
+            createNavDots() {
+                const nav = document.getElementById('navDots')
+                for (let i = 0; i < this.totalSlides; i++) {
+                    const dot = document.createElement('div')
+                    dot.className = 'nav-dot'
+                    dot.addEventListener('click', () => this.goToSlide(i))
+                    nav.appendChild(dot)
                 }
-            });
-        }, { threshold: 0.5 });
-
-        slides.forEach(slide => observer.observe(slide));
-
-        document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'ArrowDown':
-                case 'ArrowRight':
-                case ' ': e.preventDefault(); nextSlide(); break;
-                case 'ArrowUp':
-                case 'ArrowLeft': e.preventDefault(); prevSlide(); break;
             }
-        });
 
-        let touchStartY = 0;
-        document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; });
-        document.addEventListener('touchend', (e) => {
-            const diff = touchStartY - e.changedTouches[0].clientY;
-            if (Math.abs(diff) > 40) { if (diff > 0) nextSlide(); else prevSlide(); }
-        });
+            bindEvents() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault()
+                        this.nextSlide()
+                    } else if (e.key === 'ArrowUp') {
+                        this.prevSlide()
+                    }
+                })
 
-        window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
-        resizeCanvas();
-        initParticles();
-        animateParticles();
-        slides[0].classList.add('visible');
+                let touchStartY = 0
+                document.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY
+                })
+                document.addEventListener('touchend', (e) => {
+                    const touchEndY = e.changedTouches[0].clientY
+                    const diff = touchStartY - touchEndY
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) this.nextSlide()
+                        else this.prevSlide()
+                    }
+                })
+            }
 
-        console.log('%c✅ 导航系统初始化', 'color: #06ffa5;');
-        console.log('%c🎉 Meeko PPT 创建完成!', 'color: #00f5ff; font-size: 14px; font-weight: bold;');
+            setupObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const index = Array.from(this.slides).indexOf(entry.target)
+                            this.updateSlide(index)
+                        }
+                    })
+                }, { threshold: 0.5 })
+
+                this.slides.forEach(slide => observer.observe(slide))
+            }
+
+            updateSlide(index) {
+                this.currentSlide = index
+                document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index)
+                })
+                const progress = ((index + 1) / this.totalSlides) * 100
+                document.getElementById('progress').style.width = progress + '%'
+            }
+
+            nextSlide() {
+                if (this.currentSlide < this.totalSlides - 1) {
+                    this.slides[this.currentSlide + 1].scrollIntoView({ behavior: 'smooth' })
+                }
+            }
+
+            prevSlide() {
+                if (this.currentSlide > 0) {
+                    this.slides[this.currentSlide - 1].scrollIntoView({ behavior: 'smooth' })
+                }
+            }
+
+            goToSlide(index) {
+                this.slides[index].scrollIntoView({ behavior: 'smooth' })
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation()
+        })
     </script>
 </body>
 </html>
