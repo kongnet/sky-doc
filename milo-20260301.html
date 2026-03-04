@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 使用与个人洞察周报 - 2026.03.01</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #161616;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #ff6b35;
+            --accent-glow: rgba(255, 107, 53, 0.4);
+            --accent-secondary: #ffd23f;
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --title-size: clamp(2rem, 6vw, 4.5rem);
+            --h2-size: clamp(1.5rem, 4vw, 2.5rem);
+            --h3-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            --body-size: clamp(0.75rem, 1.3vw, 1rem);
+            --small-size: clamp(0.65rem, 1vw, 0.85rem);
+            --slide-padding: clamp(1.5rem, 4vw, 4rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.6s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            height: 100%;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        .accent-text { color: var(--accent); }
+        .yellow-text { color: var(--accent-secondary); }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 600;
+            line-height: 1.1;
+            margin-bottom: var(--content-gap);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 600;
+            margin-bottom: var(--content-gap);
+        }
+
+        h3 {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        p, li {
+            font-size: var(--body-size);
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .date {
+            font-size: var(--small-size);
+            color: var(--accent);
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        li {
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5em;
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: transform 0.3s var(--ease-out-expo), border-color 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-glow);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: var(--body-size);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-desc {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            background: rgba(255, 107, 53, 0.15);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 4px;
+            font-size: var(--small-size);
+            color: var(--accent);
+            margin-right: 0.5rem;
+        }
+
+        .tag.success {
+            background: rgba(76, 175, 80, 0.15);
+            border-color: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        .tag.fail {
+            background: rgba(244, 67, 54, 0.15);
+            border-color: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            z-index: 100;
+            transition: width 0.3s;
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide.visible .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .slide.visible .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .slide.visible .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .slide.visible .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .slide.visible .reveal:nth-child(5) { transition-delay: 0.5s; }
+
+        .title-slide {
+            background: 
+                radial-gradient(ellipse at 80% 20%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, rgba(255, 210, 63, 0.1) 0%, transparent 50%),
+                var(--bg-primary);
+        }
+
+        .content-slide {
+            background: var(--bg-primary);
+        }
+
+        .content-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 210, 63, 0.05) 100%);
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1rem;
+        }
+
+        .quote {
+            font-size: var(--h3-size);
+            font-style: italic;
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-family: var(--font-display);
+        }
+
+        .section-num {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.05);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .nav-dots { right: 0.75rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal {
+                transition: opacity 0.3s ease;
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots"></nav>
+
+    <!-- Slide 1: Title -->
+    <section class="slide title-slide">
+        <div class="slide-content">
+            <p class="date reveal">Weekly Report</p>
+            <h1 class="reveal">AI 使用与<br><span class="accent-text">个人洞察</span> 周报</h1>
+            <p class="subtitle reveal">OpenCode · 豆包大模型 ·</p>
+             火山方舟<p class="reveal" style="margin-top: 2rem; color: var(--text-secondary); font-size: var(--small-size);">2026.03.01</p>
+        </div>
+    </section>
+
+    <!-- Slide 2: OpenCode -->
+    <section class="slide content-slide">
+        <span class="section-num">01</span>
+        <div class="slide-content">
+            <h2 class="reveal">OpenCode：AI Agent 驱动</h2>
+            <div class="grid" style="margin-top: 1.5rem;">
+                <div class="card reveal">
+                    <div class="card-title">工具选型</div>
+                    <div class="card-desc">OpenCode 桌面端 + 火山引擎 API</div>
+                </div>
+                <div class="card reveal">
+                    <div class="card-title">模型方案</div>
+                    <div class="card-desc">火山引擎方舟 Coding Plan (Lite) 首月8.9元</div>
+                </div>
+                <div class="card reveal">
+                    <div class="card-title">核心优势</div>
+                    <div class="card-desc">"执行-报错-自纠" 闭环</div>
+                </div>
+            </div>
+            <div class="highlight-box reveal">
+                <p class="quote">"自主性极大释放双手，复杂任务仍需人工介入"</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: Doubao & Seedance -->
+    <section class="slide content-slide">
+        <span class="section-num">02</span>
+        <div class="slide-content">
+            <h2 class="reveal">豆包大模型 & Seedance 2.0</h2>
+            <div class="reveal" style="margin-top: 1.5rem;">
+                <h3>AI 游戏陪玩</h3>
+                <ul style="margin-top: 0.5rem;">
+                    <li><span class="accent-text">欢乐斗地主</span> - 识别手牌，语音交互流畅，叫分激进有延迟</li>
+                    <li><span class="accent-text">王者荣耀</span> - 识别英雄，对局分析，永不挂机提供情绪价值</li>
+                </ul>
+            </div>
+            <div class="reveal" style="margin-top: 1.5rem;">
+                <h3>Seedance 视频创作</h3>
+                <ul style="margin-top: 0.5rem;">
+                    <li><span class="yellow-text">物理真实感</span> - 接近真实拍摄，无液态扭曲</li>
+                    <li><span class="yellow-text">叙事能力</span> - 理解复杂指令和镜头语言</li>
+                    <li><span class="yellow-text">交互优化</span> - 对话微调视频，降低剪辑门槛</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Volcengine -->
+    <section class="slide content-slide">
+        <span class="section-num">03</span>
+        <div class="slide-content">
+            <h2 class="reveal">火山方舟平台</h2>
+            <div class="reveal" style="margin-top: 1.5rem;">
+                <h3>旗舰模型</h3>
+                <ul style="margin-top: 0.5rem;">
+                    <li><span class="accent-text">Doubao-Seed-2.0-pro</span> — Agent通用模型</li>
+                    <li><span class="accent-text">Doubao-Seedance-2.0</span> — 多模态视频模型</li>
+                    <li><span class="accent-text">Doubao-Seed-2.0-Code</span> — 编程优化模型</li>
+                </ul>
+            </div>
+            <div class="reveal" style="margin-top: 1.5rem;">
+                <h3>亮点 Agent</h3>
+                <div class="grid" style="margin-top: 0.75rem;">
+                    <div class="card">
+                        <div class="card-title">智能体</div>
+                        <div class="card-desc">浏览器/移动端/电脑使用智能体</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">电商营销视频</div>
+                        <div class="card-desc">上传商品图自动生成营销视频</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">视频实时理解</div>
+                        <div class="card-desc">视频通话，实时画面分析</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Next Week -->
+    <section class="slide content-slide">
+        <span class="section-num">04</span>
+        <div class="slide-content">
+            <h2 class="reveal">下周计划</h2>
+            <ul class="reveal" style="margin-top: 1.5rem; max-width: 700px;">
+                <li>系统学习豆包应用广场中浏览器/移动端/电脑智能体基础功能</li>
+                <li>尝试将电脑智能体与日常工作结合，对比 OpenCode 差异</li>
+                <li>继续优化 blog 功能，借助 AI 工具添加新交互功能</li>
+            </ul>
+            <div class="reveal" style="margin-top: 3rem; text-align: center;">
+                <p class="subtitle">Thanks for watching</p>
+                <p style="color: var(--accent); margin-top: 0.5rem;">2026.03.01</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.progressBar = document.getElementById('progressBar');
+                this.navDots = document.getElementById('navDots');
+                this.currentSlide = 0;
+                this.init();
+            }
+
+            init() {
+                this.createNavDots();
+                this.bindEvents();
+                this.updateProgress();
+                this.setupIntersectionObserver();
+            }
+
+            createNavDots() {
+                this.slides.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'nav-dot';
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                    this.navDots.appendChild(dot);
+                });
+                this.updateNavDots();
+            }
+
+            bindEvents() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        this.nextSlide();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        this.prevSlide();
+                    }
+                });
+
+                document.addEventListener('wheel', (e) => {
+                    if (e.deltaY > 0) {
+                        this.nextSlide();
+                    } else {
+                        this.prevSlide();
+                    }
+                }, { passive: true });
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const index = Array.from(this.slides).indexOf(entry.target);
+                            this.currentSlide = index;
+                            this.updateNavDots();
+                            this.updateProgress();
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            updateProgress() {
+                const progress = ((this.currentSlide + 1) / this.slides.length) * 100;
+                this.progressBar.style.width = `${progress}%`;
+            }
+
+            updateNavDots() {
+                const dots = this.navDots.querySelectorAll('.nav-dot');
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === this.currentSlide);
+                });
+            }
+
+            nextSlide() {
+                if (this.currentSlide < this.slides.length - 1) {
+                    this.goToSlide(this.currentSlide + 1);
+                }
+            }
+
+            prevSlide() {
+                if (this.currentSlide > 0) {
+                    this.goToSlide(this.currentSlide - 1);
+                }
+            }
+
+            goToSlide(index) {
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        new SlidePresentation();
+    </script>
+</body>
+</html>
