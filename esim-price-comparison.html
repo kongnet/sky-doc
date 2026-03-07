@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eSIM全球价格对比报表</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    .price-highlight { background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%); }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <header class="gradient-bg text-white py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-4xl font-bold mb-4">🌍 eSIM全球价格对比报表</h1>
+      <p class="text-xl opacity-90">基于实时搜索数据的eSIM运营商价格与覆盖分析</p>
+      <p class="mt-4 text-sm opacity-75">生成时间: 2026/03/08 05:33</p>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- 概览卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+        <div class="text-3xl font-bold text-indigo-600">6</div>
+        <div class="text-gray-600 mt-1">对比运营商</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+        <div class="text-3xl font-bold text-purple-600">200+</div>
+        <div class="text-gray-600 mt-1">覆盖国家/地区</div>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+        <div class="text-3xl font-bold text-pink-600">$0.70</div>
+        <div class="text-gray-600 mt-1">最低起价/GB</div>
+      </div>
+    </div>
+
+    <!-- 主要对比表格 -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800">📊 运营商概览对比</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase">运营商</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase">价格区间</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase">覆盖国家</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase">特色</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600 uppercase">推荐场景</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 font-semibold text-gray-900">Holafly</td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  $3.90/天起
+                </span>
+              </td>
+              <td class="px-6 py-4 text-gray-600">113+</td>
+              <td class="px-6 py-4 text-gray-600">无限流量专家</td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-500">
+                  长期旅行、无限流量需求
+                </span>
+              </td>
+            </tr>
+            
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 font-semibold text-gray-900">Airalo</td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  $4.50/天起
+                </span>
+              </td>
+              <td class="px-6 py-4 text-gray-600">137+</td>
+              <td class="px-6 py-4 text-gray-600">性价比之选</td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-500">
+                  综合性价比首选
+                </span>
+              </td>
+            </tr>
+            
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 font-semibold text-gray-900">Nomad</td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  $4.00/天起
+                </span>
+              </td>
+              <td class="px-6 py-4 text-gray-600">150+</td>
+              <td class="px-6 py-4 text-gray-600">灵活短期套餐</td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-500">
+                  短期灵活使用
+                </span>
+              </td>
+            </tr>
+            
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 font-semibold text-gray-900">Saily</td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  $1.99/GB起
+                </span>
+              </td>
+              <td class="px-6 py-4 text-gray-600">130+</td>
+              <td class="px-6 py-4 text-gray-600">低价入门</td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-500">
+                  预算有限、轻度使用
+                </span>
+              </td>
+            </tr>
+            
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 font-semibold text-gray-900">MicroEsim</td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  $0.98起
+                </span>
+              </td>
+              <td class="px-6 py-4 text-gray-600">190+</td>
+              <td class="px-6 py-4 text-gray-600">超低价</td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-500">
+                  超低预算、全球覆盖
+                </span>
+              </td>
+            </tr>
+            
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 font-semibold text-gray-900">Ubigi</td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                  $0.70/GB起
+                </span>
+              </td>
+              <td class="px-6 py-4 text-gray-600">200+</td>
+              <td class="px-6 py-4 text-gray-600">商务首选</td>
+              <td class="px-6 py-4">
+                <span class="text-sm text-gray-500">
+                  商务人士、稳定连接
+                </span>
+              </td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 价格分析图表 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">💰 价格区间对比</h3>
+        <canvas id="priceChart" height="250"></canvas>
+      </div>
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">🌐 覆盖范围对比</h3>
+        <canvas id="coverageChart" height="250"></canvas>
+      </div>
+    </div>
+
+    <!-- 详细价格表 -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800">📋 详细价格对比</h2>
+      </div>
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <div class="border rounded-lg p-4 border-gray-200">
+            <h4 class="font-bold text-lg mb-2 text-gray-800">Holafly</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">起步价格:</span>
+                <span class="font-semibold">$3.90/天起</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">覆盖国家:</span>
+                <span class="font-semibold">113+</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">主打特色:</span>
+                <span class="font-semibold text-blue-600">无限流量专家</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border rounded-lg p-4 border-gray-200">
+            <h4 class="font-bold text-lg mb-2 text-gray-800">Airalo</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">起步价格:</span>
+                <span class="font-semibold">$4.50/天起</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">覆盖国家:</span>
+                <span class="font-semibold">137+</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">主打特色:</span>
+                <span class="font-semibold text-blue-600">性价比之选</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border rounded-lg p-4 border-gray-200">
+            <h4 class="font-bold text-lg mb-2 text-gray-800">Nomad</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">起步价格:</span>
+                <span class="font-semibold">$4.00/天起</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">覆盖国家:</span>
+                <span class="font-semibold">150+</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">主打特色:</span>
+                <span class="font-semibold text-blue-600">灵活短期套餐</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border rounded-lg p-4 border-gray-200">
+            <h4 class="font-bold text-lg mb-2 text-gray-800">Saily</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">起步价格:</span>
+                <span class="font-semibold">$1.99/GB起</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">覆盖国家:</span>
+                <span class="font-semibold">130+</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">主打特色:</span>
+                <span class="font-semibold text-blue-600">低价入门</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border rounded-lg p-4 border-green-400 bg-green-50">
+            <h4 class="font-bold text-lg mb-2 text-green-700">MicroEsim</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">起步价格:</span>
+                <span class="font-semibold">$0.98起</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">覆盖国家:</span>
+                <span class="font-semibold">190+</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">主打特色:</span>
+                <span class="font-semibold text-blue-600">超低价</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border rounded-lg p-4 border-green-400 bg-green-50">
+            <h4 class="font-bold text-lg mb-2 text-green-700">Ubigi</h4>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">起步价格:</span>
+                <span class="font-semibold">$0.70/GB起</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">覆盖国家:</span>
+                <span class="font-semibold">200+</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">主打特色:</span>
+                <span class="font-semibold text-blue-600">商务首选</span>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- 地区价格参考 -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+      <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800">🗺️ 地区价格参考</h2>
+        <p class="text-gray-600 mt-2">各地区主流eSIM价格区间（仅供参考，实际价格可能因套餐和促销活动而异）</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">地区</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">1GB/7天 均价</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">3GB/30天 均价</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">无限流量/天</th>
+              <th class="px-6 py-4 text-left text-sm font-semibold text-gray-600">推荐运营商</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 font-medium">🇪🇺 欧洲</td>
+              <td class="px-6 py-4">$3.50 - $8.00</td>
+              <td class="px-6 py-4">$8.00 - $18.00</td>
+              <td class="px-6 py-4">$4.00 - $7.00</td>
+              <td class="px-6 py-4"><span class="text-blue-600 font-medium">Holafly, Airalo</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 font-medium">🇺🇸 北美</td>
+              <td class="px-6 py-4">$4.50 - $9.00</td>
+              <td class="px-6 py-4">$10.00 - $22.00</td>
+              <td class="px-6 py-4">$5.00 - $8.00</td>
+              <td class="px-6 py-4"><span class="text-blue-600 font-medium">Airalo, Nomad</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 font-medium">🇯🇵 亚洲</td>
+              <td class="px-6 py-4">$3.00 - $7.00</td>
+              <td class="px-6 py-4">$8.00 - $16.00</td>
+              <td class="px-6 py-4">$3.90 - $6.00</td>
+              <td class="px-6 py-4"><span class="text-blue-600 font-medium">MicroEsim, Holafly</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 font-medium">🇦🇺 大洋洲</td>
+              <td class="px-6 py-4">$4.00 - $8.50</td>
+              <td class="px-6 py-4">$9.00 - $19.00</td>
+              <td class="px-6 py-4">$4.50 - $7.50</td>
+              <td class="px-6 py-4"><span class="text-blue-600 font-medium">Airalo, Ubigi</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 font-medium">🇧🇷 南美</td>
+              <td class="px-6 py-4">$3.50 - $7.50</td>
+              <td class="px-6 py-4">$8.50 - $17.00</td>
+              <td class="px-6 py-4">$4.00 - $6.50</td>
+              <td class="px-6 py-4"><span class="text-blue-600 font-medium">Nomad, Saily</span></td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 font-medium">🌍 全球</td>
+              <td class="px-6 py-4">$5.00 - $12.00</td>
+              <td class="px-6 py-4">$15.00 - $35.00</td>
+              <td class="px-6 py-4">$6.00 - $10.00</td>
+              <td class="px-6 py-4"><span class="text-blue-600 font-medium">Ubigi, Airalo</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 数据来源 -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">📚 数据来源</h3>
+      <p class="text-gray-600 mb-4">本报告数据基于Tavily实时搜索API获取，包含以下运营商官方和第三方评测数据：</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        
+        <a href="https://www.google.com/search?q=Holafly%20eSIM" 
+           target="_blank" 
+           class="flex items-center justify-center px-4 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700">
+          Holafly
+        </a>
+        
+        <a href="https://www.google.com/search?q=Airalo%20eSIM" 
+           target="_blank" 
+           class="flex items-center justify-center px-4 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700">
+          Airalo
+        </a>
+        
+        <a href="https://www.google.com/search?q=Nomad%20eSIM" 
+           target="_blank" 
+           class="flex items-center justify-center px-4 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700">
+          Nomad
+        </a>
+        
+        <a href="https://www.google.com/search?q=Saily%20eSIM" 
+           target="_blank" 
+           class="flex items-center justify-center px-4 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700">
+          Saily
+        </a>
+        
+        <a href="https://www.google.com/search?q=MicroEsim%20eSIM" 
+           target="_blank" 
+           class="flex items-center justify-center px-4 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700">
+          MicroEsim
+        </a>
+        
+        <a href="https://www.google.com/search?q=Ubigi%20eSIM" 
+           target="_blank" 
+           class="flex items-center justify-center px-4 py-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-gray-700">
+          Ubigi
+        </a>
+        
+      </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="text-center text-gray-500 py-8">
+      <p>数据更新时间: 2026/03/08 05:33</p>
+      <p class="mt-2 text-sm">⚠️ 价格仅供参考，实际价格请以各运营商官网为准</p>
+    </footer>
+  </div>
+
+  <script>
+    // 价格对比图表
+    const priceCtx = document.getElementById('priceChart').getContext('2d');
+    new Chart(priceCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Holafly', 'Airalo', 'Nomad', 'Saily', 'MicroEsim', 'Ubigi'],
+        datasets: [{
+          label: '起步价格指数',
+          data: [39, 45, 40, 20, 10, 7],
+          backgroundColor: [
+            'rgba(102, 126, 234, 0.8)',
+            'rgba(118, 75, 162, 0.8)',
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(255, 206, 86, 0.8)',
+          ],
+          borderColor: [
+            'rgba(102, 126, 234, 1)',
+            'rgba(118, 75, 162, 1)',
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 206, 86, 1)',
+          ],
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: '相对价格指数 (指数越低越便宜)'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: '价格指数'
+            }
+          }
+        }
+      }
+    });
+
+    // 覆盖范围图表
+    const coverageCtx = document.getElementById('coverageChart').getContext('2d');
+    new Chart(coverageCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Holafly (113+)', 'Airalo (137+)', 'Nomad (150+)', 'Saily (130+)', 'MicroEsim (190+)', 'Ubigi (200+)'],
+        datasets: [{
+          data: [113, 137, 150, 130, 190, 200],
+          backgroundColor: [
+            'rgba(102, 126, 234, 0.8)',
+            'rgba(118, 75, 162, 0.8)',
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(255, 206, 86, 0.8)',
+          ],
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: true,
+            text: '覆盖国家数量'
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
