@@ -219,8 +219,8 @@
         <div id="pieChart" class="chart"></div>
       </div>
       <div class="chart-container">
-        <div class="chart-title">📊 情感得分条形图</div>
-        <div id="barChart" class="chart"></div>
+        <div class="chart-title">📊 情感得分分布散点图</div>
+        <div id="scatterChart" class="chart"></div>
       </div>
       <div class="chart-container full-width">
         <div class="chart-title">📉 情感趋势折线图 (按时间)</div>
@@ -402,7 +402,7 @@
       
     </div>
 
-    <p class="timestamp">生成时间: 2026/3/8 01:26:56</p>
+    <p class="timestamp">生成时间: 2026/3/8 01:31:24</p>
   </div>
 
   <script>
@@ -452,58 +452,92 @@
       }]
     });
 
-    // 条形图
-    const barChart = echarts.init(document.getElementById('barChart'));
-    barChart.setOption({
+    // 散点图 - 按日期分布的情感得分
+    const scatterChart = echarts.init(document.getElementById('scatterChart'));
+    const sortedByDate = [...chartData].sort((a, b) => new Date(a.date) - new Date(b.date));
+    scatterChart.setOption({
       backgroundColor: 'transparent',
       tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'shadow' },
+        trigger: 'item',
         formatter: function(params) {
-          const data = params[0].data;
+          const data = params.data;
           return '<strong>' + data.fullTitle + '</strong><br/>' +
+                 '日期: ' + data.date + '<br/>' +
                  '得分: ' + data.value + '<br/>' +
                  '来源: ' + data.source + '<br/>' +
                  '理由: ' + (data.reasoning || '无');
         }
       },
       grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
+        left: '10%',
+        right: '10%',
+        bottom: '15%',
+        top: '10%'
       },
       xAxis: {
+        type: 'category',
+        data: [...new Set(sortedByDate.map(d => d.date))],
+        axisLine: { lineStyle: { color: '#555' } },
+        axisLabel: { 
+          color: '#888',
+          rotate: 45,
+          interval: 0
+        },
+        splitLine: { show: false }
+      },
+      yAxis: {
         type: 'value',
         min: -100,
         max: 100,
+        name: '情感得分',
+        nameTextStyle: { color: '#888' },
         axisLine: { lineStyle: { color: '#555' } },
         axisLabel: { color: '#888' },
         splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
       },
-      yAxis: {
-        type: 'category',
-        data: chartData.map((d, i) => '#' + (i + 1)),
-        axisLine: { lineStyle: { color: '#555' } },
-        axisLabel: { color: '#888' }
+      visualMap: {
+        min: -100,
+        max: 100,
+        dimension: 1,
+        orient: 'horizontal',
+        right: 10,
+        top: 0,
+        text: ['正面', '负面'],
+        calculable: true,
+        inRange: {
+          color: ['#ff4757', '#ffa502', '#00d084']
+        },
+        textStyle: { color: '#fff' }
       },
       series: [{
-        type: 'bar',
-        data: chartData.map(d => ({
-          value: d.value,
+        type: 'scatter',
+        symbolSize: function (data) {
+          return 15;
+        },
+        data: sortedByDate.map((d, idx) => ({
+          value: [d.date, d.value],
           fullTitle: d.fullTitle,
           source: d.source,
+          date: d.date,
           reasoning: d.reasoning,
           itemStyle: {
-            color: d.value > 0 ? '#00d084' : d.value < 0 ? '#ff4757' : '#ffa502'
+            color: d.value > 0 ? '#00d084' : d.value < 0 ? '#ff4757' : '#ffa502',
+            opacity: 0.8
           }
         })),
-        barWidth: '60%',
-        label: {
-          show: true,
-          position: 'right',
-          formatter: '{c}',
-          color: '#fff'
+        markLine: {
+          silent: true,
+          lineStyle: {
+            color: '#666',
+            type: 'dashed'
+          },
+          data: [{
+            yAxis: 0,
+            label: {
+              formatter: '中性线',
+              color: '#888'
+            }
+          }]
         }
       }]
     });
@@ -585,7 +619,7 @@
     // 响应式
     window.addEventListener('resize', () => {
       pieChart.resize();
-      barChart.resize();
+      scatterChart.resize();
       lineChart.resize();
     });
   </script>
