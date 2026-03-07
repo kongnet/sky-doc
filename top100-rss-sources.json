@@ -1,0 +1,168 @@
+{
+  "version": "1.0",
+  "description": "全球 Top 100 优质网站 RSS 订阅源",
+  "created": "2026-03-07",
+  "total_feeds": 100,
+  "categories": {
+    "📰 国际主流媒体": {
+      "icon": "📰",
+      "description": "全球权威新闻媒体",
+      "feeds": [
+        {"name": "BBC News", "url": "https://feeds.bbci.co.uk/news/rss.xml", "lang": "en"},
+        {"name": "BBC 中文", "url": "https://www.bbc.com/zhongwen/simp/index.xml", "lang": "zh"},
+        {"name": "Reuters 路透", "url": "https://www.reutersagency.com/feed/?taxonomy=markets&post_type=reuters-best", "lang": "en"},
+        {"name": "CNN", "url": "http://rss.cnn.com/rss/edition.rss", "lang": "en"},
+        {"name": "The New York Times", "url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", "lang": "en"},
+        {"name": "The Guardian", "url": "https://www.theguardian.com/international/rss", "lang": "en"},
+        {"name": "Washington Post", "url": "https://feeds.washingtonpost.com/rss/world", "lang": "en"},
+        {"name": "Al Jazeera", "url": "https://www.aljazeera.com/xml/rss/all.xml", "lang": "en"},
+        {"name": "Associated Press", "url": "https://rsshub.app/apnews/topics/ap-top-news", "lang": "en"},
+        {"name": "Financial Times", "url": "https://www.ft.com/rss/home/uk", "lang": "en"}
+      ]
+    },
+    "💻 科技与互联网": {
+      "icon": "💻",
+      "description": "顶级科技媒体",
+      "feeds": [
+        {"name": "TechCrunch", "url": "https://techcrunch.com/feed/", "lang": "en"},
+        {"name": "The Verge", "url": "https://www.theverge.com/rss/index.xml", "lang": "en"},
+        {"name": "Wired", "url": "https://www.wired.com/feed/rss", "lang": "en"},
+        {"name": "Ars Technica", "url": "https://arstechnica.com/feed/", "lang": "en"},
+        {"name": "Engadget", "url": "https://www.engadget.com/rss.xml", "lang": "en"},
+        {"name": "CNET", "url": "https://www.cnet.com/rss/news/", "lang": "en"},
+        {"name": "Mashable", "url": "https://mashable.com/rss", "lang": "en"},
+        {"name": "Gizmodo", "url": "https://gizmodo.com/rss", "lang": "en"},
+        {"name": "VentureBeat", "url": "https://venturebeat.com/feed/", "lang": "en"},
+        {"name": "ZDNet", "url": "https://www.zdnet.com/rss.xml", "lang": "en"}
+      ]
+    },
+    "🤖 AI 与人工智能": {
+      "icon": "🤖",
+      "description": "AI领域权威资讯",
+      "feeds": [
+        {"name": "OpenAI Blog", "url": "https://openai.com/blog/rss.xml", "lang": "en"},
+        {"name": "Anthropic", "url": "https://www.anthropic.com/rss", "lang": "en"},
+        {"name": "Google AI Blog", "url": "https://ai.googleblog.com/feeds/posts/default", "lang": "en"},
+        {"name": "DeepMind", "url": "https://deepmind.com/blog/feed", "lang": "en"},
+        {"name": "MIT AI", "url": "https://news.mit.edu/rss/topic/artificial-intelligence2", "lang": "en"},
+        {"name": "AI News", "url": "https://www.artificialintelligence-news.com/feed/", "lang": "en"},
+        {"name": "Machine Learning Mastery", "url": "https://machinelearningmastery.com/feed/", "lang": "en"},
+        {"name": "Towards Data Science", "url": "https://towardsdatascience.com/feed", "lang": "en"},
+        {"name": "Analytics Vidhya", "url": "https://www.analyticsvidhya.com/feed/", "lang": "en"},
+        {"name": "Paper with Code", "url": "https://paperswithcode.com/rss", "lang": "en"}
+      ]
+    },
+    "💰 金融与商业": {
+      "icon": "💰",
+      "description": "全球财经资讯",
+      "feeds": [
+        {"name": "Bloomberg", "url": "https://www.bloomberg.com/feeds/news.rss", "lang": "en"},
+        {"name": "CNBC", "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html", "lang": "en"},
+        {"name": "Wall Street Journal", "url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml", "lang": "en"},
+        {"name": "Forbes", "url": "https://www.forbes.com/business/feed/", "lang": "en"},
+        {"name": "Business Insider", "url": "https://www.businessinsider.com/rss", "lang": "en"},
+        {"name": "Fortune", "url": "https://fortune.com/feed/", "lang": "en"},
+        {"name": "Harvard Business Review", "url": "https://hbr.org/rss/index.xml", "lang": "en"},
+        {"name": "McKinsey Insights", "url": "https://www.mckinsey.com/insights/rss", "lang": "en"},
+        {"name": "Economist", "url": "https://www.economist.com/latest/rss.xml", "lang": "en"},
+        {"name": "MarketWatch", "url": "https://www.marketwatch.com/rss/topstories", "lang": "en"}
+      ]
+    },
+    "🎨 设计与创意": {
+      "icon": "🎨",
+      "description": "设计灵感与资源",
+      "feeds": [
+        {"name": "Dribbble", "url": "https://dribbble.com/shots/popular.rss", "lang": "en"},
+        {"name": "Behance", "url": "https://www.behance.net/feeds/projects", "lang": "en"},
+        {"name": "Awwwards", "url": "https://www.awwwards.com/websites/rss/", "lang": "en"},
+        {"name": "Smashing Magazine", "url": "https://www.smashingmagazine.com/feed/", "lang": "en"},
+        {"name": "CSS-Tricks", "url": "https://css-tricks.com/feed/", "lang": "en"},
+        {"name": "Design Milk", "url": "https://design-milk.com/feed/", "lang": "en"},
+        {"name": "Dezeen", "url": "https://www.dezeen.com/feed/", "lang": "en"},
+        {"name": "Creative Review", "url": "https://www.creativereview.co.uk/feed/", "lang": "en"},
+        {"name": "It's Nice That", "url": "https://www.itsnicethat.com/rss", "lang": "en"},
+        {"name": "Design Week", "url": "https://www.designweek.co.uk/feed/", "lang": "en"}
+      ]
+    },
+    "📱 产品与设计": {
+      "icon": "📱",
+      "description": "产品设计与UX",
+      "feeds": [
+        {"name": "Product Hunt", "url": "https://www.producthunt.com/feed", "lang": "en"},
+        {"name": "Sidebar", "url": "https://sidebar.io/feed.xml", "lang": "en"},
+        {"name": "UX Collective", "url": "https://uxdesign.cc/feed", "lang": "en"},
+        {"name": "Nielsen Norman Group", "url": "https://www.nngroup.com/rss/", "lang": "en"},
+        {"name": "InVision Blog", "url": "https://www.invisionapp.com/blog/feed/", "lang": "en"},
+        {"name": "Figma Blog", "url": "https://www.figma.com/blog/feed/", "lang": "en"},
+        {"name": "Web Design Ledger", "url": "https://webdesignledger.com/feed/", "lang": "en"},
+        {"name": "Mockplus", "url": "https://www.mockplus.com/blog/feed", "lang": "en"},
+        {"name": "ProtoPie", "url": "https://www.protopie.io/blog/rss.xml", "lang": "en"},
+        {"name": "Marvel Blog", "url": "https://marvelapp.com/blog/rss/", "lang": "en"}
+      ]
+    },
+    "🏢 大厂技术博客": {
+      "icon": "🏢",
+      "description": "科技公司技术博客",
+      "feeds": [
+        {"name": "Google Developers", "url": "https://developers.googleblog.com/feeds/posts/default", "lang": "en"},
+        {"name": "Meta Engineering", "url": "https://engineering.fb.com/feed/", "lang": "en"},
+        {"name": "Netflix Tech Blog", "url": "https://netflixtechblog.com/feed", "lang": "en"},
+        {"name": "Uber Engineering", "url": "https://eng.uber.com/feed/", "lang": "en"},
+        {"name": "Airbnb Engineering", "url": "https://medium.com/feed/airbnb-engineering", "lang": "en"},
+        {"name": "Spotify Engineering", "url": "https://engineering.atspotify.com/feed/", "lang": "en"},
+        {"name": "Twitter Engineering", "url": "https://blog.twitter.com/engineering/feed", "lang": "en"},
+        {"name": "LinkedIn Engineering", "url": "https://engineering.linkedin.com/blog/rss", "lang": "en"},
+        {"name": "Stripe Blog", "url": "https://stripe.com/blog/rss", "lang": "en"},
+        {"name": "Shopify Engineering", "url": "https://shopify.engineering/rss.xml", "lang": "en"}
+      ]
+    },
+    "📦 编程语言与框架": {
+      "icon": "📦",
+      "description": "主流技术栈官方博客",
+      "feeds": [
+        {"name": "React Blog", "url": "https://react.dev/rss.xml", "lang": "en"},
+        {"name": "Vue.js News", "url": "https://news.vuejs.org/feed.xml", "lang": "en"},
+        {"name": "Angular Blog", "url": "https://blog.angular.io/feed", "lang": "en"},
+        {"name": "Node.js Blog", "url": "https://nodejs.org/en/feed/blog.xml", "lang": "en"},
+        {"name": "Python Insider", "url": "https://blog.python.org/feeds/posts/default", "lang": "en"},
+        {"name": "Go Blog", "url": "https://blog.golang.org/feed.atom", "lang": "en"},
+        {"name": "Rust Blog", "url": "https://blog.rust-lang.org/feed.xml", "lang": "en"},
+        {"name": "TypeScript Blog", "url": "https://devblogs.microsoft.com/typescript/feed/", "lang": "en"},
+        {"name": "Docker Blog", "url": "https://www.docker.com/blog/feed/", "lang": "en"},
+        {"name": "Kubernetes Blog", "url": "https://kubernetes.io/feed.xml", "lang": "en"}
+      ]
+    },
+    "🛡️ 网络安全": {
+      "icon": "🛡️",
+      "description": "安全资讯与漏洞分析",
+      "feeds": [
+        {"name": "Schneier on Security", "url": "https://www.schneier.com/blog/atom.xml", "lang": "en"},
+        {"name": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/", "lang": "en"},
+        {"name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews", "lang": "en"},
+        {"name": "Dark Reading", "url": "https://www.darkreading.com/rss.xml", "lang": "en"},
+        {"name": "Security Week", "url": "https://www.securityweek.com/feed/", "lang": "en"},
+        {"name": "Bleeping Computer", "url": "https://www.bleepingcomputer.com/feed/", "lang": "en"},
+        {"name": "Naked Security", "url": "https://nakedsecurity.sophos.com/feed/", "lang": "en"},
+        {"name": "Threatpost", "url": "https://threatpost.com/feed/", "lang": "en"},
+        {"name": "Security Affairs", "url": "https://securityaffairs.co/wordpress/feed", "lang": "en"},
+        {"name": "PortSwigger Research", "url": "https://portswigger.net/research/rss", "lang": "en"}
+      ]
+    },
+    "📚 学术与研究": {
+      "icon": "📚",
+      "description": "学术期刊与研究机构",
+      "feeds": [
+        {"name": "Nature", "url": "https://www.nature.com/nature.rss", "lang": "en"},
+        {"name": "Science Magazine", "url": "https://www.sciencemag.org/rss/news_current.xml", "lang": "en"},
+        {"name": "MIT Technology Review", "url": "https://www.technologyreview.com/feed/", "lang": "en"},
+        {"name": "IEEE Spectrum", "url": "https://spectrum.ieee.org/rss", "lang": "en"},
+        {"name": "arXiv CS", "url": "http://arxiv.org/rss/cs", "lang": "en"},
+        {"name": "ACM TechNews", "url": "https://technews.acm.org/rss.xml", "lang": "en"},
+        {"name": "Distill.pub", "url": "https://distill.pub/rss.xml", "lang": "en"},
+        {"name": "Papers with Code", "url": "https://paperswithcode.com/rss", "lang": "en"},
+        {"name": "Semantic Scholar", "url": "https://www.semanticscholar.org/rss", "lang": "en"},
+        {"name": "ResearchGate", "url": "https://www.researchgate.net/publicrss", "lang": "en"}
+      ]
+    }
+  }
+}

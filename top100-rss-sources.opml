@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <head>
+    <title>全球 Top 100 优质网站 RSS 订阅源</title>
+    <dateCreated>Sat, 07 Mar 2026 22:50:00 GMT</dateCreated>
+    <dateModified>Sat, 07 Mar 2026 22:50:00 GMT</dateModified>
+  </head>
+  <body>
+    <!-- 📰 国际主流媒体 -->
+    <outline text="📰 国际主流媒体">
+      <outline type="rss" text="BBC News" xmlUrl="https://feeds.bbci.co.uk/news/rss.xml" />
+      <outline type="rss" text="BBC 中文" xmlUrl="https://www.bbc.com/zhongwen/simp/index.xml" />
+      <outline type="rss" text="Reuters 路透" xmlUrl="https://www.reutersagency.com/feed/?taxonomy=markets&amp;post_type=reuters-best" />
+      <outline type="rss" text="CNN" xmlUrl="http://rss.cnn.com/rss/edition.rss" />
+      <outline type="rss" text="The New York Times" xmlUrl="https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml" />
+      <outline type="rss" text="The Guardian" xmlUrl="https://www.theguardian.com/international/rss" />
+      <outline type="rss" text="Washington Post" xmlUrl="https://feeds.washingtonpost.com/rss/world" />
+      <outline type="rss" text="Al Jazeera" xmlUrl="https://www.aljazeera.com/xml/rss/all.xml" />
+      <outline type="rss" text="Associated Press" xmlUrl="https://rsshub.app/apnews/topics/ap-top-news" />
+      <outline type="rss" text="Financial Times" xmlUrl="https://www.ft.com/rss/home/uk" />
+    </outline>
+
+    <!-- 💻 科技与互联网 -->
+    <outline text="💻 科技与互联网">
+      <outline type="rss" text="TechCrunch" xmlUrl="https://techcrunch.com/feed/" />
+      <outline type="rss" text="The Verge" xmlUrl="https://www.theverge.com/rss/index.xml" />
+      <outline type="rss" text="Wired" xmlUrl="https://www.wired.com/feed/rss" />
+      <outline type="rss" text="Ars Technica" xmlUrl="https://arstechnica.com/feed/" />
+      <outline type="rss" text="Engadget" xmlUrl="https://www.engadget.com/rss.xml" />
+      <outline type="rss" text="CNET" xmlUrl="https://www.cnet.com/rss/news/" />
+      <outline type="rss" text="Mashable" xmlUrl="https://mashable.com/rss" />
+      <outline type="rss" text="Gizmodo" xmlUrl="https://gizmodo.com/rss" />
+      <outline type="rss" text="VentureBeat" xmlUrl="https://venturebeat.com/feed/" />
+      <outline type="rss" text="ZDNet" xmlUrl="https://www.zdnet.com/rss.xml" />
+    </outline>
+
+    <!-- 🤖 AI 与人工智能 -->
+    <outline text="🤖 AI 与人工智能">
+      <outline type="rss" text="OpenAI Blog" xmlUrl="https://openai.com/blog/rss.xml" />
+      <outline type="rss" text="Anthropic" xmlUrl="https://www.anthropic.com/rss" />
+      <outline type="rss" text="Google AI Blog" xmlUrl="https://ai.googleblog.com/feeds/posts/default" />
+      <outline type="rss" text="DeepMind" xmlUrl="https://deepmind.com/blog/feed" />
+      <outline type="rss" text="MIT AI" xmlUrl="https://news.mit.edu/rss/topic/artificial-intelligence2" />
+      <outline type="rss" text="AI News" xmlUrl="https://www.artificialintelligence-news.com/feed/" />
+      <outline type="rss" text="Machine Learning Mastery" xmlUrl="https://machinelearningmastery.com/feed/" />
+      <outline type="rss" text="Towards Data Science" xmlUrl="https://towardsdatascience.com/feed" />
+      <outline type="rss" text="Analytics Vidhya" xmlUrl="https://www.analyticsvidhya.com/feed/" />
+      <outline type="rss" text="Paper with Code" xmlUrl="https://paperswithcode.com/rss" />
+    </outline>
+
+    <!-- 💰 金融与商业 -->
+    <outline text="💰 金融与商业">
+      <outline type="rss" text="Bloomberg" xmlUrl="https://www.bloomberg.com/feeds/news.rss" />
+      <outline type="rss" text="CNBC" xmlUrl="https://www.cnbc.com/id/100003114/device/rss/rss.html" />
+      <outline type="rss" text="Wall Street Journal" xmlUrl="https://feeds.a.dj.com/rss/RSSMarketsMain.xml" />
+      <outline type="rss" text="Forbes" xmlUrl="https://www.forbes.com/business/feed/" />
+      <outline type="rss" text="Business Insider" xmlUrl="https://www.businessinsider.com/rss" />
+      <outline type="rss" text="Fortune" xmlUrl="https://fortune.com/feed/" />
+      <outline type="rss" text="Harvard Business Review" xmlUrl="https://hbr.org/rss/index.xml" />
+      <outline type="rss" text="McKinsey Insights" xmlUrl="https://www.mckinsey.com/insights/rss" />
+      <outline type="rss" text="Economist" xmlUrl="https://www.economist.com/latest/rss.xml" />
+      <outline type="rss" text="MarketWatch" xmlUrl="https://www.marketwatch.com/rss/topstories" />
+    </outline>
+
+    <!-- 🎨 设计与创意 -->
+    <outline text="🎨 设计与创意">
+      <outline type="rss" text="Dribbble" xmlUrl="https://dribbble.com/shots/popular.rss" />
+      <outline type="rss" text="Behance" xmlUrl="https://www.behance.net/feeds/projects" />
+      <outline type="rss" text="Awwwards" xmlUrl="https://www.awwwards.com/websites/rss/" />
+      <outline type="rss" text="Smashing Magazine" xmlUrl="https://www.smashingmagazine.com/feed/" />
+      <outline type="rss" text="CSS-Tricks" xmlUrl="https://css-tricks.com/feed/" />
+      <outline type="rss" text="Design Milk" xmlUrl="https://design-milk.com/feed/" />
+      <outline type="rss" text="Dezeen" xmlUrl="https://www.dezeen.com/feed/" />
+      <outline type="rss" text="Creative Review" xmlUrl="https://www.creativereview.co.uk/feed/" />
+      <outline type="rss" text="It's Nice That" xmlUrl="https://www.itsnicethat.com/rss" />
+      <outline type="rss" text="Design Week" xmlUrl="https://www.designweek.co.uk/feed/" />
+    </outline>
+
+    <!-- 📱 产品与设计 -->
+    <outline text="📱 产品与设计">
+      <outline type="rss" text="Product Hunt" xmlUrl="https://www.producthunt.com/feed" />
+      <outline type="rss" text="Sidebar" xmlUrl="https://sidebar.io/feed.xml" />
+      <outline type="rss" text="UX Collective" xmlUrl="https://uxdesign.cc/feed" />
+      <outline type="rss" text="Nielsen Norman Group" xmlUrl="https://www.nngroup.com/rss/" />
+      <outline type="rss" text="InVision Blog" xmlUrl="https://www.invisionapp.com/blog/feed/" />
+      <outline type="rss" text="Figma Blog" xmlUrl="https://www.figma.com/blog/feed/" />
+      <outline type="rss" text="Web Design Ledger" xmlUrl="https://webdesignledger.com/feed/" />
+      <outline type="rss" text="Mockplus" xmlUrl="https://www.mockplus.com/blog/feed" />
+      <outline type="rss" text="ProtoPie" xmlUrl="https://www.protopie.io/blog/rss.xml" />
+      <outline type="rss" text="Marvel Blog" xmlUrl="https://marvelapp.com/blog/rss/" />
+    </outline>
+
+    <!-- 🏢 大厂技术博客 -->
+    <outline text="🏢 大厂技术博客">
+      <outline type="rss" text="Google Developers" xmlUrl="https://developers.googleblog.com/feeds/posts/default" />
+      <outline type="rss" text="Meta Engineering" xmlUrl="https://engineering.fb.com/feed/" />
+      <outline type="rss" text="Netflix Tech Blog" xmlUrl="https://netflixtechblog.com/feed" />
+      <outline type="rss" text="Uber Engineering" xmlUrl="https://eng.uber.com/feed/" />
+      <outline type="rss" text="Airbnb Engineering" xmlUrl="https://medium.com/feed/airbnb-engineering" />
+      <outline type="rss" text="Spotify Engineering" xmlUrl="https://engineering.atspotify.com/feed/" />
+      <outline type="rss" text="Twitter Engineering" xmlUrl="https://blog.twitter.com/engineering/feed" />
+      <outline type="rss" text="LinkedIn Engineering" xmlUrl="https://engineering.linkedin.com/blog/rss" />
+      <outline type="rss" text="Stripe Blog" xmlUrl="https://stripe.com/blog/rss" />
+      <outline type="rss" text="Shopify Engineering" xmlUrl="https://shopify.engineering/rss.xml" />
+    </outline>
+
+    <!-- 📦 编程语言与框架 -->
+    <outline text="📦 编程语言与框架">
+      <outline type="rss" text="React Blog" xmlUrl="https://react.dev/rss.xml" />
+      <outline type="rss" text="Vue.js News" xmlUrl="https://news.vuejs.org/feed.xml" />
+      <outline type="rss" text="Angular Blog" xmlUrl="https://blog.angular.io/feed" />
+      <outline type="rss" text="Node.js Blog" xmlUrl="https://nodejs.org/en/feed/blog.xml" />
+      <outline type="rss" text="Python Insider" xmlUrl="https://blog.python.org/feeds/posts/default" />
+      <outline type="rss" text="Go Blog" xmlUrl="https://blog.golang.org/feed.atom" />
+      <outline type="rss" text="Rust Blog" xmlUrl="https://blog.rust-lang.org/feed.xml" />
+      <outline type="rss" text="TypeScript Blog" xmlUrl="https://devblogs.microsoft.com/typescript/feed/" />
+      <outline type="rss" text="Docker Blog" xmlUrl="https://www.docker.com/blog/feed/" />
+      <outline type="rss" text="Kubernetes Blog" xmlUrl="https://kubernetes.io/feed.xml" />
+    </outline>
+
+    <!-- 🛡️ 网络安全 -->
+    <outline text="🛡️ 网络安全">
+      <outline type="rss" text="Schneier on Security" xmlUrl="https://www.schneier.com/blog/atom.xml" />
+      <outline type="rss" text="Krebs on Security" xmlUrl="https://krebsonsecurity.com/feed/" />
+      <outline type="rss" text="The Hacker News" xmlUrl="https://feeds.feedburner.com/TheHackersNews" />
+      <outline type="rss" text="Dark Reading" xmlUrl="https://www.darkreading.com/rss.xml" />
+      <outline type="rss" text="Security Week" xmlUrl="https://www.securityweek.com/feed/" />
+      <outline type="rss" text="Bleeping Computer" xmlUrl="https://www.bleepingcomputer.com/feed/" />
+      <outline type="rss" text="Naked Security" xmlUrl="https://nakedsecurity.sophos.com/feed/" />
+      <outline type="rss" text="Threatpost" xmlUrl="https://threatpost.com/feed/" />
+      <outline type="rss" text="Security Affairs" xmlUrl="https://securityaffairs.co/wordpress/feed" />
+      <outline type="rss" text="PortSwigger Research" xmlUrl="https://portswigger.net/research/rss" />
+    </outline>
+
+    <!-- 📚 学术与研究 -->
+    <outline text="📚 学术与研究">
+      <outline type="rss" text="Nature" xmlUrl="https://www.nature.com/nature.rss" />
+      <outline type="rss" text="Science Magazine" xmlUrl="https://www.sciencemag.org/rss/news_current.xml" />
+      <outline type="rss" text="MIT Technology Review" xmlUrl="https://www.technologyreview.com/feed/" />
+      <outline type="rss" text="IEEE Spectrum" xmlUrl="https://spectrum.ieee.org/rss" />
+      <outline type="rss" text="arXiv CS" xmlUrl="http://arxiv.org/rss/cs" />
+      <outline type="rss" text="ACM TechNews" xmlUrl="https://technews.acm.org/rss.xml" />
+      <outline type="rss" text="Distill.pub" xmlUrl="https://distill.pub/rss.xml" />
+      <outline type="rss" text="Papers with Code" xmlUrl="https://paperswithcode.com/rss" />
+      <outline type="rss" text="Semantic Scholar" xmlUrl="https://www.semanticscholar.org/rss" />
+      <outline type="rss" text="ResearchGate" xmlUrl="https://www.researchgate.net/publicrss" />
+    </outline>
+  </body>
+</opml>
