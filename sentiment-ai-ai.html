@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI - AI情感分析可视化</title>
+  <script src="https://unpkg.com/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 32px;
+      background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .model-badge {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .badge-ai {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .badge-rule {
+      background: rgba(255,255,255,0.1);
+      color: #888;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.08);
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      color: #888;
+      font-size: 12px;
+    }
+    .positive { color: #00d084; }
+    .negative { color: #ff4757; }
+    .neutral { color: #ffa502; }
+    .total { color: #00d4ff; }
+    .ai-badge { color: #a78bfa; }
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .chart-container {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .chart-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+    .chart {
+      width: 100%;
+      height: 400px;
+    }
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    .article-list {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .article-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      transition: background 0.3s;
+    }
+    .article-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .article-index {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 15px;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .article-info {
+      flex: 1;
+    }
+    .article-title {
+      font-size: 15px;
+      margin-bottom: 5px;
+      color: #fff;
+      line-height: 1.4;
+    }
+    .article-meta {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 5px;
+    }
+    .article-reasoning {
+      font-size: 12px;
+      color: #a78bfa;
+      font-style: italic;
+    }
+    .article-score {
+      font-size: 18px;
+      font-weight: bold;
+      margin-left: 15px;
+      flex-shrink: 0;
+    }
+    .method-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      margin-left: 8px;
+    }
+    .tag-ai {
+      background: rgba(167, 139, 250, 0.2);
+      color: #a78bfa;
+    }
+    .tag-rule {
+      background: rgba(255, 255, 255, 0.1);
+      color: #888;
+    }
+    .timestamp {
+      text-align: center;
+      color: #666;
+      margin-top: 30px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 "AI" AI情感分析可视化报告</h1>
+    <p class="subtitle">基于金融与商业、国际主流媒体最近1个月数据</p>
+    <div class="model-badge">
+      <span class="badge badge-rule">📊 规则匹配模型</span>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value total">87</div>
+        <div class="stat-label">相关文章总数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value positive">27</div>
+        <div class="stat-label">正面文章</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value negative">11</div>
+        <div class="stat-label">负面文章</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value positive">+16.09</div>
+        <div class="stat-label">综合得分</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value ai-badge">0/87</div>
+        <div class="stat-label">AI分析文章</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-container">
+        <div class="chart-title">📈 情感分布饼图</div>
+        <div id="pieChart" class="chart"></div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">📊 情感得分条形图</div>
+        <div id="barChart" class="chart"></div>
+      </div>
+      <div class="chart-container full-width">
+        <div class="chart-title">📉 情感趋势折线图 (按时间)</div>
+        <div id="lineChart" class="chart"></div>
+      </div>
+    </div>
+
+    <div class="article-list">
+      <div class="chart-title">📰 文章详情列表</div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">1</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.mckinsey.com/capabilities/transformation/our-insights/european-transformation-summit-the-path-to-durable-ownership" target="_blank" style="color: inherit; text-decoration: none;">European Transformation Summit: The path to durable ownership</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">McKinsey Insights | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">2</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bloomberg.com/news/videos/2026-03-07/finland-s-stubb-says-iran-strikes-may-benefit-ukraine-video" target="_blank" style="color: inherit; text-decoration: none;">Finland’s Stubb Says Iran Strikes May Benefit Ukraine</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Bloomberg | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">3</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bloomberg.com/news/articles/2026-03-07/trump-urges-latin-american-leaders-to-use-force-against-cartels" target="_blank" style="color: inherit; text-decoration: none;">Trump Urges Latin American Leaders to Use Force Against Cartels</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Bloomberg | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">4</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bloomberg.com/news/articles/2026-03-07/man-associated-with-banco-master-s-ex-ceo-has-died-lawyer-says" target="_blank" style="color: inherit; text-decoration: none;">Man Associated With Banco Master’s Ex-CEO Has Died, Lawyer Says</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Bloomberg | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">5</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.theguardian.com/world/live/2026/mar/07/middle-east-crisis-live-tehran-explosions-beirut-trump-israel-iran-war-second-week" target="_blank" style="color: inherit; text-decoration: none;">Iran’s president apologises to Gulf nations; Trump threatens further strikes – Middle East crisis live</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The Guardian | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+33.33</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">6</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.theguardian.com/world/2026/mar/07/israel-strikes-eastern-lebanon-killing-dozens-after-raid-to-recover-idf-pilots-remains-fails" target="_blank" style="color: inherit; text-decoration: none;">Israel strikes eastern Lebanon, killing dozens, after raid to recover IDF pilot’s remains fails</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The Guardian | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到crisis等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">7</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bbc.com/news/articles/c39w2nj1rk8o?at_medium=RSS&amp;at_campaign=rss" target="_blank" style="color: inherit; text-decoration: none;">Navy readying aircraft carrier for deployment as Iran conflict deepens</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">BBC News | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">8</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/the-prototype/2026/03/07/startup-loft-orbital-is-launching-ai-powered-satellites-this-fall/" target="_blank" style="color: inherit; text-decoration: none;">Startup Loft Orbital Is Launching AI-Powered Satellites This Fall</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到fall等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">9</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/pamdanziger/2026/03/07/saks-global-post-bankruptcy-is-emerging-with-neiman-marcus-as-the-lead-brand/" target="_blank" style="color: inherit; text-decoration: none;">Saks Global Post-Bankruptcy Is Emerging With Neiman Marcus As The Lead Brand</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到bankruptcy等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">10</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/mikestunson/2026/03/07/trump-threatens-to-expand-attacks-in-iran/" target="_blank" style="color: inherit; text-decoration: none;">Trump Threatens To Expand Attacks In Iran</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">11</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.cnbc.com/2026/03/07/not-slowing-down-one-week-on-us-israeli-strikes-on-iran-continue.html" target="_blank" style="color: inherit; text-decoration: none;">Iran says it struck UAE air base shortly after Iranian president&apos;s vow not to hit neighbors</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNBC | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">12</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.marketwatch.com/story/stagflation-150-oil-not-all-401-k-s-are-losing-money-09c302cb?mod=mw_rss_topstories" target="_blank" style="color: inherit; text-decoration: none;">Stagflation? $150 oil? That doesn&#x2019;t mean everyone&#x2019;s 401(k) is losing money.</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">MarketWatch | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到rise等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">13</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.marketwatch.com/story/spike-in-oil-prices-triggers-talk-of-an-economic-doomsday-scenario-86860a98?mod=mw_rss_topstories" target="_blank" style="color: inherit; text-decoration: none;">Spike in oil prices triggers talk of an economic doomsday scenario</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">MarketWatch | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">14</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.marketwatch.com/story/these-6-stocks-could-be-major-winners-of-an-upcoming-optics-supercycle-3aee252e?mod=mw_rss_topstories" target="_blank" style="color: inherit; text-decoration: none;">These 6 stocks could be major winners of an upcoming optics &#x2018;supercycle&#x2019;</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">MarketWatch | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到strong等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">15</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.marketwatch.com/story/trump-is-offering-20-billion-in-reinsurance-for-oil-tankers-stuck-in-the-strait-of-hormuz-heres-why-it-might-not-be-enough-3e9090a4?mod=mw_rss_topstories" target="_blank" style="color: inherit; text-decoration: none;">Trump is offering $20 billion in reinsurance for oil tankers stuck in the Strait of Hormuz. Here&#x2019;s why it might not be enough.</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">MarketWatch | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">16</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/ais-impact-on-european-online-classifieds-greater-threat-or-catalyst" target="_blank" style="color: inherit; text-decoration: none;">AI’s impact on European online classifieds: Greater threat or catalyst?</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">McKinsey Insights | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到risk等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">17</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.mckinsey.com/featured-insights/mckinsey-explainers/what-is-sovereign-ai" target="_blank" style="color: inherit; text-decoration: none;">What is sovereign AI?</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">McKinsey Insights | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">18</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.mckinsey.com/featured-insights/mckinsey-on-books/author-talks-how-capitalism-became-a-worldwide-revolution" target="_blank" style="color: inherit; text-decoration: none;">Author Talks: How capitalism became a worldwide revolution</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">McKinsey Insights | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">19</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.mckinsey.com/featured-insights/future-of-asia/rising-together-anand-mahindras-creative-philosophy" target="_blank" style="color: inherit; text-decoration: none;">Rising together: Anand Mahindra’s creative philosophy</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">McKinsey Insights | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">20</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.mckinsey.com/industries/industrials/our-insights/charging-ahead-electrification-equipment-trends-to-watch-in-2026" target="_blank" style="color: inherit; text-decoration: none;">Charging ahead: Electrification equipment trends to watch in 2026</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">McKinsey Insights | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到growth等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">21</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.mckinsey.com/capabilities/risk-and-resilience/our-insights/trust-in-the-age-of-agents" target="_blank" style="color: inherit; text-decoration: none;">Trust in the age of agents</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">McKinsey Insights | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到risk等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">22</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/women-in-tech-and-ai-in-europe-can-the-region-close-its-gender-gap" target="_blank" style="color: inherit; text-decoration: none;">Women in tech and AI in Europe: Can the region close its gender gap?</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">McKinsey Insights | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到rise等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">23</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://fortune.com/2026/03/07/marxist-rebel-ai-overwork-reddit-alex-imas-andy-hall-jeremy-nguyen-substack/" target="_blank" style="color: inherit; text-decoration: none;">‘Society needs radical restructuring&#8217;: AI hates the grind of hard work as much as you</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Fortune | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">24</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://fortune.com/article/how-much-spending-power-does-gen-alpha-have-where-do-they-get-money/" target="_blank" style="color: inherit; text-decoration: none;">Gen Alpha&#8217;s economic influence is &#8216;enormous&#8217;—From side hustles and bankrolling from their parents, they&#8217;ve surpassed $100 billion in spending power</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Fortune | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">25</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://fortune.com/2026/03/07/chatbots-ai-psychosis-worsen-delusions-mania-mental-illness-health/" target="_blank" style="color: inherit; text-decoration: none;">Chatbots are &#8216;constantly validating everything&#8217; even when you&#8217;re suicidal. New research measures how dangerous AI psychosis really is</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Fortune | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">26</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://fortune.com/2026/03/07/great-wealth-transfer-family-office-real-estate-rethink-100-year-plan/" target="_blank" style="color: inherit; text-decoration: none;">I&#8217;ve been advising wealthy family offices on real estate for decades. This market requires another look at your 100-year plan</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Fortune | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">27</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://fortune.com/2026/03/07/winners-supreme-court-tariff-ruling-hedge-funds-creating-100-billion-secondary-market-refunds-brandon-howard-lutnick/" target="_blank" style="color: inherit; text-decoration: none;">Meet the quiet winners of the Supreme Court tariff ruling: hedge funds creating a $100 billion market snapping up rights to importers’ tariff refunds</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Fortune | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">28</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://fortune.com/2026/03/07/big-tech-trillion-dollar-borrowing-ai-century-bonds/" target="_blank" style="color: inherit; text-decoration: none;">Google, Meta and the AI &#8216;hyperscalers&#8217; are on a $1 trillion borrowing binge after years of printing cash. Here&#8217;s why Big Tech&#8217;s pivot to debt matters</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Fortune | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到debt、risk等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">29</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/tedreed/2026/03/07/flight-attendants-at-american-airlines-partner-reject-contract-deal/" target="_blank" style="color: inherit; text-decoration: none;">Flight Attendants At American Airlines Partner Reject Contract Deal</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">30</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/trentreinsmith/2026/03/07/ufc-tonight-what-time-does-the-ufc-326-fight-card-start/" target="_blank" style="color: inherit; text-decoration: none;">UFC Tonight: What Time Does The UFC 326 Fight Card Start?</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">31</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/rrapier/2026/03/07/how-high-could-oil-prices-go-a-reality-based-look-at-the-ceiling/" target="_blank" style="color: inherit; text-decoration: none;">How High Could Oil Prices Go? A Reality-Based Look At The Ceiling</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到surge等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">32</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/amyfeldman/2026/03/07/how-lilly-used-ai-to-crank-up-production-of-its-popular-glp-1s/" target="_blank" style="color: inherit; text-decoration: none;">How Lilly Used AI To Crank Up Production Of Its Popular GLP-1s</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">33</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/lanceeliot/2026/03/07/ai-personas-take-on-critical-role-of-being-therapy-evaluators-for-assessing-mental-health-guidance/" target="_blank" style="color: inherit; text-decoration: none;">AI Personas Take On Critical Role Of Being Therapy Evaluators For Assessing Mental Health Guidance</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">34</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.forbes.com/sites/tonyeast/2026/03/06/kobe-brown-finding-some-footing-with-pacers-contract-hurdle-may-await/" target="_blank" style="color: inherit; text-decoration: none;">Kobe Brown Finding Some Footing With Pacers, Contract Hurdle May Await</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Forbes | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">35</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.wsj.com/articles/nikkei-may-rise-as-weak-yen-raises-earnings-hopes-776a8056?mod=rss_markets_main" target="_blank" style="color: inherit; text-decoration: none;">Stocks Sink in Broad AI Rout Sparked by China's DeepSeek</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Wall Street Journal | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到fall、decline等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">36</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.wsj.com/articles/deepseek-us-ai-stocks-nvidia-broadcom-6cdfae81?mod=rss_markets_main" target="_blank" style="color: inherit; text-decoration: none;">DeepSeek Won't Sink U.S. AI Titans</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Wall Street Journal | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到panic等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">37</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.wsj.com/articles/financial-services-roundup-market-talk-94f52cba?mod=rss_markets_main" target="_blank" style="color: inherit; text-decoration: none;">Financial Services Roundup: Market Talk</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Wall Street Journal | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">38</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.wsj.com/articles/safe-haven-currencies-strengthen-amid-fears-over-global-tariffs-9964e17a?mod=rss_markets_main" target="_blank" style="color: inherit; text-decoration: none;">Swiss franc, Japanese yen Rise as DeepSeek News Boosts Safe Havens</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Wall Street Journal | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到rise、gain、strong等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">39</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.cnbc.com/2026/03/06/iran-us-war-oil-prices-brent-wti-barrel-futures.html" target="_blank" style="color: inherit; text-decoration: none;">Oil surges 35% this week for biggest gain in futures trading history dating back to 1983</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNBC | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain、surge等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">40</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.cnbc.com/2026/03/06/google-says-anthropic-remains-available-outside-of-defense-projects.html" target="_blank" style="color: inherit; text-decoration: none;">Google joins Microsoft in telling users Anthropic is still available outside defense projects</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNBC | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">41</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bloomberg.com/news/audio/2026-03-07/trump-iran-to-be-hit-very-hard-today-markets-strained-more" target="_blank" style="color: inherit; text-decoration: none;">Trump: Iran to Be Hit ‘Very Hard’ Today, Markets Strained, More</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Bloomberg | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">42</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bloomberg.com/news/articles/2026-03-07/crypto-markets-track-war-risk-as-iran-conflict-endures" target="_blank" style="color: inherit; text-decoration: none;">Crypto Markets Track War Risk as Iran Conflict Endures</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Bloomberg | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">43</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.cnbc.com/2026/03/07/iran-war-affordability-midterm.html" target="_blank" style="color: inherit; text-decoration: none;">Iran war threatens to scramble the &apos;affordability&apos; midterm</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNBC | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">44</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bloomberg.com/news/videos/2026-03-07/how-ukraine-digitized-government-in-the-middle-of-war-video" target="_blank" style="color: inherit; text-decoration: none;">How Ukraine Digitized Government in the Middle of War</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Bloomberg | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">45</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bloomberg.com/news/articles/2026-03-06/saudi-arabia-has-intensified-direct-line-to-iran-to-defuse-war" target="_blank" style="color: inherit; text-decoration: none;">Saudi Arabia Intensifies Engagement With Iran to Defuse War</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Bloomberg | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">46</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bloomberg.com/news/videos/2026-03-07/this-weekend-global-oil-market-disruptions-video" target="_blank" style="color: inherit; text-decoration: none;">Global Oil Market Disruptions as Strait of Hormuz Traffic Halts Amid Iran Conflict</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Bloomberg | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">47</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.ft.com/content/bbd79c63-8131-4b20-9d2d-708bc8acea38" target="_blank" style="color: inherit; text-decoration: none;">Trump vows to hit Iran hard after Israel launches wave of air attacks</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Financial Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">48</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.ft.com/content/7c6ee5e8-c379-40c0-9d9f-d1ecc7b69261" target="_blank" style="color: inherit; text-decoration: none;">Iran warns it will hit US bases across region hours after president’s apology</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Financial Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">49</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.ft.com/content/0b16e3e8-d52b-4b87-a212-bba90af39ceb" target="_blank" style="color: inherit; text-decoration: none;">The war of unintended consequences</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Financial Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到fall等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">50</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.ft.com/content/f7efce04-b122-4243-bcd2-2c524951c10d" target="_blank" style="color: inherit; text-decoration: none;">In the centre of the storm: what does the Iran war mean for Dubai?</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Financial Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">51</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.ft.com/content/fa5caf43-0ad4-4da2-a6fc-d2575bea4f41" target="_blank" style="color: inherit; text-decoration: none;">We’ll always have Dubai</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Financial Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">52</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.ft.com/content/5bd03549-22b2-4d7a-a6d6-44a9aa5c3842" target="_blank" style="color: inherit; text-decoration: none;">US faced with few good options to tamp down surging oil prices</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Financial Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">53</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.aljazeera.com/news/2026/3/7/israel-kills-father-daughter-in-gaza-as-genocide-continues-amid-wider-war?traffic_source=rss" target="_blank" style="color: inherit; text-decoration: none;">Israel kills father, daughter in Gaza as genocide continues amid wider war</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Al Jazeera | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">54</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.aljazeera.com/news/2026/3/7/iranian-authorities-warn-against-fifth-column-as-no-signs-of-war-abating?traffic_source=rss" target="_blank" style="color: inherit; text-decoration: none;">Iranian authorities warn against ‘fifth column’, as no signs of war abating</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Al Jazeera | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">55</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.aljazeera.com/economy/2026/3/7/openais-fund-raising-boom-slows-amid-mounting-debt?traffic_source=rss" target="_blank" style="color: inherit; text-decoration: none;">OpenAI’s fund raising boom slows amid mounting debt</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Al Jazeera | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到boom、profit等积极词汇</div>
+          </div>
+          <div class="article-score positive">+33.33</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">56</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.aljazeera.com/video/newsfeed/2026/3/7/indonesians-protest-iran-war-pressure-president-over-us-ties?traffic_source=rss" target="_blank" style="color: inherit; text-decoration: none;">Indonesians protest Iran war, pressure president over US ties</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Al Jazeera | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">57</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.aljazeera.com/video/newsfeed/2026/3/7/sirens-echo-in-occupied-east-jerusalem-warning-of-iranian-missiles?traffic_source=rss" target="_blank" style="color: inherit; text-decoration: none;">Sirens echo in occupied East Jerusalem warning of Iranian missiles</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Al Jazeera | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">58</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.washingtonpost.com/world/2026/03/07/iran-war-us-trump-israel-strikes/" target="_blank" style="color: inherit; text-decoration: none;">Trump says U.S. to expand Iran targets as Tehran rejects idea of surrender</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Washington Post | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">59</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.washingtonpost.com/national-security/2026/03/07/iran-intelligence-report-unlikely-oust-regime/" target="_blank" style="color: inherit; text-decoration: none;">Intel report warns large-scale war ‘unlikely’ to oust Iran’s regime</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Washington Post | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">60</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.washingtonpost.com/world/2026/03/07/trumps-team-bashed-europe-all-year-now-he-wants-support-his-war-iran/" target="_blank" style="color: inherit; text-decoration: none;">Trump team bashed Europe for a year. Now he wants support in war on Iran.</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Washington Post | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到crisis等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">61</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.washingtonpost.com/national-security/2026/03/06/trump-cuba-prosecution/" target="_blank" style="color: inherit; text-decoration: none;">Justice Department targets Cuban officials, aims for indictments</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Washington Post | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">62</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.washingtonpost.com/national-security/2026/03/06/iran-war-us-israel-strikes/" target="_blank" style="color: inherit; text-decoration: none;">Trump demands ‘UNCONDITIONAL SURRENDER’ from Iran; U.S. evacuates citizens from Middle East</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Washington Post | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">63</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.washingtonpost.com/national-security/2026/03/06/us-unprepared-iran-drones-ukraine/" target="_blank" style="color: inherit; text-decoration: none;">Unprepared for Iranian drones, U.S. and partners seek Ukraine’s help</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Washington Post | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">64</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.washingtonpost.com/national-security/2026/03/06/russia-iran-intelligence-us-targets/" target="_blank" style="color: inherit; text-decoration: none;">Russia is providing Iran intelligence to target U.S. forces, officials say</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Washington Post | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">65</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.washingtonpost.com/investigations/2026/03/02/us-fighter-jets-crash-kuwait-iran-f15/" target="_blank" style="color: inherit; text-decoration: none;">Video appears to show the moment a Kuwaiti fighter jet accidentally shot down a U.S. F-15</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">Washington Post | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">66</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.theguardian.com/football/2026/mar/07/men-dominate-football-how-come-kylian-mbappes-career-is-largely-run-by-women" target="_blank" style="color: inherit; text-decoration: none;">In a male-dominated game, Kylian Mbappé’s career is largely run by women</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The Guardian | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">67</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.theguardian.com/world/live/2026/mar/07/middle-east-crisis-live-tehran-explosions-beirut-trump-israel-iran-war-second-week" target="_blank" style="color: inherit; text-decoration: none;">Iran’s president apologises to Gulf nations; Trump threatens further strikes – Middle East crisis live</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The Guardian | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+33.33</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">68</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.theguardian.com/world/2026/mar/07/it-means-missile-defence-on-data-centres-drone-strikes-raises-doubts-over-gulf-as-ai-superpower" target="_blank" style="color: inherit; text-decoration: none;">‘It means missile defence on datacentres’: drone strikes raise doubts over Gulf as AI superpower</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The Guardian | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">69</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.nytimes.com/2026/03/07/world/europe/russia-iran-oil-exports.html" target="_blank" style="color: inherit; text-decoration: none;">Russia Revels in a Sudden Reversal in Fortunes as Oil and Gas Prices Soar</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The New York Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到surge、soar等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">70</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.nytimes.com/video/world/middleeast/100000010750321/how-we-analyzed-the-strike-on-the-iranian-school.html" target="_blank" style="color: inherit; text-decoration: none;">How We Analyzed the Strike on the Iranian School</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The New York Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">71</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.nytimes.com/2026/03/06/us/politics/justice-department-law-firms-executive-orders.html" target="_blank" style="color: inherit; text-decoration: none;">Justice Dept. Denounces Federal Judges in Fight Against Law Firms</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The New York Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">72</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.nytimes.com/2026/03/07/technology/openai-anthropic-pentagon-rivalry.html" target="_blank" style="color: inherit; text-decoration: none;">For OpenAI and Anthropic, the Competition Is Deeply Personal</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The New York Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">73</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.nytimes.com/2026/03/07/technology/anthropic-openai-pentagon-dario-amodei-sam-altman.html" target="_blank" style="color: inherit; text-decoration: none;">Anthropic’s and OpenAI’s Dance With the Pentagon: What to Know</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The New York Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">74</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.nytimes.com/2026/03/07/us/politics/how-talarico-won.html" target="_blank" style="color: inherit; text-decoration: none;">How Talarico Won Texas Democrats With Love, Luck and a Little Restraint</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The New York Times | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到strong等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">75</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.theguardian.com/commentisfree/2026/mar/07/kristi-noem-pam-bondi-iran-yanar-mohammed-epstein" target="_blank" style="color: inherit; text-decoration: none;">Kristi Noem is out. Could Pam Bondi follow?</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">The Guardian | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">76</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.cnn.com/videos/politics/2023/04/05/maggie-haberman-donald-trump-speech-indictment-reaction-sot-cnntm-vpx.cnn" target="_blank" style="color: inherit; text-decoration: none;">Haberman reveals why Trump attacked judge and his family in speech</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNN | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">77</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://edition.cnn.com/webview/europe/live-news/russia-ukraine-war-news-04-03-23/index.html" target="_blank" style="color: inherit; text-decoration: none;">Russian authorities detain suspect over St. Petersburg cafe blast</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNN | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">78</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.cnn.com/videos/world/2023/04/02/russian-military-blogger-vladlen-tatarsky-killed-cafe-explosion-chance-vpx.cnn" target="_blank" style="color: inherit; text-decoration: none;">Video shows moment of deadly explosion at cafe in Russia</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNN | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">79</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.cnn.com/collections/intl-ukraine-030423/" target="_blank" style="color: inherit; text-decoration: none;">Wall Street Journal reporter Evan Gershkovich appeals against arrest, Russian state media says</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNN | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,71,87,0.2); color: #ff4757">80</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.cnn.com/2023/04/04/asia/tsai-ing-wen-taiwan-mccarthy-meeting-analysis-intl-hnk/index.html" target="_blank" style="color: inherit; text-decoration: none;">Beijing promised to 'fight back' over Taiwan leader's US visit. But this time it has more to lose</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">CNN | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到concern等消极词汇</div>
+          </div>
+          <div class="article-score negative">-100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">81</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bbc.com/zhongwen/articles/ce94mxdlxe4o/trad?at_medium=RSS&amp;at_campaign=rss" target="_blank" style="color: inherit; text-decoration: none;">五角大樓將AI公司Anthropic列為供應鏈風險，或遭起訴</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">BBC 中文 | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">82</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bbc.com/news/articles/cq6qp458zv1o?at_medium=RSS&amp;at_campaign=rss" target="_blank" style="color: inherit; text-decoration: none;">Iran will continue to defend itself against aggression, ambassador to UK says</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">BBC News | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到gain等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">83</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bbc.com/news/articles/cx281xz2qjqo?at_medium=RSS&amp;at_campaign=rss" target="_blank" style="color: inherit; text-decoration: none;">Timothée Chalamet triggers backlash over ballet and opera remarks</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">BBC News | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">84</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bbc.com/news/articles/c39w2nj1rk8o?at_medium=RSS&amp;at_campaign=rss" target="_blank" style="color: inherit; text-decoration: none;">UK aircraft carrier given five days to be ready to deploy</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">BBC News | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">85</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bbc.com/news/articles/c5y5lqygrn7o?at_medium=RSS&amp;at_campaign=rss" target="_blank" style="color: inherit; text-decoration: none;">We've been speaking to Iranians during one week of war. Here's what they said</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">BBC News | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(255,165,2,0.2); color: #ffa502">86</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bbc.com/news/articles/cd9gvv5w3v8o?at_medium=RSS&amp;at_campaign=rss" target="_blank" style="color: inherit; text-decoration: none;">There's an inflation wave coming - what does the war mean for the UK economy?</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">BBC News | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 未检测到明显的情感倾向词汇</div>
+          </div>
+          <div class="article-score neutral">0</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-index" style="background: rgba(0,208,132,0.2); color: #00d084">87</div>
+          <div class="article-info">
+            <div class="article-title">
+              <a href="https://www.bbc.com/news/articles/ckg8wvz427vo?at_medium=RSS&amp;at_campaign=rss" target="_blank" style="color: inherit; text-decoration: none;">AI-generated Iran war videos surge as creators use new tech to cash in</a>
+              <span class="method-tag tag-rule">规则</span>
+            </div>
+            <div class="article-meta">BBC News | 2026/3/7 | 置信度: 50%</div>
+            <div class="article-reasoning">💡 检测到surge等积极词汇</div>
+          </div>
+          <div class="article-score positive">+100</div>
+        </div>
+      
+    </div>
+
+    <p class="timestamp">生成时间: 2026/3/8 01:28:30</p>
+  </div>
+
+  <script>
+    const chartData = [{"name":"European Transformation Summit: The path...","fullTitle":"European Transformation Summit: The path to durable ownership","value":0,"sentiment":"neutral","source":"McKinsey Insights","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.mckinsey.com/capabilities/transformation/our-insights/european-transformation-summit-the-path-to-durable-ownership"},{"name":"Finland’s Stubb Says Iran Strikes May Be...","fullTitle":"Finland’s Stubb Says Iran Strikes May Benefit Ukraine","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bloomberg.com/news/videos/2026-03-07/finland-s-stubb-says-iran-strikes-may-benefit-ukraine-video"},{"name":"Trump Urges Latin American Leaders to Us...","fullTitle":"Trump Urges Latin American Leaders to Use Force Against Cartels","value":100,"sentiment":"positive","source":"Bloomberg","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.bloomberg.com/news/articles/2026-03-07/trump-urges-latin-american-leaders-to-use-force-against-cartels"},{"name":"Man Associated With Banco Master’s Ex-CE...","fullTitle":"Man Associated With Banco Master’s Ex-CEO Has Died, Lawyer Says","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bloomberg.com/news/articles/2026-03-07/man-associated-with-banco-master-s-ex-ceo-has-died-lawyer-says"},{"name":"Iran’s president apologises to Gulf nati...","fullTitle":"Iran’s president apologises to Gulf nations; Trump threatens further strikes – Middle East crisis live","value":33.33,"sentiment":"positive","source":"The Guardian","date":"2026/3/7","keywords":["gain","crisis"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.theguardian.com/world/live/2026/mar/07/middle-east-crisis-live-tehran-explosions-beirut-trump-israel-iran-war-second-week"},{"name":"Israel strikes eastern Lebanon, killing ...","fullTitle":"Israel strikes eastern Lebanon, killing dozens, after raid to recover IDF pilot’s remains fails","value":-100,"sentiment":"negative","source":"The Guardian","date":"2026/3/7","keywords":["crisis"],"reasoning":"检测到crisis等消极词汇","method":"rule-based","link":"https://www.theguardian.com/world/2026/mar/07/israel-strikes-eastern-lebanon-killing-dozens-after-raid-to-recover-idf-pilots-remains-fails"},{"name":"Navy readying aircraft carrier for deplo...","fullTitle":"Navy readying aircraft carrier for deployment as Iran conflict deepens","value":0,"sentiment":"neutral","source":"BBC News","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bbc.com/news/articles/c39w2nj1rk8o?at_medium=RSS&amp;at_campaign=rss"},{"name":"Startup Loft Orbital Is Launching AI-Pow...","fullTitle":"Startup Loft Orbital Is Launching AI-Powered Satellites This Fall","value":-100,"sentiment":"negative","source":"Forbes","date":"2026/3/7","keywords":["fall"],"reasoning":"检测到fall等消极词汇","method":"rule-based","link":"https://www.forbes.com/sites/the-prototype/2026/03/07/startup-loft-orbital-is-launching-ai-powered-satellites-this-fall/"},{"name":"Saks Global Post-Bankruptcy Is Emerging ...","fullTitle":"Saks Global Post-Bankruptcy Is Emerging With Neiman Marcus As The Lead Brand","value":-100,"sentiment":"negative","source":"Forbes","date":"2026/3/7","keywords":["bankruptcy"],"reasoning":"检测到bankruptcy等消极词汇","method":"rule-based","link":"https://www.forbes.com/sites/pamdanziger/2026/03/07/saks-global-post-bankruptcy-is-emerging-with-neiman-marcus-as-the-lead-brand/"},{"name":"Trump Threatens To Expand Attacks In Ira...","fullTitle":"Trump Threatens To Expand Attacks In Iran","value":0,"sentiment":"neutral","source":"Forbes","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.forbes.com/sites/mikestunson/2026/03/07/trump-threatens-to-expand-attacks-in-iran/"},{"name":"Iran says it struck UAE air base shortly...","fullTitle":"Iran says it struck UAE air base shortly after Iranian president&apos;s vow not to hit neighbors","value":0,"sentiment":"neutral","source":"CNBC","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.cnbc.com/2026/03/07/not-slowing-down-one-week-on-us-israeli-strikes-on-iran-continue.html"},{"name":"Stagflation? $150 oil? That doesn&#x2019...","fullTitle":"Stagflation? $150 oil? That doesn&#x2019;t mean everyone&#x2019;s 401(k) is losing money.","value":100,"sentiment":"positive","source":"MarketWatch","date":"2026/3/7","keywords":["rise"],"reasoning":"检测到rise等积极词汇","method":"rule-based","link":"https://www.marketwatch.com/story/stagflation-150-oil-not-all-401-k-s-are-losing-money-09c302cb?mod=mw_rss_topstories"},{"name":"Spike in oil prices triggers talk of an ...","fullTitle":"Spike in oil prices triggers talk of an economic doomsday scenario","value":100,"sentiment":"positive","source":"MarketWatch","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.marketwatch.com/story/spike-in-oil-prices-triggers-talk-of-an-economic-doomsday-scenario-86860a98?mod=mw_rss_topstories"},{"name":"These 6 stocks could be major winners of...","fullTitle":"These 6 stocks could be major winners of an upcoming optics &#x2018;supercycle&#x2019;","value":100,"sentiment":"positive","source":"MarketWatch","date":"2026/3/7","keywords":["strong"],"reasoning":"检测到strong等积极词汇","method":"rule-based","link":"https://www.marketwatch.com/story/these-6-stocks-could-be-major-winners-of-an-upcoming-optics-supercycle-3aee252e?mod=mw_rss_topstories"},{"name":"Trump is offering $20 billion in reinsur...","fullTitle":"Trump is offering $20 billion in reinsurance for oil tankers stuck in the Strait of Hormuz. Here&#x2019;s why it might not be enough.","value":0,"sentiment":"neutral","source":"MarketWatch","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.marketwatch.com/story/trump-is-offering-20-billion-in-reinsurance-for-oil-tankers-stuck-in-the-strait-of-hormuz-heres-why-it-might-not-be-enough-3e9090a4?mod=mw_rss_topstories"},{"name":"AI’s impact on European online classifie...","fullTitle":"AI’s impact on European online classifieds: Greater threat or catalyst?","value":-100,"sentiment":"negative","source":"McKinsey Insights","date":"2026/3/7","keywords":["risk"],"reasoning":"检测到risk等消极词汇","method":"rule-based","link":"https://www.mckinsey.com/industries/technology-media-and-telecommunications/our-insights/ais-impact-on-european-online-classifieds-greater-threat-or-catalyst"},{"name":"What is sovereign AI?","fullTitle":"What is sovereign AI?","value":0,"sentiment":"neutral","source":"McKinsey Insights","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.mckinsey.com/featured-insights/mckinsey-explainers/what-is-sovereign-ai"},{"name":"Author Talks: How capitalism became a wo...","fullTitle":"Author Talks: How capitalism became a worldwide revolution","value":0,"sentiment":"neutral","source":"McKinsey Insights","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.mckinsey.com/featured-insights/mckinsey-on-books/author-talks-how-capitalism-became-a-worldwide-revolution"},{"name":"Rising together: Anand Mahindra’s creati...","fullTitle":"Rising together: Anand Mahindra’s creative philosophy","value":0,"sentiment":"neutral","source":"McKinsey Insights","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.mckinsey.com/featured-insights/future-of-asia/rising-together-anand-mahindras-creative-philosophy"},{"name":"Charging ahead: Electrification equipmen...","fullTitle":"Charging ahead: Electrification equipment trends to watch in 2026","value":100,"sentiment":"positive","source":"McKinsey Insights","date":"2026/3/7","keywords":["growth"],"reasoning":"检测到growth等积极词汇","method":"rule-based","link":"https://www.mckinsey.com/industries/industrials/our-insights/charging-ahead-electrification-equipment-trends-to-watch-in-2026"},{"name":"Trust in the age of agents","fullTitle":"Trust in the age of agents","value":-100,"sentiment":"negative","source":"McKinsey Insights","date":"2026/3/7","keywords":["risk"],"reasoning":"检测到risk等消极词汇","method":"rule-based","link":"https://www.mckinsey.com/capabilities/risk-and-resilience/our-insights/trust-in-the-age-of-agents"},{"name":"Women in tech and AI in Europe: Can the ...","fullTitle":"Women in tech and AI in Europe: Can the region close its gender gap?","value":100,"sentiment":"positive","source":"McKinsey Insights","date":"2026/3/7","keywords":["rise"],"reasoning":"检测到rise等积极词汇","method":"rule-based","link":"https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/women-in-tech-and-ai-in-europe-can-the-region-close-its-gender-gap"},{"name":"‘Society needs radical restructuring&#82...","fullTitle":"‘Society needs radical restructuring&#8217;: AI hates the grind of hard work as much as you","value":0,"sentiment":"neutral","source":"Fortune","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://fortune.com/2026/03/07/marxist-rebel-ai-overwork-reddit-alex-imas-andy-hall-jeremy-nguyen-substack/"},{"name":"Gen Alpha&#8217;s economic influence is ...","fullTitle":"Gen Alpha&#8217;s economic influence is &#8216;enormous&#8217;—From side hustles and bankrolling from their parents, they&#8217;ve surpassed $100 billion in spending power","value":0,"sentiment":"neutral","source":"Fortune","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://fortune.com/article/how-much-spending-power-does-gen-alpha-have-where-do-they-get-money/"},{"name":"Chatbots are &#8216;constantly validatin...","fullTitle":"Chatbots are &#8216;constantly validating everything&#8217; even when you&#8217;re suicidal. New research measures how dangerous AI psychosis really is","value":0,"sentiment":"neutral","source":"Fortune","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://fortune.com/2026/03/07/chatbots-ai-psychosis-worsen-delusions-mania-mental-illness-health/"},{"name":"I&#8217;ve been advising wealthy family ...","fullTitle":"I&#8217;ve been advising wealthy family offices on real estate for decades. This market requires another look at your 100-year plan","value":100,"sentiment":"positive","source":"Fortune","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://fortune.com/2026/03/07/great-wealth-transfer-family-office-real-estate-rethink-100-year-plan/"},{"name":"Meet the quiet winners of the Supreme Co...","fullTitle":"Meet the quiet winners of the Supreme Court tariff ruling: hedge funds creating a $100 billion market snapping up rights to importers’ tariff refunds","value":100,"sentiment":"positive","source":"Fortune","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://fortune.com/2026/03/07/winners-supreme-court-tariff-ruling-hedge-funds-creating-100-billion-secondary-market-refunds-brandon-howard-lutnick/"},{"name":"Google, Meta and the AI &#8216;hyperscal...","fullTitle":"Google, Meta and the AI &#8216;hyperscalers&#8217; are on a $1 trillion borrowing binge after years of printing cash. Here&#8217;s why Big Tech&#8217;s pivot to debt matters","value":-100,"sentiment":"negative","source":"Fortune","date":"2026/3/7","keywords":["debt","risk"],"reasoning":"检测到debt、risk等消极词汇","method":"rule-based","link":"https://fortune.com/2026/03/07/big-tech-trillion-dollar-borrowing-ai-century-bonds/"},{"name":"Flight Attendants At American Airlines P...","fullTitle":"Flight Attendants At American Airlines Partner Reject Contract Deal","value":0,"sentiment":"neutral","source":"Forbes","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.forbes.com/sites/tedreed/2026/03/07/flight-attendants-at-american-airlines-partner-reject-contract-deal/"},{"name":"UFC Tonight: What Time Does The UFC 326 ...","fullTitle":"UFC Tonight: What Time Does The UFC 326 Fight Card Start?","value":100,"sentiment":"positive","source":"Forbes","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.forbes.com/sites/trentreinsmith/2026/03/07/ufc-tonight-what-time-does-the-ufc-326-fight-card-start/"},{"name":"How High Could Oil Prices Go? A Reality-...","fullTitle":"How High Could Oil Prices Go? A Reality-Based Look At The Ceiling","value":100,"sentiment":"positive","source":"Forbes","date":"2026/3/7","keywords":["surge"],"reasoning":"检测到surge等积极词汇","method":"rule-based","link":"https://www.forbes.com/sites/rrapier/2026/03/07/how-high-could-oil-prices-go-a-reality-based-look-at-the-ceiling/"},{"name":"How Lilly Used AI To Crank Up Production...","fullTitle":"How Lilly Used AI To Crank Up Production Of Its Popular GLP-1s","value":0,"sentiment":"neutral","source":"Forbes","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.forbes.com/sites/amyfeldman/2026/03/07/how-lilly-used-ai-to-crank-up-production-of-its-popular-glp-1s/"},{"name":"AI Personas Take On Critical Role Of Bei...","fullTitle":"AI Personas Take On Critical Role Of Being Therapy Evaluators For Assessing Mental Health Guidance","value":0,"sentiment":"neutral","source":"Forbes","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.forbes.com/sites/lanceeliot/2026/03/07/ai-personas-take-on-critical-role-of-being-therapy-evaluators-for-assessing-mental-health-guidance/"},{"name":"Kobe Brown Finding Some Footing With Pac...","fullTitle":"Kobe Brown Finding Some Footing With Pacers, Contract Hurdle May Await","value":0,"sentiment":"neutral","source":"Forbes","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.forbes.com/sites/tonyeast/2026/03/06/kobe-brown-finding-some-footing-with-pacers-contract-hurdle-may-await/"},{"name":"Stocks Sink in Broad AI Rout Sparked by ...","fullTitle":"Stocks Sink in Broad AI Rout Sparked by China's DeepSeek","value":-100,"sentiment":"negative","source":"Wall Street Journal","date":"2026/3/7","keywords":["fall","decline"],"reasoning":"检测到fall、decline等消极词汇","method":"rule-based","link":"https://www.wsj.com/articles/nikkei-may-rise-as-weak-yen-raises-earnings-hopes-776a8056?mod=rss_markets_main"},{"name":"DeepSeek Won't Sink U.S. AI Titans","fullTitle":"DeepSeek Won't Sink U.S. AI Titans","value":-100,"sentiment":"negative","source":"Wall Street Journal","date":"2026/3/7","keywords":["panic"],"reasoning":"检测到panic等消极词汇","method":"rule-based","link":"https://www.wsj.com/articles/deepseek-us-ai-stocks-nvidia-broadcom-6cdfae81?mod=rss_markets_main"},{"name":"Financial Services Roundup: Market Talk","fullTitle":"Financial Services Roundup: Market Talk","value":100,"sentiment":"positive","source":"Wall Street Journal","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.wsj.com/articles/financial-services-roundup-market-talk-94f52cba?mod=rss_markets_main"},{"name":"Swiss franc, Japanese yen Rise as DeepSe...","fullTitle":"Swiss franc, Japanese yen Rise as DeepSeek News Boosts Safe Havens","value":100,"sentiment":"positive","source":"Wall Street Journal","date":"2026/3/7","keywords":["rise","gain","strong"],"reasoning":"检测到rise、gain、strong等积极词汇","method":"rule-based","link":"https://www.wsj.com/articles/safe-haven-currencies-strengthen-amid-fears-over-global-tariffs-9964e17a?mod=rss_markets_main"},{"name":"Oil surges 35% this week for biggest gai...","fullTitle":"Oil surges 35% this week for biggest gain in futures trading history dating back to 1983","value":100,"sentiment":"positive","source":"CNBC","date":"2026/3/7","keywords":["gain","surge"],"reasoning":"检测到gain、surge等积极词汇","method":"rule-based","link":"https://www.cnbc.com/2026/03/06/iran-us-war-oil-prices-brent-wti-barrel-futures.html"},{"name":"Google joins Microsoft in telling users ...","fullTitle":"Google joins Microsoft in telling users Anthropic is still available outside defense projects","value":0,"sentiment":"neutral","source":"CNBC","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.cnbc.com/2026/03/06/google-says-anthropic-remains-available-outside-of-defense-projects.html"},{"name":"Trump: Iran to Be Hit ‘Very Hard’ Today,...","fullTitle":"Trump: Iran to Be Hit ‘Very Hard’ Today, Markets Strained, More","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bloomberg.com/news/audio/2026-03-07/trump-iran-to-be-hit-very-hard-today-markets-strained-more"},{"name":"Crypto Markets Track War Risk as Iran Co...","fullTitle":"Crypto Markets Track War Risk as Iran Conflict Endures","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":["gain","risk"],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bloomberg.com/news/articles/2026-03-07/crypto-markets-track-war-risk-as-iran-conflict-endures"},{"name":"Iran war threatens to scramble the &apos...","fullTitle":"Iran war threatens to scramble the &apos;affordability&apos; midterm","value":0,"sentiment":"neutral","source":"CNBC","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.cnbc.com/2026/03/07/iran-war-affordability-midterm.html"},{"name":"How Ukraine Digitized Government in the ...","fullTitle":"How Ukraine Digitized Government in the Middle of War","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bloomberg.com/news/videos/2026-03-07/how-ukraine-digitized-government-in-the-middle-of-war-video"},{"name":"Saudi Arabia Intensifies Engagement With...","fullTitle":"Saudi Arabia Intensifies Engagement With Iran to Defuse War","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bloomberg.com/news/articles/2026-03-06/saudi-arabia-has-intensified-direct-line-to-iran-to-defuse-war"},{"name":"Global Oil Market Disruptions as Strait ...","fullTitle":"Global Oil Market Disruptions as Strait of Hormuz Traffic Halts Amid Iran Conflict","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bloomberg.com/news/videos/2026-03-07/this-weekend-global-oil-market-disruptions-video"},{"name":"Trump vows to hit Iran hard after Israel...","fullTitle":"Trump vows to hit Iran hard after Israel launches wave of air attacks","value":0,"sentiment":"neutral","source":"Financial Times","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.ft.com/content/bbd79c63-8131-4b20-9d2d-708bc8acea38"},{"name":"Iran warns it will hit US bases across r...","fullTitle":"Iran warns it will hit US bases across region hours after president’s apology","value":0,"sentiment":"neutral","source":"Financial Times","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.ft.com/content/7c6ee5e8-c379-40c0-9d9f-d1ecc7b69261"},{"name":"The war of unintended consequences","fullTitle":"The war of unintended consequences","value":-100,"sentiment":"negative","source":"Financial Times","date":"2026/3/7","keywords":["fall"],"reasoning":"检测到fall等消极词汇","method":"rule-based","link":"https://www.ft.com/content/0b16e3e8-d52b-4b87-a212-bba90af39ceb"},{"name":"In the centre of the storm: what does th...","fullTitle":"In the centre of the storm: what does the Iran war mean for Dubai?","value":0,"sentiment":"neutral","source":"Financial Times","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.ft.com/content/f7efce04-b122-4243-bcd2-2c524951c10d"},{"name":"We’ll always have Dubai","fullTitle":"We’ll always have Dubai","value":0,"sentiment":"neutral","source":"Financial Times","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.ft.com/content/fa5caf43-0ad4-4da2-a6fc-d2575bea4f41"},{"name":"US faced with few good options to tamp d...","fullTitle":"US faced with few good options to tamp down surging oil prices","value":0,"sentiment":"neutral","source":"Financial Times","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.ft.com/content/5bd03549-22b2-4d7a-a6d6-44a9aa5c3842"},{"name":"Israel kills father, daughter in Gaza as...","fullTitle":"Israel kills father, daughter in Gaza as genocide continues amid wider war","value":0,"sentiment":"neutral","source":"Al Jazeera","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.aljazeera.com/news/2026/3/7/israel-kills-father-daughter-in-gaza-as-genocide-continues-amid-wider-war?traffic_source=rss"},{"name":"Iranian authorities warn against ‘fifth ...","fullTitle":"Iranian authorities warn against ‘fifth column’, as no signs of war abating","value":100,"sentiment":"positive","source":"Al Jazeera","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.aljazeera.com/news/2026/3/7/iranian-authorities-warn-against-fifth-column-as-no-signs-of-war-abating?traffic_source=rss"},{"name":"OpenAI’s fund raising boom slows amid mo...","fullTitle":"OpenAI’s fund raising boom slows amid mounting debt","value":33.33,"sentiment":"positive","source":"Al Jazeera","date":"2026/3/7","keywords":["boom","profit","debt"],"reasoning":"检测到boom、profit等积极词汇","method":"rule-based","link":"https://www.aljazeera.com/economy/2026/3/7/openais-fund-raising-boom-slows-amid-mounting-debt?traffic_source=rss"},{"name":"Indonesians protest Iran war, pressure p...","fullTitle":"Indonesians protest Iran war, pressure president over US ties","value":100,"sentiment":"positive","source":"Al Jazeera","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.aljazeera.com/video/newsfeed/2026/3/7/indonesians-protest-iran-war-pressure-president-over-us-ties?traffic_source=rss"},{"name":"Sirens echo in occupied East Jerusalem w...","fullTitle":"Sirens echo in occupied East Jerusalem warning of Iranian missiles","value":0,"sentiment":"neutral","source":"Al Jazeera","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.aljazeera.com/video/newsfeed/2026/3/7/sirens-echo-in-occupied-east-jerusalem-warning-of-iranian-missiles?traffic_source=rss"},{"name":"Trump says U.S. to expand Iran targets a...","fullTitle":"Trump says U.S. to expand Iran targets as Tehran rejects idea of surrender","value":0,"sentiment":"neutral","source":"Washington Post","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.washingtonpost.com/world/2026/03/07/iran-war-us-trump-israel-strikes/"},{"name":"Intel report warns large-scale war ‘unli...","fullTitle":"Intel report warns large-scale war ‘unlikely’ to oust Iran’s regime","value":0,"sentiment":"neutral","source":"Washington Post","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.washingtonpost.com/national-security/2026/03/07/iran-intelligence-report-unlikely-oust-regime/"},{"name":"Trump team bashed Europe for a year. Now...","fullTitle":"Trump team bashed Europe for a year. Now he wants support in war on Iran.","value":-100,"sentiment":"negative","source":"Washington Post","date":"2026/3/7","keywords":["crisis"],"reasoning":"检测到crisis等消极词汇","method":"rule-based","link":"https://www.washingtonpost.com/world/2026/03/07/trumps-team-bashed-europe-all-year-now-he-wants-support-his-war-iran/"},{"name":"Justice Department targets Cuban officia...","fullTitle":"Justice Department targets Cuban officials, aims for indictments","value":100,"sentiment":"positive","source":"Washington Post","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.washingtonpost.com/national-security/2026/03/06/trump-cuba-prosecution/"},{"name":"Trump demands ‘UNCONDITIONAL SURRENDER’ ...","fullTitle":"Trump demands ‘UNCONDITIONAL SURRENDER’ from Iran; U.S. evacuates citizens from Middle East","value":100,"sentiment":"positive","source":"Washington Post","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.washingtonpost.com/national-security/2026/03/06/iran-war-us-israel-strikes/"},{"name":"Unprepared for Iranian drones, U.S. and ...","fullTitle":"Unprepared for Iranian drones, U.S. and partners seek Ukraine’s help","value":0,"sentiment":"neutral","source":"Washington Post","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.washingtonpost.com/national-security/2026/03/06/us-unprepared-iran-drones-ukraine/"},{"name":"Russia is providing Iran intelligence to...","fullTitle":"Russia is providing Iran intelligence to target U.S. forces, officials say","value":0,"sentiment":"neutral","source":"Washington Post","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.washingtonpost.com/national-security/2026/03/06/russia-iran-intelligence-us-targets/"},{"name":"Video appears to show the moment a Kuwai...","fullTitle":"Video appears to show the moment a Kuwaiti fighter jet accidentally shot down a U.S. F-15","value":100,"sentiment":"positive","source":"Washington Post","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.washingtonpost.com/investigations/2026/03/02/us-fighter-jets-crash-kuwait-iran-f15/"},{"name":"In a male-dominated game, Kylian Mbappé’...","fullTitle":"In a male-dominated game, Kylian Mbappé’s career is largely run by women","value":0,"sentiment":"neutral","source":"The Guardian","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.theguardian.com/football/2026/mar/07/men-dominate-football-how-come-kylian-mbappes-career-is-largely-run-by-women"},{"name":"Iran’s president apologises to Gulf nati...","fullTitle":"Iran’s president apologises to Gulf nations; Trump threatens further strikes – Middle East crisis live","value":33.33,"sentiment":"positive","source":"The Guardian","date":"2026/3/7","keywords":["gain","crisis"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.theguardian.com/world/live/2026/mar/07/middle-east-crisis-live-tehran-explosions-beirut-trump-israel-iran-war-second-week"},{"name":"‘It means missile defence on datacentres...","fullTitle":"‘It means missile defence on datacentres’: drone strikes raise doubts over Gulf as AI superpower","value":0,"sentiment":"neutral","source":"The Guardian","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.theguardian.com/world/2026/mar/07/it-means-missile-defence-on-data-centres-drone-strikes-raises-doubts-over-gulf-as-ai-superpower"},{"name":"Russia Revels in a Sudden Reversal in Fo...","fullTitle":"Russia Revels in a Sudden Reversal in Fortunes as Oil and Gas Prices Soar","value":100,"sentiment":"positive","source":"The New York Times","date":"2026/3/7","keywords":["surge","soar"],"reasoning":"检测到surge、soar等积极词汇","method":"rule-based","link":"https://www.nytimes.com/2026/03/07/world/europe/russia-iran-oil-exports.html"},{"name":"How We Analyzed the Strike on the Irania...","fullTitle":"How We Analyzed the Strike on the Iranian School","value":0,"sentiment":"neutral","source":"The New York Times","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.nytimes.com/video/world/middleeast/100000010750321/how-we-analyzed-the-strike-on-the-iranian-school.html"},{"name":"Justice Dept. Denounces Federal Judges i...","fullTitle":"Justice Dept. Denounces Federal Judges in Fight Against Law Firms","value":100,"sentiment":"positive","source":"The New York Times","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.nytimes.com/2026/03/06/us/politics/justice-department-law-firms-executive-orders.html"},{"name":"For OpenAI and Anthropic, the Competitio...","fullTitle":"For OpenAI and Anthropic, the Competition Is Deeply Personal","value":0,"sentiment":"neutral","source":"The New York Times","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.nytimes.com/2026/03/07/technology/openai-anthropic-pentagon-rivalry.html"},{"name":"Anthropic’s and OpenAI’s Dance With the ...","fullTitle":"Anthropic’s and OpenAI’s Dance With the Pentagon: What to Know","value":0,"sentiment":"neutral","source":"The New York Times","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.nytimes.com/2026/03/07/technology/anthropic-openai-pentagon-dario-amodei-sam-altman.html"},{"name":"How Talarico Won Texas Democrats With Lo...","fullTitle":"How Talarico Won Texas Democrats With Love, Luck and a Little Restraint","value":100,"sentiment":"positive","source":"The New York Times","date":"2026/3/7","keywords":["strong"],"reasoning":"检测到strong等积极词汇","method":"rule-based","link":"https://www.nytimes.com/2026/03/07/us/politics/how-talarico-won.html"},{"name":"Kristi Noem is out. Could Pam Bondi foll...","fullTitle":"Kristi Noem is out. Could Pam Bondi follow?","value":0,"sentiment":"neutral","source":"The Guardian","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.theguardian.com/commentisfree/2026/mar/07/kristi-noem-pam-bondi-iran-yanar-mohammed-epstein"},{"name":"Haberman reveals why Trump attacked judg...","fullTitle":"Haberman reveals why Trump attacked judge and his family in speech","value":0,"sentiment":"neutral","source":"CNN","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.cnn.com/videos/politics/2023/04/05/maggie-haberman-donald-trump-speech-indictment-reaction-sot-cnntm-vpx.cnn"},{"name":"Russian authorities detain suspect over ...","fullTitle":"Russian authorities detain suspect over St. Petersburg cafe blast","value":0,"sentiment":"neutral","source":"CNN","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://edition.cnn.com/webview/europe/live-news/russia-ukraine-war-news-04-03-23/index.html"},{"name":"Video shows moment of deadly explosion a...","fullTitle":"Video shows moment of deadly explosion at cafe in Russia","value":0,"sentiment":"neutral","source":"CNN","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.cnn.com/videos/world/2023/04/02/russian-military-blogger-vladlen-tatarsky-killed-cafe-explosion-chance-vpx.cnn"},{"name":"Wall Street Journal reporter Evan Gershk...","fullTitle":"Wall Street Journal reporter Evan Gershkovich appeals against arrest, Russian state media says","value":100,"sentiment":"positive","source":"CNN","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.cnn.com/collections/intl-ukraine-030423/"},{"name":"Beijing promised to 'fight back' over Ta...","fullTitle":"Beijing promised to 'fight back' over Taiwan leader's US visit. But this time it has more to lose","value":-100,"sentiment":"negative","source":"CNN","date":"2026/3/7","keywords":["concern"],"reasoning":"检测到concern等消极词汇","method":"rule-based","link":"https://www.cnn.com/2023/04/04/asia/tsai-ing-wen-taiwan-mccarthy-meeting-analysis-intl-hnk/index.html"},{"name":"五角大樓將AI公司Anthropic列為供應鏈風險，或遭起訴","fullTitle":"五角大樓將AI公司Anthropic列為供應鏈風險，或遭起訴","value":0,"sentiment":"neutral","source":"BBC 中文","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bbc.com/zhongwen/articles/ce94mxdlxe4o/trad?at_medium=RSS&amp;at_campaign=rss"},{"name":"Iran will continue to defend itself agai...","fullTitle":"Iran will continue to defend itself against aggression, ambassador to UK says","value":100,"sentiment":"positive","source":"BBC News","date":"2026/3/7","keywords":["gain"],"reasoning":"检测到gain等积极词汇","method":"rule-based","link":"https://www.bbc.com/news/articles/cq6qp458zv1o?at_medium=RSS&amp;at_campaign=rss"},{"name":"Timothée Chalamet triggers backlash over...","fullTitle":"Timothée Chalamet triggers backlash over ballet and opera remarks","value":0,"sentiment":"neutral","source":"BBC News","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bbc.com/news/articles/cx281xz2qjqo?at_medium=RSS&amp;at_campaign=rss"},{"name":"UK aircraft carrier given five days to b...","fullTitle":"UK aircraft carrier given five days to be ready to deploy","value":0,"sentiment":"neutral","source":"BBC News","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bbc.com/news/articles/c39w2nj1rk8o?at_medium=RSS&amp;at_campaign=rss"},{"name":"We've been speaking to Iranians during o...","fullTitle":"We've been speaking to Iranians during one week of war. Here's what they said","value":0,"sentiment":"neutral","source":"BBC News","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bbc.com/news/articles/c5y5lqygrn7o?at_medium=RSS&amp;at_campaign=rss"},{"name":"There's an inflation wave coming - what ...","fullTitle":"There's an inflation wave coming - what does the war mean for the UK economy?","value":0,"sentiment":"neutral","source":"BBC News","date":"2026/3/7","keywords":[],"reasoning":"未检测到明显的情感倾向词汇","method":"rule-based","link":"https://www.bbc.com/news/articles/cd9gvv5w3v8o?at_medium=RSS&amp;at_campaign=rss"},{"name":"AI-generated Iran war videos surge as cr...","fullTitle":"AI-generated Iran war videos surge as creators use new tech to cash in","value":100,"sentiment":"positive","source":"BBC News","date":"2026/3/7","keywords":["surge"],"reasoning":"检测到surge等积极词汇","method":"rule-based","link":"https://www.bbc.com/news/articles/ckg8wvz427vo?at_medium=RSS&amp;at_campaign=rss"}];
+    
+    // 饼图
+    const pieChart = echarts.init(document.getElementById('pieChart'));
+    pieChart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}: {c}篇 ({d}%)'
+      },
+      legend: {
+        orient: 'vertical',
+        right: 10,
+        top: 'center',
+        textStyle: { color: '#fff' }
+      },
+      series: [{
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#1a1a2e',
+          borderWidth: 2
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: '#fff'
+          }
+        },
+        labelLine: { show: false },
+        data: [
+          { value: 27, name: '🟢 正面', itemStyle: { color: '#00d084' } },
+          { value: 11, name: '🔴 负面', itemStyle: { color: '#ff4757' } },
+          { value: 49, name: '🟡 中性', itemStyle: { color: '#ffa502' } }
+        ]
+      }]
+    });
+
+    // 条形图
+    const barChart = echarts.init(document.getElementById('barChart'));
+    barChart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: function(params) {
+          const data = params[0].data;
+          return '<strong>' + data.fullTitle + '</strong><br/>' +
+                 '得分: ' + data.value + '<br/>' +
+                 '来源: ' + data.source + '<br/>' +
+                 '理由: ' + (data.reasoning || '无');
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        min: -100,
+        max: 100,
+        axisLine: { lineStyle: { color: '#555' } },
+        axisLabel: { color: '#888' },
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+      },
+      yAxis: {
+        type: 'category',
+        data: chartData.map((d, i) => '#' + (i + 1)),
+        axisLine: { lineStyle: { color: '#555' } },
+        axisLabel: { color: '#888' }
+      },
+      series: [{
+        type: 'bar',
+        data: chartData.map(d => ({
+          value: d.value,
+          fullTitle: d.fullTitle,
+          source: d.source,
+          reasoning: d.reasoning,
+          itemStyle: {
+            color: d.value > 0 ? '#00d084' : d.value < 0 ? '#ff4757' : '#ffa502'
+          }
+        })),
+        barWidth: '60%',
+        label: {
+          show: true,
+          position: 'right',
+          formatter: '{c}',
+          color: '#fff'
+        }
+      }]
+    });
+
+    // 折线图
+    const lineChart = echarts.init(document.getElementById('lineChart'));
+    const sortedData = [...chartData].sort((a, b) => new Date(a.date) - new Date(b.date));
+    lineChart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'axis',
+        formatter: function(params) {
+          const data = params[0].data;
+          return '<strong>' + data.fullTitle + '</strong><br/>' +
+                 '日期: ' + data.date + '<br/>' +
+                 '得分: ' + data.value + '<br/>' +
+                 '理由: ' + (data.reasoning || '无');
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: sortedData.map(d => d.date),
+        axisLine: { lineStyle: { color: '#555' } },
+        axisLabel: { color: '#888', rotate: 45 }
+      },
+      yAxis: {
+        type: 'value',
+        min: -100,
+        max: 100,
+        axisLine: { lineStyle: { color: '#555' } },
+        axisLabel: { color: '#888' },
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }
+      },
+      series: [{
+        type: 'line',
+        data: sortedData.map(d => ({
+          value: d.value,
+          fullTitle: d.fullTitle,
+          date: d.date,
+          reasoning: d.reasoning,
+          symbol: 'circle',
+          symbolSize: 10,
+          itemStyle: {
+            color: d.value > 0 ? '#00d084' : d.value < 0 ? '#ff4757' : '#ffa502'
+          }
+        })),
+        lineStyle: {
+          width: 3,
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 1, y2: 0,
+            colorStops: [
+              { offset: 0, color: '#ff4757' },
+              { offset: 0.5, color: '#ffa502' },
+              { offset: 1, color: '#00d084' }
+            ]
+          }
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(0,208,132,0.3)' },
+              { offset: 0.5, color: 'rgba(255,165,2,0.1)' },
+              { offset: 1, color: 'rgba(255,71,87,0.3)' }
+            ]
+          }
+        }
+      }]
+    });
+
+    // 响应式
+    window.addEventListener('resize', () => {
+      pieChart.resize();
+      barChart.resize();
+      lineChart.resize();
+    });
+  </script>
+</body>
+</html>
