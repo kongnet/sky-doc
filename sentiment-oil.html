@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>oil - 情感分析可视化</title>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="https://unpkg.com/echarts@5.4.3/dist/echarts.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -82,6 +82,20 @@
     .chart {
       width: 100%;
       height: 400px;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chart-loading {
+      color: #888;
+      font-size: 14px;
+    }
+    .chart-error {
+      color: #ff4757;
+      font-size: 14px;
+      text-align: center;
+      padding: 20px;
     }
     .full-width {
       grid-column: 1 / -1;
@@ -165,15 +179,21 @@
     <div class="charts-grid">
       <div class="chart-container">
         <div class="chart-title">📈 情感分布饼图</div>
-        <div id="pieChart" class="chart"></div>
+        <div id="pieChart" class="chart">
+          <div class="chart-loading">正在加载图表...</div>
+        </div>
       </div>
       <div class="chart-container">
         <div class="chart-title">📊 情感得分条形图</div>
-        <div id="barChart" class="chart"></div>
+        <div id="barChart" class="chart">
+          <div class="chart-loading">正在加载图表...</div>
+        </div>
       </div>
       <div class="chart-container full-width">
         <div class="chart-title">📉 情感趋势折线图 (按时间)</div>
-        <div id="lineChart" class="chart"></div>
+        <div id="lineChart" class="chart">
+          <div class="chart-loading">正在加载图表...</div>
+        </div>
       </div>
     </div>
 
@@ -299,12 +319,19 @@
       
     </div>
 
-    <p class="timestamp">生成时间: 2026/3/8 01:21:22</p>
+    <p class="timestamp">生成时间: 2026/3/8 01:23:18</p>
   </div>
 
   <script>
+    // 检查 ECharts 是否加载成功
+    if (typeof echarts === 'undefined') {
+      document.querySelectorAll('.chart').forEach(el => {
+        el.innerHTML = '<div class="chart-error">❌ 图表加载失败<br>请检查网络连接或刷新页面</div>';
+      });
+    } else {
     const chartData = [{"name":"This Weekend | Trump on Iran, Oil Price ...","fullTitle":"This Weekend | Trump on Iran, Oil Price Outlook","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":[],"link":"https://www.bloomberg.com/news/videos/2026-03-07/this-weekend-join-us-this-morning-0307-video"},{"name":"Stagflation? $150 oil? That doesn&#x2019...","fullTitle":"Stagflation? $150 oil? That doesn&#x2019;t mean everyone&#x2019;s 401(k) is losing money.","value":100,"sentiment":"positive","source":"MarketWatch","date":"2026/3/7","keywords":["rise"],"link":"https://www.marketwatch.com/story/stagflation-150-oil-not-all-401-k-s-are-losing-money-09c302cb?mod=mw_rss_topstories"},{"name":"Spike in oil prices triggers talk of an ...","fullTitle":"Spike in oil prices triggers talk of an economic doomsday scenario","value":100,"sentiment":"positive","source":"MarketWatch","date":"2026/3/7","keywords":["gain"],"link":"https://www.marketwatch.com/story/spike-in-oil-prices-triggers-talk-of-an-economic-doomsday-scenario-86860a98?mod=mw_rss_topstories"},{"name":"Trump is offering $20 billion in reinsur...","fullTitle":"Trump is offering $20 billion in reinsurance for oil tankers stuck in the Strait of Hormuz. Here&#x2019;s why it might not be enough.","value":0,"sentiment":"neutral","source":"MarketWatch","date":"2026/3/7","keywords":[],"link":"https://www.marketwatch.com/story/trump-is-offering-20-billion-in-reinsurance-for-oil-tankers-stuck-in-the-strait-of-hormuz-heres-why-it-might-not-be-enough-3e9090a4?mod=mw_rss_topstories"},{"name":"How High Could Oil Prices Go? A Reality-...","fullTitle":"How High Could Oil Prices Go? A Reality-Based Look At The Ceiling","value":100,"sentiment":"positive","source":"Forbes","date":"2026/3/7","keywords":["surge"],"link":"https://www.forbes.com/sites/rrapier/2026/03/07/how-high-could-oil-prices-go-a-reality-based-look-at-the-ceiling/"},{"name":"Oil surges 35% this week for biggest gai...","fullTitle":"Oil surges 35% this week for biggest gain in futures trading history dating back to 1983","value":100,"sentiment":"positive","source":"CNBC","date":"2026/3/7","keywords":["gain","surge"],"link":"https://www.cnbc.com/2026/03/06/iran-us-war-oil-prices-brent-wti-barrel-futures.html"},{"name":"Crypto Markets Track War Risk as Iran Co...","fullTitle":"Crypto Markets Track War Risk as Iran Conflict Endures","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":["gain","risk"],"link":"https://www.bloomberg.com/news/articles/2026-03-07/crypto-markets-track-war-risk-as-iran-conflict-endures"},{"name":"Global Oil Market Disruptions as Strait ...","fullTitle":"Global Oil Market Disruptions as Strait of Hormuz Traffic Halts Amid Iran Conflict","value":0,"sentiment":"neutral","source":"Bloomberg","date":"2026/3/7","keywords":[],"link":"https://www.bloomberg.com/news/videos/2026-03-07/this-weekend-global-oil-market-disruptions-video"},{"name":"Is the nightmare scenario for global ene...","fullTitle":"Is the nightmare scenario for global energy here?","value":-100,"sentiment":"negative","source":"Financial Times","date":"2026/3/7","keywords":["crisis"],"link":"https://www.ft.com/content/5a74c0f8-1cf2-4a6b-9339-a098fcbeb100"},{"name":"US faced with few good options to tamp d...","fullTitle":"US faced with few good options to tamp down surging oil prices","value":0,"sentiment":"neutral","source":"Financial Times","date":"2026/3/7","keywords":[],"link":"https://www.ft.com/content/5bd03549-22b2-4d7a-a6d6-44a9aa5c3842"},{"name":"A week of war in charts: the impact on t...","fullTitle":"A week of war in charts: the impact on the US","value":0,"sentiment":"neutral","source":"Financial Times","date":"2026/3/7","keywords":[],"link":"https://www.ft.com/content/7ec4acb7-8c49-4da5-a7f3-83410e873e5a"},{"name":"Gas Prices Continue to Surge in U.S., Ri...","fullTitle":"Gas Prices Continue to Surge in U.S., Rising 14% in a Week","value":100,"sentiment":"positive","source":"The New York Times","date":"2026/3/7","keywords":["surge","soar"],"link":"https://www.nytimes.com/2026/03/07/business/gasoline-prices.html"},{"name":"Russia Revels in a Sudden Reversal in Fo...","fullTitle":"Russia Revels in a Sudden Reversal in Fortunes as Oil and Gas Prices Soar","value":100,"sentiment":"positive","source":"The New York Times","date":"2026/3/7","keywords":["surge","soar"],"link":"https://www.nytimes.com/2026/03/07/world/europe/russia-iran-oil-exports.html"}];
     
+    try {
     // 饼图
     const pieChart = echarts.init(document.getElementById('pieChart'));
     pieChart.setOption({
@@ -483,6 +510,14 @@
       barChart.resize();
       lineChart.resize();
     });
+    
+    } catch (e) {
+      console.error('图表渲染错误:', e);
+      document.querySelectorAll('.chart').forEach(el => {
+        el.innerHTML = '<div class="chart-error">❌ 图表渲染失败<br>' + e.message + '</div>';
+      });
+    }
+    }
   </script>
 </body>
 </html>
