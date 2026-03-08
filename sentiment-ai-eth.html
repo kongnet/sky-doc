@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>以太坊(ETH)情感分析报告</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header { text-align: center; margin-bottom: 30px; }
+    h1 { color: #333; margin: 0; }
+    .score-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; text-align: center; margin: 20px 0; }
+    .score-value { font-size: 48px; font-weight: bold; }
+    .score-label { font-size: 24px; margin-top: 10px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 30px 0; }
+    .stat-card { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; }
+    .stat-number { font-size: 32px; font-weight: bold; color: #667eea; }
+    .stat-label { color: #666; margin-top: 5px; }
+    .chart-container { height: 400px; margin: 30px 0; }
+    .articles { margin-top: 30px; }
+    .article-item { padding: 15px; border-bottom: 1px solid #eee; }
+    .article-title { font-weight: bold; color: #333; }
+    .article-meta { color: #999; font-size: 14px; margin-top: 5px; }
+    .timestamp { text-align: center; color: #999; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🪙 以太坊(ETH)情感分析报告</h1>
+    </div>
+    
+    <div class="score-card">
+      <div class="score-value">+5.00</div>
+      <div class="score-label" style="color: #64748b">中性 (Neutral)</div>
+    </div>
+    
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" style="color: #22c55e">15</div>
+        <div class="stat-label">看涨文章</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" style="color: #64748b">37</div>
+        <div class="stat-label">中性文章</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" style="color: #ef4444">4</div>
+        <div class="stat-label">看跌文章</div>
+      </div>
+    </div>
+    
+    <div id="sentimentChart" class="chart-container"></div>
+    
+    <div class="articles">
+      <h2>📰 相关文章 (56篇)</h2>
+      
+        <div class="article-item">
+          <div class="article-title">Inside the Quest at Colossus to Replace Visa and Mastercard With KYC-Less Crypto Cards</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 18:15:22</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Samsung is &#8216;very interested&#8217; in letting you vibe code on Galaxy phones</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:11</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Ethereum co-founder Jeffrey Wilcke sends $157M in ETH to Kraken after months of wallet silence</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:55:36</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">State of 1inch Q4 2025</div>
+          <div class="article-meta">📊 数据分析与研究 · 2026/3/7 17:43:06</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">A Valuation of LayerZero</div>
+          <div class="article-meta">📊 数据分析与研究 · 2026/3/7 17:43:06</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Curve Accuses PancakeSwap of Using Stableswap Code Without Authorization</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:41</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Treasury Staking Initiative</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">This Is Fine (Until the Grant Runs Out)</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">The Ethereum Foundation's Commitment to DeFi</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Announcing the Platform Team at EF</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Ethereum Protocol Studies 2026</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">An update from Tomasz</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Introducing the EF Academic Secretariat 2026 PhD Fellowship</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Trillion Dollar Security Day at Devconnect</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Executive Leadership Update</div>
+          <div class="article-meta">🔧 DeFi与以太坊生态 · 2026/3/7 17:42:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Ethena&#8217;s price slips 15% from its weekly high &#8211; Deeper losses ahead?</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:34</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Are &#8216;busy&#8217; Ethereum whales a sign of big players getting ready for a big move?</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:34</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Bitcoin On-Chain Data Identifies Unusual Market Cap Behavior &#8211; Details</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:33</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Ethereum Rising Wedge Warning: Breakdown Could Send Price Toward $1,500</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:33</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Solana Rally Over? SOL Risks 2022-Like Correction As Price Erases Mid-Week Recovery</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:33</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Crypto ETFs Stay Red: Bitcoin Loses $349 Million in Friday Pullback</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:28</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Bank of Canada pilot issues country’s first tokenized bond</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:27</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">USDC beats Tether as stablecoin transfer volume hits $1.8T all-time high</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:27</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Bitcoin slips below $68,000 as dollar posts steepest weekly gain in a year</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:25</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Iran war could make affordability bigger issue in 2026 elections</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 17:40:59</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">A Japanese ‘conman’ tried to sell an undercover DEA agent nuclear materials – but how did he get them?</div>
+          <div class="article-meta">📰 国际主流媒体 · 2026/3/7 17:40:22</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Rethinking the Stack: AI-Native Operating Systems and Tools</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/7 17:39:13</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">AI is a Mood, Not A Method essay</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/7 17:38:30</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">关于ETH的一个小问题</div>
+          <div class="article-meta">💻 技术社区 · 2026/3/7 15:34:40</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">EC-Council Expands AI Certification Portfolio to Strengthen U.S. AI Workforce Readiness and Security</div>
+          <div class="article-meta">🛡️ 网络安全 · 2026/3/7 15:13:48</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">The Multi-Model Database for AI Agents: Deploy SurrealDB with Docker Extension</div>
+          <div class="article-meta">📦 编程语言与框架 · 2026/3/7 15:13:44</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Open WebUI + Docker Model Runner: Self-Hosted Models, Zero Configuration</div>
+          <div class="article-meta">📦 编程语言与框架 · 2026/3/7 15:13:44</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Angular support for generating apps in Google AI Studio is now available</div>
+          <div class="article-meta">📦 编程语言与框架 · 2026/3/7 15:13:31</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Product ethics have never mattered more</div>
+          <div class="article-meta">📱 产品与设计 · 2026/3/7 15:13:14</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">These 6 stocks could be major winners of an upcoming optics &#x2018;supercycle&#x2019;</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 15:12:55</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Rising together: Anand Mahindra’s creative philosophy</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 15:12:53</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Gaming’s next growth era: Unlocking the value of attention</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 15:12:53</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">AI’s impact on European online classifieds: Greater threat or catalyst?</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 15:12:53</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Gen Z is hacking the exorbitant costs of live events by ditching Coachella and opting for something actually affordable. Meet Breakaway</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 15:12:50</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Can LLM Embeddings Improve Time Series Forecasting? A Practical Feature Engineering Approach</div>
+          <div class="article-meta">🤖 AI 与人工智能 · 2026/3/7 15:12:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">AI to help researchers see the bigger picture in cell biology</div>
+          <div class="article-meta">🤖 AI 与人工智能 · 2026/3/7 15:12:35</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">New method could increase LLM training efficiency</div>
+          <div class="article-meta">🤖 AI 与人工智能 · 2026/3/7 15:12:35</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Exposing biases, moods, personalities, and abstract concepts hidden in large language models</div>
+          <div class="article-meta">🤖 AI 与人工智能 · 2026/3/7 15:12:35</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Best Cellphone Plans of 2026: Our Top Picks</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:24</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Pay As a Local</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:11:45</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">The Algorithm That Powers Your X (Twitter) Post</div>
+          <div class="article-meta">📮 技术周刊 · 2026/3/7 15:04:59</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Building Prometheus: How Backend Aggregation Enables Gigawatt-Scale AI Clusters</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:04:53</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Metronome + Stripe：构建计费的未来</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:22:05</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">AI 代理能否构建真正的 Stripe 集成？我们建立了一个基准来找出答案</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:22:05</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">0Din: A GenAI Bug Bounty Program – Securing Tomorrow’s AI Together</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:22:01</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">再见innerHTML，你好setHTML：Firefox 148 中更强的 XSS 保护</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:22:01</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">AWS Security Hub Extended 通过精选的合作伙伴解决方案提供全栈企业安全性</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:21:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">与前往 KotlinConf 2026 的第一批演讲者会面</div>
+          <div class="article-meta">📦 编程语言官方博客 · 2026/3/5 19:21:54</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">开始使用 Popover API</div>
+          <div class="article-meta">🎨 前端 &amp; 设计 · 2026/3/5 19:21:36</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">询问技术专家：人工智能如何理解我的视觉搜索？</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/5 19:21:01</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">D4RT：教人工智能从四个维度看世界</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/5 19:21:00</div>
+        </div>
+      
+    </div>
+    
+    <div class="timestamp">生成时间: 2026/3/8 15:57:54</div>
+  </div>
+  
+  <script>
+    const chart = echarts.init(document.getElementById('sentimentChart'));
+    const option = {
+      title: { text: '情感分布', left: 'center' },
+      tooltip: { trigger: 'item' },
+      series: [{
+        type: 'pie',
+        radius: ['40%', '70%'],
+        data: [
+          { value: 15, name: '看涨', itemStyle: { color: '#22c55e' } },
+          { value: 37, name: '中性', itemStyle: { color: '#64748b' } },
+          { value: 4, name: '看跌', itemStyle: { color: '#ef4444' } }
+        ],
+        label: { formatter: '{b}: {c} ({d}%)' }
+      }]
+    };
+    chart.setOption(option);
+  </script>
+</body>
+</html>
