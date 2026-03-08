@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>纳斯达克/美股情感分析报告</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header { text-align: center; margin-bottom: 30px; }
+    h1 { color: #333; margin: 0; }
+    .score-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; text-align: center; margin: 20px 0; }
+    .score-value { font-size: 48px; font-weight: bold; }
+    .score-label { font-size: 24px; margin-top: 10px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 30px 0; }
+    .stat-card { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; }
+    .stat-number { font-size: 32px; font-weight: bold; color: #667eea; }
+    .stat-label { color: #666; margin-top: 5px; }
+    .warning { background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .articles { margin-top: 30px; }
+    .article-item { padding: 15px; border-bottom: 1px solid #eee; }
+    .article-title { font-weight: bold; color: #333; }
+    .article-meta { color: #999; font-size: 14px; margin-top: 5px; }
+    .timestamp { text-align: center; color: #999; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📈 纳斯达克/美股情感分析报告</h1>
+    </div>
+    
+    
+    <div class="score-card">
+      <div class="score-value">+1.63</div>
+      <div class="score-label" style="color: #64748b">中性 (Neutral)</div>
+    </div>
+    
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" style="color: #22c55e">10</div>
+        <div class="stat-label">看涨文章</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" style="color: #64748b">73</div>
+        <div class="stat-label">中性文章</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" style="color: #ef4444">3</div>
+        <div class="stat-label">看跌文章</div>
+      </div>
+    </div>
+    
+    <div class="articles">
+      <h2>📰 相关文章 (86篇)</h2>
+      
+        <div class="article-item">
+          <div class="article-title">M5 Pro and M5 Max are surprisingly big departures from older Apple Silicon</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:18</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">The $599 MacBook Neo is Apple&#039;s long-awaited colorful, lower-cost MacBook</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:18</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google Pixel 10a review: The sidegrade</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:18</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">MacBook Neo hands-on: Apple build quality at a substantially lower price</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:18</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google and Epic announce settlement to end app store antitrust case</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:17</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Amazon appears to be down, with over 20,000 reported problems</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:17</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Workers report watching Ray-Ban Meta-shot footage of people using the bathroom</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:17</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Apple&#039;s 512GB Mac Studio vanishes, a quiet acknowledgment of the RAM shortage</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:17</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google Messages starts rolling out ‘Tap to Draft’ for Smart Replies</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:13</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google Home voice commands should be &#8216;snappier&#8217; with fewer errors in new update</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:13</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Apple TV has two new sci-fi series coming as spinoffs to beloved hits</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:12</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Apple adds Steve Lemay and Molly Anderson to its leadership page</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:12</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Apple ran a test on the App Store to see if AI could improve search result rankings</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:12</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Apple @ Work: ABMate gives Apple Business Manager the native Mac app it deserves</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:12</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google Pixel 10a deals: Get a free gift card or Pixel Buds 2a</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:11</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Apple's HomePad gets delayed again, rumor claims</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:09</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google Pixel 11 Pro XL design changes hinted at by case leak</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:09</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Weekly deals: Samsung Galaxy S26 series on sale, iPhone 17e, Nothing Phone (4a), Apple MacBook Neo on pre-order</div>
+          <div class="article-meta">📲 消费电子媒体 · 2026/3/7 17:56:09</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Microsoft Reveals ClickFix Campaign Using Windows Terminal to Deploy Lumma Stealer</div>
+          <div class="article-meta">🛡️ 安全资讯 · 2026/3/7 17:53:18</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Nasdaq Wants Investors to Make Yes or No Bets on Its Index amid Event-Trading Boom</div>
+          <div class="article-meta">🏛️ 监管与机构新闻 · 2026/3/7 17:42:52</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google says Anthropic AI will remain available on Google Cloud despite Pentagon risk designation</div>
+          <div class="article-meta">💰 综合加密货币新闻 · 2026/3/7 17:42:32</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Demystifying GCP: Generate Clear Google Cloud Platform Diagrams Automatically with Coordimap</div>
+          <div class="article-meta">🎨 前端 &amp; 设计 · 2026/3/7 17:39:36</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Tech Layoffs Are Not About AI: An Insider View from a Former Amazon Manager [video]</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/7 15:34:33</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Microsoft: Hackers abusing AI at every stage of cyberattacks</div>
+          <div class="article-meta">🛡️ 网络安全 · 2026/3/7 15:32:35</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">🚀 Google Workspace CLI Is Here — A Game‑Changer for Developers &amp; AI Agents</div>
+          <div class="article-meta">🎨 前端 &amp; 设计 · 2026/3/7 15:29:48</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google GTIG: 90 zero-day flaws exploited in 2025 as enterprise targets grow</div>
+          <div class="article-meta">🛡️ 网络安全 · 2026/3/7 15:13:56</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">U.S. CISA adds Apple, Rockwell, and Hikvision  flaws to its Known Exploited Vulnerabilities catalog</div>
+          <div class="article-meta">🛡️ 网络安全 · 2026/3/7 15:13:56</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Microsoft warns of ClickFix campaign exploiting Windows Terminal to deliver Lumma Stealer</div>
+          <div class="article-meta">🛡️ 网络安全 · 2026/3/7 15:13:56</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google Patches Chrome&#8217;s Fifth Zero-Day of the Year</div>
+          <div class="article-meta">🛡️ 网络安全 · 2026/3/7 15:13:53</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Microsoft 365 Backup to add file-level restore for faster recovery</div>
+          <div class="article-meta">🛡️ 网络安全 · 2026/3/7 15:13:48</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Docker Model Runner Brings vLLM to macOS with Apple Silicon</div>
+          <div class="article-meta">📦 编程语言与框架 · 2026/3/7 15:13:44</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Angular support for generating apps in Google AI Studio is now available</div>
+          <div class="article-meta">📦 编程语言与框架 · 2026/3/7 15:13:31</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">&quot;We&#039;re certainly not making any compromises on the design&quot; says Apple&#039;s head of design</div>
+          <div class="article-meta">🎨 设计与创意 · 2026/3/7 15:13:05</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Perforated floors cast dappled light through London extension by ConForm Architects</div>
+          <div class="article-meta">🎨 设计与创意 · 2026/3/7 15:13:05</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google, Meta and the AI &#8216;hyperscalers&#8217; are on a $1 trillion borrowing binge after years of printing cash. Here&#8217;s why Big Tech&#8217;s pivot to debt matters</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 15:12:50</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Stocks Sink in Broad AI Rout Sparked by China's DeepSeek</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 15:12:47</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google joins Microsoft in telling users Anthropic is still available outside defense projects</div>
+          <div class="article-meta">💰 金融与商业 · 2026/3/7 15:12:46</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">How to Combine LLM Embeddings + TF-IDF + Metadata in One Scikit-learn Pipeline</div>
+          <div class="article-meta">🤖 AI 与人工智能 · 2026/3/7 15:12:39</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Apple wasn't at the world's biggest Android show - but its influence was all I could see</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:29</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Everything Apple announced this week: $599 MacBook Neo, M5 Pro, iPhone 17e, and more</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:29</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Motorola Razr Fold hands-on: This beats Samsung and Google Pixel in notable ways</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:29</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google Workspace CLI brings Gmail, Docs, Sheets and more into a common interface for AI agents</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:27</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">OpenAI launches GPT-5.4 with native computer use mode, financial plugins for Microsoft Excel, Google Sheets</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:27</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google PM open-sources Always On Memory Agent, ditching vector databases for LLM-driven persistent memory</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:27</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">F1 2026: Everything to Know About Streaming on Apple TV This Season</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:24</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google&#039;s new command-line tool can plug OpenClaw into your Workspace data</div>
+          <div class="article-meta">💻 科技与互联网 · 2026/3/7 15:12:21</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Access public data insights faster: Data Commons MCP is now hosted on Google Cloud</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:11:43</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Get ready for Google I/O 2026</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:11:43</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">On-Device Function Calling in Google AI Edge Gallery</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:11:43</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">How we built the Google I/O 2026 Save the Date experience</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:11:43</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">You can't stream the energy: A developer's guide to Google Cloud Next '26 in Vegas</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:11:43</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Adapting the Facebook Reels RecSys AI Model Based on User Feedback</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:04:54</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">FFmpeg at Meta: Media Processing at Scale</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:04:53</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Investing in Infrastructure: Meta’s Renewed Commitment to jemalloc</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/7 15:04:53</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google's new command-line tool can plug OpenClaw into your Workspace data</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/7 15:03:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">The Best Google Pixel Phones of 2026, Tested and Reviewed</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/7 15:03:57</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">How to Avoid Getting Locked Out of Your Google Account</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/7 15:03:57</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Microsoft, Google, Amazon say Anthropic Claude remains available to non-defense customers</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/7 15:03:50</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">多家国外科技媒体流量暴跌逾 85%，谷歌“AI 概览”或引发媒体行业巨震</div>
+          <div class="article-meta">📰 新闻资讯 · 2026/3/7 15:03:49</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Ask HN: Which third-party Mac apps feel indistinguishable from Apple apps?</div>
+          <div class="article-meta">💻 技术社区 · 2026/3/7 15:03:46</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Uploading Pirated Books via BitTorrent Qualifies as Fair Use, Meta Argues</div>
+          <div class="article-meta">💻 技术社区 · 2026/3/7 15:03:44</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">FASTEST LLM decode engine on Apple Silicon. 658 tok/s on M4-Max,beats MLX by 19%</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/7 15:03:34</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">AWS 每周综述：Amazon Bedrock 中的 Claude Opus 4.6、AWS Builder ID 使用 Apple 登录等（2026 年 2 月 9 日）</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:21:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">在 Amazon Lightsail 上推出 OpenClaw 以运行您的自主私有 AI 代理</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:21:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">AWS 每周综述：Amazon Bedrock 中的 Claude Sonnet 4.6、GovCloud 区域中的 Kiro、新代理插件等（2026 年 2 月 23 日）</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:21:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">由第五代 AMD EPYC 处理器提供支持的 Amazon EC2 Hpc8a 实例现已推出</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:21:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">AWS 每周综述：Amazon EC2 M8azn 实例、Amazon Bedrock 中的新开放权重模型等（2026 年 2 月 16 日）</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:21:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">具有高达 22.8 TB 本地 NVMe 存储的 Amazon EC2 C8id、M8id 和 R8id 实例现已上市</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:21:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">宣布推出适用于自定义 Amazon Nova 模型的 Amazon SageMaker Inference</div>
+          <div class="article-meta">🏢 大厂技术博客 · 2026/3/5 19:21:58</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google推出iOS版Quick Share，打通安卓到苹果设备的文件传输壁垒</div>
+          <div class="article-meta">🛡️ 安全资讯 · 2026/3/5 19:21:35</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">神经损伤、能量管理和 Apple TV：2026 年 F1 今日开赛</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/5 19:21:28</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">特价 MacBook Neo 暴露了苹果另一款关键产品的疯狂价格</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/5 19:21:28</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">苹果禁止美国用户下载字节跳动的中文应用</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/5 19:21:28</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">在工作人员审查裸露、性爱和其他镜头后，Meta因人工智能智能眼镜的隐私问题而被起诉</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/5 19:21:26</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">谷歌表示 2025 年追踪到的所有零日漏洞中有一半针对的是有缺陷的企业技术</div>
+          <div class="article-meta">🌐 科技媒体 · 2026/3/5 19:21:26</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">遏制网络赌博及虚假信息不力，Meta 遭印尼政府严厉警告</div>
+          <div class="article-meta">📰 新闻资讯 · 2026/3/5 19:21:25</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">基于 FreeRTOS 的复古风桌面系统 FRANK OS 1.0 发布，界面酷似微软 Windows 95</div>
+          <div class="article-meta">📰 新闻资讯 · 2026/3/5 19:21:25</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">苹果新款 Apple TV 与 HomePod mini 缺席，或因 Siri 未就绪</div>
+          <div class="article-meta">📰 新闻资讯 · 2026/3/5 19:21:25</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">派早报：Apple 发布 M5 系列芯片及 Studio Display、MacBook 系列新品</div>
+          <div class="article-meta">💻 技术社区 · 2026/3/5 19:21:24</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">派早报：Apple 推出 MacBook Neo、Setapp 调整商业模式等</div>
+          <div class="article-meta">💻 技术社区 · 2026/3/5 19:21:24</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Google Workspace CLI</div>
+          <div class="article-meta">💻 技术社区 · 2026/3/5 19:21:22</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Apple Silicon 上的 Nvidia PersonaPlex 7B：Swift 中的全双工语音到语音</div>
+          <div class="article-meta">💻 技术社区 · 2026/3/5 19:21:21</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Stability AI 和 NVIDIA 通过 Stable Diffusion 3.5 NIM 带来更快的性能并简化企业部署</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/5 19:21:11</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Stability AI 为 Amazon Bedrock 带来图像服务，通过企业级基础设施提供端到端创意控制</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/5 19:21:11</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">Amazon Lightsail 现已提供 OpenClaw，这是一款私人自托管 AI 助手</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/5 19:21:07</div>
+        </div>
+      
+        <div class="article-item">
+          <div class="article-title">谷歌和马萨诸塞州人工智能中心正在为联邦启动一项新的人工智能培训计划。</div>
+          <div class="article-meta">🤖 AI 专题 · 2026/3/5 19:21:01</div>
+        </div>
+      
+    </div>
+    
+    
+    <div class="timestamp">生成时间: 2026/3/8 17:58:10</div>
+  </div>
+</body>
+</html>
