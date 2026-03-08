@@ -3,921 +3,705 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>全球市值排行榜 - 纳斯达克 | 虚拟币 | 港股 | A股</title>
+  <title>全球市值排行榜</title>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    .header {
-      text-align: center;
-      color: white;
-      margin-bottom: 30px;
-    }
-    .header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-    .header p {
-      opacity: 0.9;
-      font-size: 1.1rem;
-    }
-    .markets-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    @media (max-width: 1200px) {
-      .markets-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 768px) {
-      .markets-grid { grid-template-columns: 1fr; }
-    }
-    .market-column {
-      background: white;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    }
-    .column-header {
-      padding: 20px;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .column-icon {
-      font-size: 2rem;
-    }
-    .column-title {
-      font-size: 1.3rem;
-      font-weight: bold;
-      flex: 1;
-    }
-    .column-total {
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-    .column-body {
-      padding: 10px;
-    }
-    .stock-item {
-      display: flex;
-      align-items: center;
-      padding: 12px;
-      border-bottom: 1px solid #f0f0f0;
-      transition: background 0.2s;
-    }
-    .stock-item:hover {
-      background: #f8f9fa;
-    }
-    .stock-item:last-child {
-      border-bottom: none;
-    }
-    .stock-rank {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: #f0f0f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 0.9rem;
-      margin-right: 12px;
-    }
-    .stock-rank.top3 {
-      background: linear-gradient(135deg, #ffd700, #ffed4e);
-      color: #333;
-    }
-    .stock-info {
-      flex: 1;
-    }
-    .stock-name {
-      font-weight: 600;
-      color: #333;
-      font-size: 0.95rem;
-    }
-    .stock-code {
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 2px;
-    }
-    .stock-data {
-      text-align: right;
-    }
-    .stock-cap {
-      font-weight: bold;
-      color: #333;
-      font-size: 0.95rem;
-    }
-    .stock-price {
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 2px;
-    }
-    .column-footer {
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: bold;
-      color: #333;
-    }
-    .footer-total {
-      font-size: 1.2rem;
-    }
-    .charts-section {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-    @media (max-width: 1024px) {
-      .charts-section { grid-template-columns: 1fr; }
-    }
-    .chart-container {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    }
-    .chart-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    .chart {
-      width: 100%;
-      height: 400px;
-    }
-    .summary-section {
-      background: white;
-      border-radius: 16px;
-      padding: 30px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      text-align: center;
-    }
-    .summary-title {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 20px;
-    }
-    .summary-stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-    @media (max-width: 768px) {
-      .summary-stats { grid-template-columns: repeat(2, 1fr); }
-    }
-    .stat-item {
-      padding: 20px;
-      border-radius: 12px;
-      color: white;
-    }
-    .stat-value {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    .stat-label {
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-    .grand-total {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #667eea;
-      margin-top: 20px;
-    }
-    .footer {
-      text-align: center;
-      color: white;
-      margin-top: 30px;
-      opacity: 0.8;
-    }
-    .back-link {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 12px 30px;
-      background: white;
-      color: #667eea;
-      text-decoration: none;
-      border-radius: 25px;
-      font-weight: bold;
-      transition: transform 0.2s;
-    }
-    .back-link:hover {
-      transform: translateY(-2px);
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 15px; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    .header { text-align: center; color: white; margin-bottom: 20px; }
+    .header h1 { font-size: 2rem; margin-bottom: 5px; }
+    .header p { opacity: 0.9; font-size: 0.9rem; }
+    
+    /* 四列布局 - 紧凑样式 */
+    .markets-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    @media (max-width: 1200px) { .markets-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .markets-grid { grid-template-columns: 1fr; } }
+    
+    .market-column { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .column-header { padding: 10px 12px; color: white; display: flex; align-items: center; gap: 6px; }
+    .column-icon { font-size: 1.3rem; }
+    .column-title { font-size: 0.95rem; font-weight: bold; flex: 1; }
+    .column-total { font-size: 0.75rem; opacity: 0.95; }
+    .column-body { padding: 4px; }
+    .stock-item { display: flex; align-items: center; padding: 5px 6px; border-bottom: 1px solid #f0f0f0; }
+    .stock-item:last-child { border-bottom: none; }
+    .stock-rank { width: 18px; height: 18px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.65rem; margin-right: 6px; flex-shrink: 0; }
+    .stock-info { flex: 1; min-width: 0; }
+    .stock-name { font-weight: 600; color: #333; font-size: 0.8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .stock-code { font-size: 0.65rem; color: #888; margin-top: 1px; }
+    .stock-data { text-align: right; flex-shrink: 0; }
+    .stock-cap { font-weight: bold; color: #333; font-size: 0.75rem; }
+    .stock-price { font-size: 0.65rem; color: #666; margin-top: 1px; }
+    .column-footer { padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: bold; color: #333; }
+    .footer-total { font-size: 0.95rem; }
+    
+    /* 图表区域 */
+    .charts-section { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px; }
+    @media (max-width: 1024px) { .charts-section { grid-template-columns: 1fr; } }
+    .chart-container { background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    .chart-title { font-size: 1rem; font-weight: bold; color: #333; margin-bottom: 10px; text-align: center; }
+    .chart { width: 100%; height: 350px; }
+    
+    /* 底部统计 */
+    .summary-section { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); text-align: center; margin-bottom: 15px; }
+    .summary-title { font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 15px; }
+    .summary-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
+    @media (max-width: 768px) { .summary-stats { grid-template-columns: repeat(2, 1fr); } }
+    .stat-item { padding: 12px 8px; border-radius: 8px; color: white; }
+    .stat-value { font-size: 1.4rem; font-weight: bold; margin-bottom: 2px; }
+    .stat-label { font-size: 0.75rem; opacity: 0.9; }
+    .grand-total { font-size: 1.8rem; font-weight: bold; color: #667eea; }
+    .footer { text-align: center; color: white; margin-top: 15px; opacity: 0.8; font-size: 0.8rem; }
+    .back-link { display: inline-block; margin-top: 10px; padding: 8px 20px; background: white; color: #667eea; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>🌍 全球市值排行榜</h1>
-      <p>纳斯达克 | 虚拟币 | 港股 | A股 · 前10名市值对比</p>
+      <p>纳斯达克 | 虚拟币 | 港股 | A股 · TOP 10对比</p>
     </div>
-
+    
     <div class="markets-grid">
-      
-    <div class="market-column">
-      <div class="column-header" style="background: #3b82f6">
-        <span class="column-icon">📈</span>
-        <span class="column-title">纳斯达克</span>
-        <span class="column-total">$23.79万亿</span>
+      <div class="market-column">
+        <div class="column-header" style="background: #3b82f6">
+          <span class="column-icon">📈</span>
+          <span class="column-title">纳斯达克</span>
+          <span class="column-total">$23.8万亿</span>
+        </div>
+        <div class="column-body">
+          
+            <div class="stock-item">
+              <div class="stock-rank">1</div>
+              <div class="stock-info">
+                <div class="stock-name">NVIDIA</div>
+                <div class="stock-code">NVDA</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">43.2k亿</div>
+                <div class="stock-price">$177.82</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">2</div>
+              <div class="stock-info">
+                <div class="stock-name">Apple</div>
+                <div class="stock-code">AAPL</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">37.8k亿</div>
+                <div class="stock-price">$257.46</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">3</div>
+              <div class="stock-info">
+                <div class="stock-name">Microsoft</div>
+                <div class="stock-code">MSFT</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">30.4k亿</div>
+                <div class="stock-price">$408.96</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">4</div>
+              <div class="stock-info">
+                <div class="stock-name">Amazon</div>
+                <div class="stock-code">AMZN</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">22.9k亿</div>
+                <div class="stock-price">$213.21</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">5</div>
+              <div class="stock-info">
+                <div class="stock-name">Meta</div>
+                <div class="stock-code">META</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">16.3k亿</div>
+                <div class="stock-price">$644.86</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">6</div>
+              <div class="stock-info">
+                <div class="stock-name">Tesla</div>
+                <div class="stock-code">TSLA</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">14.9k亿</div>
+                <div class="stock-price">$396.73</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">7</div>
+              <div class="stock-info">
+                <div class="stock-name">Broadcom</div>
+                <div class="stock-code">AVGO</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">15.7k亿</div>
+                <div class="stock-price">$330.48</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">8</div>
+              <div class="stock-info">
+                <div class="stock-name">Alphabet</div>
+                <div class="stock-code">GOOGL</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">36.1k亿</div>
+                <div class="stock-price">$298.3</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">9</div>
+              <div class="stock-info">
+                <div class="stock-name">Berkshire</div>
+                <div class="stock-code">BRK-B</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">10.8k亿</div>
+                <div class="stock-price">$498.98</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">10</div>
+              <div class="stock-info">
+                <div class="stock-name">Walmart</div>
+                <div class="stock-code">WMT</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">9.9k亿</div>
+                <div class="stock-price">$123.8</div>
+              </div>
+            </div>
+          
+        </div>
+        <div class="column-footer" style="background: #3b82f615">
+          <span>合计</span>
+          <span class="footer-total">$23.79万亿</span>
+        </div>
       </div>
-      <div class="column-body">
-        
-          <div class="stock-item">
-            <div class="stock-rank">1</div>
-            <div class="stock-info">
-              <div class="stock-name">NVIDIA</div>
-              <div class="stock-code">NVDA</div>
+    
+      <div class="market-column">
+        <div class="column-header" style="background: #f59e0b">
+          <span class="column-icon">₿</span>
+          <span class="column-title">虚拟币</span>
+          <span class="column-total">$2.1万亿</span>
+        </div>
+        <div class="column-body">
+          
+            <div class="stock-item">
+              <div class="stock-rank">1</div>
+              <div class="stock-info">
+                <div class="stock-name">Bitcoin</div>
+                <div class="stock-code">BTC</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">13.5k亿</div>
+                <div class="stock-price">$67724.41</div>
+              </div>
             </div>
-            <div class="stock-data">
-              <div class="stock-cap">$43.21千亿</div>
-              <div class="stock-price">$177.82</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">2</div>
+              <div class="stock-info">
+                <div class="stock-name">Ethereum</div>
+                <div class="stock-code">ETH</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">2.4k亿</div>
+                <div class="stock-price">$1963.75</div>
+              </div>
             </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">2</div>
-            <div class="stock-info">
-              <div class="stock-name">Apple</div>
-              <div class="stock-code">AAPL</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">3</div>
+              <div class="stock-info">
+                <div class="stock-name">Tether</div>
+                <div class="stock-code">USDT</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">1.8k亿</div>
+                <div class="stock-price">$1</div>
+              </div>
             </div>
-            <div class="stock-data">
-              <div class="stock-cap">$37.84千亿</div>
-              <div class="stock-price">$257.46</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">4</div>
+              <div class="stock-info">
+                <div class="stock-name">BNB</div>
+                <div class="stock-code">BNB</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">846亿</div>
+                <div class="stock-price">$620.29</div>
+              </div>
             </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">3</div>
-            <div class="stock-info">
-              <div class="stock-name">Microsoft</div>
-              <div class="stock-code">MSFT</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">5</div>
+              <div class="stock-info">
+                <div class="stock-name">XRP</div>
+                <div class="stock-code">XRP</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">834亿</div>
+                <div class="stock-price">$1.36</div>
+              </div>
             </div>
-            <div class="stock-data">
-              <div class="stock-cap">$30.39千亿</div>
-              <div class="stock-price">$408.96</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">6</div>
+              <div class="stock-info">
+                <div class="stock-name">Solana</div>
+                <div class="stock-code">SOL</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">475亿</div>
+                <div class="stock-price">$83.18</div>
+              </div>
             </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">4</div>
-            <div class="stock-info">
-              <div class="stock-name">Amazon</div>
-              <div class="stock-code">AMZN</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">7</div>
+              <div class="stock-info">
+                <div class="stock-name">USDC</div>
+                <div class="stock-code">USDC</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">772亿</div>
+                <div class="stock-price">$1</div>
+              </div>
             </div>
-            <div class="stock-data">
-              <div class="stock-cap">$22.88千亿</div>
-              <div class="stock-price">$213.21</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">8</div>
+              <div class="stock-info">
+                <div class="stock-name">TRON</div>
+                <div class="stock-code">TRX</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">272亿</div>
+                <div class="stock-price">$0.29</div>
+              </div>
             </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">5</div>
-            <div class="stock-info">
-              <div class="stock-name">Meta</div>
-              <div class="stock-code">META</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">9</div>
+              <div class="stock-info">
+                <div class="stock-name">Dogecoin</div>
+                <div class="stock-code">DOGE</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">152亿</div>
+                <div class="stock-price">$0.09</div>
+              </div>
             </div>
-            <div class="stock-data">
-              <div class="stock-cap">$16.31千亿</div>
-              <div class="stock-price">$644.86</div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">10</div>
+              <div class="stock-info">
+                <div class="stock-name">Cardano</div>
+                <div class="stock-code">ADA</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">92亿</div>
+                <div class="stock-price">$0.25</div>
+              </div>
             </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">6</div>
-            <div class="stock-info">
-              <div class="stock-name">Tesla</div>
-              <div class="stock-code">TSLA</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$14.88千亿</div>
-              <div class="stock-price">$396.73</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">7</div>
-            <div class="stock-info">
-              <div class="stock-name">Broadcom</div>
-              <div class="stock-code">AVGO</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$15.66千亿</div>
-              <div class="stock-price">$330.48</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">8</div>
-            <div class="stock-info">
-              <div class="stock-name">Alphabet</div>
-              <div class="stock-code">GOOGL</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$36.08千亿</div>
-              <div class="stock-price">$298.3</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">9</div>
-            <div class="stock-info">
-              <div class="stock-name">Berkshire</div>
-              <div class="stock-code">BRK-B</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$10.76千亿</div>
-              <div class="stock-price">$498.98</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">10</div>
-            <div class="stock-info">
-              <div class="stock-name">Walmart</div>
-              <div class="stock-code">WMT</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$9.87千亿</div>
-              <div class="stock-price">$123.8</div>
-            </div>
-          </div>
-        
+          
+        </div>
+        <div class="column-footer" style="background: #f59e0b15">
+          <span>合计</span>
+          <span class="footer-total">$2.12万亿</span>
+        </div>
       </div>
-      <div class="column-footer" style="background: #3b82f620">
-        <span>总市值</span>
-        <span class="footer-total">$23.79万亿</span>
+    
+      <div class="market-column">
+        <div class="column-header" style="background: #ef4444">
+          <span class="column-icon">🇭🇰</span>
+          <span class="column-title">港股</span>
+          <span class="column-total">$0.5万亿</span>
+        </div>
+        <div class="column-body">
+          
+            <div class="stock-item">
+              <div class="stock-rank">1</div>
+              <div class="stock-info">
+                <div class="stock-name">友邦保险</div>
+                <div class="stock-code">1299.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">1.1k亿</div>
+                <div class="stock-price">$10.94</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">2</div>
+              <div class="stock-info">
+                <div class="stock-name">港交所</div>
+                <div class="stock-code">0388.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">671亿</div>
+                <div class="stock-price">$53.06</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">3</div>
+              <div class="stock-info">
+                <div class="stock-name">中银香港</div>
+                <div class="stock-code">2388.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">572亿</div>
+                <div class="stock-price">$5.41</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">4</div>
+              <div class="stock-info">
+                <div class="stock-name">怡和洋行</div>
+                <div class="stock-code">J36.SI</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">544亿</div>
+                <div class="stock-price">$75.51</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">5</div>
+              <div class="stock-info">
+                <div class="stock-name">新鸿基地产</div>
+                <div class="stock-code">0016.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">526亿</div>
+                <div class="stock-price">$18.15</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">6</div>
+              <div class="stock-info">
+                <div class="stock-name">太古股份</div>
+                <div class="stock-code">0019.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">377亿</div>
+                <div class="stock-price">$10.4</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">7</div>
+              <div class="stock-info">
+                <div class="stock-name">中国联通</div>
+                <div class="stock-code">0762.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">307亿</div>
+                <div class="stock-price">$1</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">8</div>
+              <div class="stock-info">
+                <div class="stock-name">长和系</div>
+                <div class="stock-code">0001.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">301亿</div>
+                <div class="stock-price">$7.87</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">9</div>
+              <div class="stock-info">
+                <div class="stock-name">华润置地</div>
+                <div class="stock-code">1109.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">282亿</div>
+                <div class="stock-price">$3.95</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">10</div>
+              <div class="stock-info">
+                <div class="stock-name">港铁公司</div>
+                <div class="stock-code">0066.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">281亿</div>
+                <div class="stock-price">$4.52</div>
+              </div>
+            </div>
+          
+        </div>
+        <div class="column-footer" style="background: #ef444415">
+          <span>合计</span>
+          <span class="footer-total">$0.50万亿</span>
+        </div>
+      </div>
+    
+      <div class="market-column">
+        <div class="column-header" style="background: #22c55e">
+          <span class="column-icon">🇨🇳</span>
+          <span class="column-title">A股</span>
+          <span class="column-total">$3.2万亿</span>
+        </div>
+        <div class="column-body">
+          
+            <div class="stock-item">
+              <div class="stock-rank">1</div>
+              <div class="stock-info">
+                <div class="stock-name">腾讯控股</div>
+                <div class="stock-code">0700.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">5.9k亿</div>
+                <div class="stock-price">$65.44</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">2</div>
+              <div class="stock-info">
+                <div class="stock-name">工商银行</div>
+                <div class="stock-code">1398.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">3.7k亿</div>
+                <div class="stock-price">$0.82</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">3</div>
+              <div class="stock-info">
+                <div class="stock-name">建设银行</div>
+                <div class="stock-code">601939.SS</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">3.4k亿</div>
+                <div class="stock-price">$1.3</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">4</div>
+              <div class="stock-info">
+                <div class="stock-name">农业银行</div>
+                <div class="stock-code">601288.SS</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">3.4k亿</div>
+                <div class="stock-price">$0.97</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">5</div>
+              <div class="stock-info">
+                <div class="stock-name">中国石油</div>
+                <div class="stock-code">0857.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">3.3k亿</div>
+                <div class="stock-price">$1.33</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">6</div>
+              <div class="stock-info">
+                <div class="stock-name">阿里巴巴</div>
+                <div class="stock-code">BABA</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">3.1k亿</div>
+                <div class="stock-price">$130.79</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">7</div>
+              <div class="stock-info">
+                <div class="stock-name">贵州茅台</div>
+                <div class="stock-code">600519.SS</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">2.5k亿</div>
+                <div class="stock-price">$203.31</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">8</div>
+              <div class="stock-info">
+                <div class="stock-name">中国银行</div>
+                <div class="stock-code">601988.SS</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">2.5k亿</div>
+                <div class="stock-price">$0.78</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">9</div>
+              <div class="stock-info">
+                <div class="stock-name">宁德时代</div>
+                <div class="stock-code">300750.SZ</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">2.4k亿</div>
+                <div class="stock-price">$51.45</div>
+              </div>
+            </div>
+          
+            <div class="stock-item">
+              <div class="stock-rank">10</div>
+              <div class="stock-info">
+                <div class="stock-name">中国移动</div>
+                <div class="stock-code">0941.HK</div>
+              </div>
+              <div class="stock-data">
+                <div class="stock-cap">2.2k亿</div>
+                <div class="stock-price">$10.09</div>
+              </div>
+            </div>
+          
+        </div>
+        <div class="column-footer" style="background: #22c55e15">
+          <span>合计</span>
+          <span class="footer-total">$3.24万亿</span>
+        </div>
       </div>
     </div>
     
-    <div class="market-column">
-      <div class="column-header" style="background: #f59e0b">
-        <span class="column-icon">₿</span>
-        <span class="column-title">虚拟币</span>
-        <span class="column-total">$2.12万亿</span>
-      </div>
-      <div class="column-body">
-        
-          <div class="stock-item">
-            <div class="stock-rank">1</div>
-            <div class="stock-info">
-              <div class="stock-name">Bitcoin</div>
-              <div class="stock-code">BTC</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$13.54千亿</div>
-              <div class="stock-price">$67,724.41</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">2</div>
-            <div class="stock-info">
-              <div class="stock-name">Ethereum</div>
-              <div class="stock-code">ETH</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$2.37千亿</div>
-              <div class="stock-price">$1,963.75</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">3</div>
-            <div class="stock-info">
-              <div class="stock-name">Tether</div>
-              <div class="stock-code">USDT</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$1.84千亿</div>
-              <div class="stock-price">$1</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">4</div>
-            <div class="stock-info">
-              <div class="stock-name">BNB</div>
-              <div class="stock-code">BNB</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$846亿</div>
-              <div class="stock-price">$620.29</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">5</div>
-            <div class="stock-info">
-              <div class="stock-name">XRP</div>
-              <div class="stock-code">XRP</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$834亿</div>
-              <div class="stock-price">$1.36</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">6</div>
-            <div class="stock-info">
-              <div class="stock-name">Solana</div>
-              <div class="stock-code">SOL</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$475亿</div>
-              <div class="stock-price">$83.18</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">7</div>
-            <div class="stock-info">
-              <div class="stock-name">USDC</div>
-              <div class="stock-code">USDC</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$772亿</div>
-              <div class="stock-price">$1</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">8</div>
-            <div class="stock-info">
-              <div class="stock-name">TRON</div>
-              <div class="stock-code">TRX</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$272亿</div>
-              <div class="stock-price">$0.29</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">9</div>
-            <div class="stock-info">
-              <div class="stock-name">Dogecoin</div>
-              <div class="stock-code">DOGE</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$152亿</div>
-              <div class="stock-price">$0.09</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">10</div>
-            <div class="stock-info">
-              <div class="stock-name">Cardano</div>
-              <div class="stock-code">ADA</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$92亿</div>
-              <div class="stock-price">$0.25</div>
-            </div>
-          </div>
-        
-      </div>
-      <div class="column-footer" style="background: #f59e0b20">
-        <span>总市值</span>
-        <span class="footer-total">$2.12万亿</span>
-      </div>
-    </div>
-    
-    <div class="market-column">
-      <div class="column-header" style="background: #ef4444">
-        <span class="column-icon">🇭🇰</span>
-        <span class="column-title">港股</span>
-        <span class="column-total">$0.50万亿</span>
-      </div>
-      <div class="column-body">
-        
-          <div class="stock-item">
-            <div class="stock-rank">1</div>
-            <div class="stock-info">
-              <div class="stock-name">友邦保险</div>
-              <div class="stock-code">1299.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$1.15千亿</div>
-              <div class="stock-price">$10.94</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">2</div>
-            <div class="stock-info">
-              <div class="stock-name">港交所</div>
-              <div class="stock-code">0388.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$671亿</div>
-              <div class="stock-price">$53.06</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">3</div>
-            <div class="stock-info">
-              <div class="stock-name">中银香港</div>
-              <div class="stock-code">2388.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$572亿</div>
-              <div class="stock-price">$5.41</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">4</div>
-            <div class="stock-info">
-              <div class="stock-name">怡和洋行</div>
-              <div class="stock-code">J36.SI</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$544亿</div>
-              <div class="stock-price">$75.51</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">5</div>
-            <div class="stock-info">
-              <div class="stock-name">新鸿基地产</div>
-              <div class="stock-code">0016.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$526亿</div>
-              <div class="stock-price">$18.15</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">6</div>
-            <div class="stock-info">
-              <div class="stock-name">太古股份</div>
-              <div class="stock-code">0019.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$377亿</div>
-              <div class="stock-price">$10.4</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">7</div>
-            <div class="stock-info">
-              <div class="stock-name">中国联通</div>
-              <div class="stock-code">0762.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$307亿</div>
-              <div class="stock-price">$1</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">8</div>
-            <div class="stock-info">
-              <div class="stock-name">长和系</div>
-              <div class="stock-code">0001.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$301亿</div>
-              <div class="stock-price">$7.87</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">9</div>
-            <div class="stock-info">
-              <div class="stock-name">华润置地</div>
-              <div class="stock-code">1109.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$282亿</div>
-              <div class="stock-price">$3.95</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">10</div>
-            <div class="stock-info">
-              <div class="stock-name">港铁公司</div>
-              <div class="stock-code">0066.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$281亿</div>
-              <div class="stock-price">$4.52</div>
-            </div>
-          </div>
-        
-      </div>
-      <div class="column-footer" style="background: #ef444420">
-        <span>总市值</span>
-        <span class="footer-total">$0.50万亿</span>
-      </div>
-    </div>
-    
-    <div class="market-column">
-      <div class="column-header" style="background: #22c55e">
-        <span class="column-icon">🇨🇳</span>
-        <span class="column-title">A股</span>
-        <span class="column-total">$3.24万亿</span>
-      </div>
-      <div class="column-body">
-        
-          <div class="stock-item">
-            <div class="stock-rank">1</div>
-            <div class="stock-info">
-              <div class="stock-name">腾讯控股</div>
-              <div class="stock-code">0700.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$5.90千亿</div>
-              <div class="stock-price">$65.44</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">2</div>
-            <div class="stock-info">
-              <div class="stock-name">工商银行</div>
-              <div class="stock-code">1398.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$3.66千亿</div>
-              <div class="stock-price">$0.82</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">3</div>
-            <div class="stock-info">
-              <div class="stock-name">建设银行</div>
-              <div class="stock-code">601939.SS</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$3.40千亿</div>
-              <div class="stock-price">$1.3</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">4</div>
-            <div class="stock-info">
-              <div class="stock-name">农业银行</div>
-              <div class="stock-code">601288.SS</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$3.40千亿</div>
-              <div class="stock-price">$0.97</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">5</div>
-            <div class="stock-info">
-              <div class="stock-name">中国石油</div>
-              <div class="stock-code">0857.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$3.27千亿</div>
-              <div class="stock-price">$1.33</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">6</div>
-            <div class="stock-info">
-              <div class="stock-name">阿里巴巴</div>
-              <div class="stock-code">BABA</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$3.12千亿</div>
-              <div class="stock-price">$130.79</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">7</div>
-            <div class="stock-info">
-              <div class="stock-name">贵州茅台</div>
-              <div class="stock-code">600519.SS</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$2.55千亿</div>
-              <div class="stock-price">$203.31</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">8</div>
-            <div class="stock-info">
-              <div class="stock-name">中国银行</div>
-              <div class="stock-code">601988.SS</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$2.52千亿</div>
-              <div class="stock-price">$0.78</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">9</div>
-            <div class="stock-info">
-              <div class="stock-name">宁德时代</div>
-              <div class="stock-code">300750.SZ</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$2.37千亿</div>
-              <div class="stock-price">$51.45</div>
-            </div>
-          </div>
-        
-          <div class="stock-item">
-            <div class="stock-rank">10</div>
-            <div class="stock-info">
-              <div class="stock-name">中国移动</div>
-              <div class="stock-code">0941.HK</div>
-            </div>
-            <div class="stock-data">
-              <div class="stock-cap">$2.21千亿</div>
-              <div class="stock-price">$10.09</div>
-            </div>
-          </div>
-        
-      </div>
-      <div class="column-footer" style="background: #22c55e20">
-        <span>总市值</span>
-        <span class="footer-total">$3.24万亿</span>
-      </div>
-    </div>
-    
-    </div>
-
     <div class="charts-section">
       <div class="chart-container">
-        <div class="chart-title">📊 四大市场市值占比</div>
+        <div class="chart-title">📊 市场占比</div>
         <div id="pieChart" class="chart"></div>
       </div>
       <div class="chart-container">
-        <div class="chart-title">📈 市值排行条形图（Top 40）</div>
+        <div class="chart-title">📈 市值排行 (Top 40)</div>
         <div id="barChart" class="chart"></div>
       </div>
     </div>
-
+    
     <div class="summary-section">
       <div class="summary-title">💰 市场总市值概览</div>
       <div class="summary-stats">
         
           <div class="stat-item" style="background: #3b82f6">
-            <div class="stat-value">$23.79</div>
-            <div class="stat-label">纳斯达克 (万亿)</div>
+            <div class="stat-value">$23.8</div>
+            <div class="stat-label">纳斯达克万亿</div>
           </div>
         
           <div class="stat-item" style="background: #f59e0b">
-            <div class="stat-value">$2.12</div>
-            <div class="stat-label">虚拟币 (万亿)</div>
+            <div class="stat-value">$2.1</div>
+            <div class="stat-label">虚拟币万亿</div>
           </div>
         
           <div class="stat-item" style="background: #ef4444">
-            <div class="stat-value">$0.50</div>
-            <div class="stat-label">港股 (万亿)</div>
+            <div class="stat-value">$0.5</div>
+            <div class="stat-label">港股万亿</div>
           </div>
         
           <div class="stat-item" style="background: #22c55e">
-            <div class="stat-value">$3.24</div>
-            <div class="stat-label">A股 (万亿)</div>
+            <div class="stat-value">$3.2</div>
+            <div class="stat-label">A股万亿</div>
           </div>
         
       </div>
-      <div class="grand-total">
-        合计: $29.65万亿
-      </div>
+      <div class="grand-total">总计: $29.65万亿</div>
     </div>
-
+    
     <div style="text-align: center;">
       <a href="index.html" class="back-link">← 返回首页</a>
     </div>
-
+    
     <div class="footer">
-      <p>数据更新时间: 2026/03/08 18:23 | 市值单位: 美元</p>
-      <p style="margin-top: 10px; font-size: 0.9rem;">Powered by 🦞 OpenClaw</p>
+      <p>更新时间: 2026/3/8 18:31:38 | Powered by 🦞 OpenClaw</p>
     </div>
   </div>
 
   <script>
-    // 饼图
-    const pieChart = echarts.init(document.getElementById('pieChart'));
-    const pieOption = {
-      tooltip: {
-        trigger: 'item',
-        formatter: '{b}: $\{c\}亿 ({d}%)'
-      },
-      legend: {
-        orient: 'vertical',
-        left: 'left',
-        textStyle: { fontSize: 12 }
-      },
-      series: [{
-        type: 'pie',
-        radius: ['40%', '70%'],
-        center: ['60%', '50%'],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 10,
-          borderColor: '#fff',
-          borderWidth: 2
-        },
-        label: {
-          show: true,
-          formatter: '{b}
-{d}%'
-        },
-        data: [{"name":"纳斯达克","itemStyle":{"color":"#3b82f6"}},{"name":"虚拟币","itemStyle":{"color":"#f59e0b"}},{"name":"港股","itemStyle":{"color":"#ef4444"}},{"name":"A股","itemStyle":{"color":"#22c55e"}}]
-      }]
-    };
-    pieChart.setOption(pieOption);
+    window.onload = function() {
+      // 饼图
+      var pieChart = echarts.init(document.getElementById('pieChart'));
+      pieChart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}: {c}亿 ({d}%)' },
+        legend: { orient: 'vertical', left: 'left', top: 'center', itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 11 } },
+        series: [{
+          type: 'pie',
+          radius: ['35%', '60%'],
+          center: ['65%', '50%'],
+          avoidLabelOverlap: false,
+          itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+          label: { show: true, formatter: '{d}%', fontSize: 11 },
+          data: [{"value":237880,"name":"纳斯达克","itemStyle":{"color":"#3b82f6"}},{"value":21194,"name":"虚拟币","itemStyle":{"color":"#f59e0b"}},{"value":5006,"name":"港股","itemStyle":{"color":"#ef4444"}},{"value":32396,"name":"A股","itemStyle":{"color":"#22c55e"}}]
+        }]
+      });
 
-    // 条形图
-    const barChart = echarts.init(document.getElementById('barChart'));
-    const barOption = {
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: { type: 'shadow' },
-        formatter: function(params) {
-          const data = params[0];
-          return data.name + '<br/>' + 
-                 data.seriesName + ': $' + data.value + '亿';
-        }
-      },
-      grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '15%',
-        containLabel: true
-      },
-      xAxis: {
-        type: 'category',
-        data: ["NVIDIA","Apple","Microsoft","Amazon","Meta","Tesla","Broadcom","Alphabet","Berkshire","Walmart","Bitcoin","Ethereum","Tether","BNB","XRP","Solana","USDC","TRON","Dogecoin","Cardano","友邦保险","港交所","中银香港","怡和洋行","新鸿基地产","太古股份","中国联通","长和系","华润置地","港铁公司","腾讯控股","工商银行","建设银行","农业银行","中国石油","阿里巴巴","贵州茅台","中国银行","宁德时代","中国移动"],
-        axisLabel: {
-          rotate: 45,
-          fontSize: 10,
-          interval: 0
-        }
-      },
-      yAxis: {
-        type: 'value',
-        name: '市值 (亿美元)',
-        axisLabel: {
-          formatter: function(value) {
-            return value >= 1000 ? (value / 1000).toFixed(1) + 'k' : value;
-          }
-        }
-      },
-      series: [{
-        type: 'bar',
-        data: [{"value":43210,"itemStyle":{"color":"#3b82f6"}},{"value":37840,"itemStyle":{"color":"#3b82f6"}},{"value":30390,"itemStyle":{"color":"#3b82f6"}},{"value":22880,"itemStyle":{"color":"#3b82f6"}},{"value":16310,"itemStyle":{"color":"#3b82f6"}},{"value":14880,"itemStyle":{"color":"#3b82f6"}},{"value":15660,"itemStyle":{"color":"#3b82f6"}},{"value":36080,"itemStyle":{"color":"#3b82f6"}},{"value":10760,"itemStyle":{"color":"#3b82f6"}},{"value":9870,"itemStyle":{"color":"#3b82f6"}},{"value":13540,"itemStyle":{"color":"#f59e0b"}},{"value":2371,"itemStyle":{"color":"#f59e0b"}},{"value":1840,"itemStyle":{"color":"#f59e0b"}},{"value":846,"itemStyle":{"color":"#f59e0b"}},{"value":834,"itemStyle":{"color":"#f59e0b"}},{"value":475,"itemStyle":{"color":"#f59e0b"}},{"value":772,"itemStyle":{"color":"#f59e0b"}},{"value":272,"itemStyle":{"color":"#f59e0b"}},{"value":152,"itemStyle":{"color":"#f59e0b"}},{"value":92,"itemStyle":{"color":"#f59e0b"}},{"value":1145,"itemStyle":{"color":"#ef4444"}},{"value":671,"itemStyle":{"color":"#ef4444"}},{"value":572,"itemStyle":{"color":"#ef4444"}},{"value":544,"itemStyle":{"color":"#ef4444"}},{"value":526,"itemStyle":{"color":"#ef4444"}},{"value":377,"itemStyle":{"color":"#ef4444"}},{"value":307,"itemStyle":{"color":"#ef4444"}},{"value":301,"itemStyle":{"color":"#ef4444"}},{"value":282,"itemStyle":{"color":"#ef4444"}},{"value":281,"itemStyle":{"color":"#ef4444"}},{"value":5903,"itemStyle":{"color":"#22c55e"}},{"value":3662,"itemStyle":{"color":"#22c55e"}},{"value":3403,"itemStyle":{"color":"#22c55e"}},{"value":3400,"itemStyle":{"color":"#22c55e"}},{"value":3265,"itemStyle":{"color":"#22c55e"}},{"value":3122,"itemStyle":{"color":"#22c55e"}},{"value":2546,"itemStyle":{"color":"#22c55e"}},{"value":2518,"itemStyle":{"color":"#22c55e"}},{"value":2367,"itemStyle":{"color":"#22c55e"}},{"value":2210,"itemStyle":{"color":"#22c55e"}}],
-        barWidth: '60%',
-        label: {
-          show: true,
-          position: 'top',
-          fontSize: 9,
-          formatter: function(params) {
-            return params.value >= 1000 ? (params.value / 1000).toFixed(1) + 'k' : params.value;
-          }
-        }
-      }]
-    };
-    barChart.setOption(barOption);
+      // 条形图
+      var barChart = echarts.init(document.getElementById('barChart'));
+      barChart.setOption({
+        tooltip: { 
+          trigger: 'axis', 
+          axisPointer: { type: 'shadow' },
+          formatter: function(p) { return p[0].name + '<br/>市值: $' + p[0].value + '亿'; }
+        },
+        grid: { left: '3%', right: '4%', bottom: '12%', top: '5%', containLabel: true },
+        xAxis: { 
+          type: 'category', 
+          data: ["NVIDIA","Apple","Microsoft","Amazon","Meta","Tesla","Broadcom","Alphabet","Berkshire","Walmart","Bitcoin","Ethereum","Tether","BNB","XRP","Solana","USDC","TRON","Dogecoin","Cardano","友邦保险","港交所","中银香港","怡和洋行","新鸿基地产","太古股份","中国联通","长和系","华润置地","港铁公司","腾讯控股","工商银行","建设银行","农业银行","中国石油","阿里巴巴","贵州茅台","中国银行","宁德时代","中国移动"], 
+          axisLabel: { rotate: 45, fontSize: 9, interval: 0 }
+        },
+        yAxis: { 
+          type: 'value', 
+          name: '亿美元',
+          axisLabel: { fontSize: 10, formatter: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'k' : v; } }
+        },
+        series: [{
+          type: 'bar',
+          data: [{"value":43210,"itemStyle":{"color":"#3b82f6"}},{"value":37840,"itemStyle":{"color":"#3b82f6"}},{"value":30390,"itemStyle":{"color":"#3b82f6"}},{"value":22880,"itemStyle":{"color":"#3b82f6"}},{"value":16310,"itemStyle":{"color":"#3b82f6"}},{"value":14880,"itemStyle":{"color":"#3b82f6"}},{"value":15660,"itemStyle":{"color":"#3b82f6"}},{"value":36080,"itemStyle":{"color":"#3b82f6"}},{"value":10760,"itemStyle":{"color":"#3b82f6"}},{"value":9870,"itemStyle":{"color":"#3b82f6"}},{"value":13540,"itemStyle":{"color":"#f59e0b"}},{"value":2371,"itemStyle":{"color":"#f59e0b"}},{"value":1840,"itemStyle":{"color":"#f59e0b"}},{"value":846,"itemStyle":{"color":"#f59e0b"}},{"value":834,"itemStyle":{"color":"#f59e0b"}},{"value":475,"itemStyle":{"color":"#f59e0b"}},{"value":772,"itemStyle":{"color":"#f59e0b"}},{"value":272,"itemStyle":{"color":"#f59e0b"}},{"value":152,"itemStyle":{"color":"#f59e0b"}},{"value":92,"itemStyle":{"color":"#f59e0b"}},{"value":1145,"itemStyle":{"color":"#ef4444"}},{"value":671,"itemStyle":{"color":"#ef4444"}},{"value":572,"itemStyle":{"color":"#ef4444"}},{"value":544,"itemStyle":{"color":"#ef4444"}},{"value":526,"itemStyle":{"color":"#ef4444"}},{"value":377,"itemStyle":{"color":"#ef4444"}},{"value":307,"itemStyle":{"color":"#ef4444"}},{"value":301,"itemStyle":{"color":"#ef4444"}},{"value":282,"itemStyle":{"color":"#ef4444"}},{"value":281,"itemStyle":{"color":"#ef4444"}},{"value":5903,"itemStyle":{"color":"#22c55e"}},{"value":3662,"itemStyle":{"color":"#22c55e"}},{"value":3403,"itemStyle":{"color":"#22c55e"}},{"value":3400,"itemStyle":{"color":"#22c55e"}},{"value":3265,"itemStyle":{"color":"#22c55e"}},{"value":3122,"itemStyle":{"color":"#22c55e"}},{"value":2546,"itemStyle":{"color":"#22c55e"}},{"value":2518,"itemStyle":{"color":"#22c55e"}},{"value":2367,"itemStyle":{"color":"#22c55e"}},{"value":2210,"itemStyle":{"color":"#22c55e"}}],
+          barWidth: '50%'
+        }]
+      });
 
-    // 响应式
-    window.addEventListener('resize', function() {
-      pieChart.resize();
-      barChart.resize();
-    });
+      window.addEventListener('resize', function() {
+        pieChart.resize();
+        barChart.resize();
+      });
+    };
   </script>
 </body>
 </html>
