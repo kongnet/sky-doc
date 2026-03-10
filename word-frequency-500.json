@@ -1,0 +1,410 @@
+{
+  "metadata": {
+    "totalWords": 40789,
+    "uniqueWords": 176,
+    "generatedAt": "2026-03-10T14:40:52.911Z",
+    "videoCount": 500
+  },
+  "topWords": [
+    {
+      "word": "trending",
+      "count": 1670
+    },
+    {
+      "word": "latest",
+      "count": 1409
+    },
+    {
+      "word": "tutorial",
+      "count": 1286
+    },
+    {
+      "word": "guide",
+      "count": 1282
+    },
+    {
+      "word": "step",
+      "count": 1194
+    },
+    {
+      "word": "popular",
+      "count": 1154
+    },
+    {
+      "word": "learn",
+      "count": 1097
+    },
+    {
+      "word": "videos",
+      "count": 1000
+    },
+    {
+      "word": "fresh",
+      "count": 802
+    },
+    {
+      "word": "new",
+      "count": 787
+    },
+    {
+      "word": "beginner",
+      "count": 774
+    },
+    {
+      "word": "hot",
+      "count": 773
+    },
+    {
+      "word": "tips",
+      "count": 753
+    },
+    {
+      "word": "complete",
+      "count": 730
+    },
+    {
+      "word": "updated",
+      "count": 704
+    },
+    {
+      "word": "viral",
+      "count": 672
+    },
+    {
+      "word": "best",
+      "count": 671
+    },
+    {
+      "word": "practices",
+      "count": 671
+    },
+    {
+      "word": "watch",
+      "count": 668
+    },
+    {
+      "word": "development",
+      "count": 664
+    },
+    {
+      "word": "tricks",
+      "count": 658
+    },
+    {
+      "word": "comprehensive",
+      "count": 654
+    },
+    {
+      "word": "techniques",
+      "count": 605
+    },
+    {
+      "word": "video",
+      "count": 596
+    },
+    {
+      "word": "re",
+      "count": 593
+    },
+    {
+      "word": "content",
+      "count": 593
+    },
+    {
+      "word": "undefined",
+      "count": 500
+    },
+    {
+      "word": "featuring",
+      "count": 500
+    },
+    {
+      "word": "perfect",
+      "count": 500
+    },
+    {
+      "word": "anyone",
+      "count": 500
+    },
+    {
+      "word": "looking",
+      "count": 500
+    },
+    {
+      "word": "whether",
+      "count": 500
+    },
+    {
+      "word": "experienced",
+      "count": 500
+    },
+    {
+      "word": "ll",
+      "count": 500
+    },
+    {
+      "word": "find",
+      "count": 500
+    },
+    {
+      "word": "valuable",
+      "count": 500
+    },
+    {
+      "word": "insights",
+      "count": 500
+    },
+    {
+      "word": "keywords",
+      "count": 500
+    },
+    {
+      "word": "how",
+      "count": 500
+    },
+    {
+      "word": "education",
+      "count": 500
+    },
+    {
+      "word": "technology",
+      "count": 500
+    },
+    {
+      "word": "programming",
+      "count": 500
+    },
+    {
+      "word": "coding",
+      "count": 500
+    },
+    {
+      "word": "software",
+      "count": 500
+    },
+    {
+      "word": "news",
+      "count": 500
+    },
+    {
+      "word": "topics",
+      "count": 500
+    },
+    {
+      "word": "youtube",
+      "count": 500
+    },
+    {
+      "word": "recent",
+      "count": 500
+    },
+    {
+      "word": "uploads",
+      "count": 500
+    },
+    {
+      "word": "newest",
+      "count": 500
+    },
+    {
+      "word": "advanced",
+      "count": 259
+    },
+    {
+      "word": "about",
+      "count": 195
+    },
+    {
+      "word": "vs",
+      "count": 170
+    },
+    {
+      "word": "updates",
+      "count": 119
+    },
+    {
+      "word": "upload",
+      "count": 116
+    },
+    {
+      "word": "join",
+      "count": 116
+    },
+    {
+      "word": "explore",
+      "count": 116
+    },
+    {
+      "word": "performance",
+      "count": 115
+    },
+    {
+      "word": "optimization",
+      "count": 115
+    },
+    {
+      "word": "expert",
+      "count": 111
+    },
+    {
+      "word": "explained",
+      "count": 100
+    },
+    {
+      "word": "common",
+      "count": 98
+    },
+    {
+      "word": "mistakes",
+      "count": 98
+    },
+    {
+      "word": "avoid",
+      "count": 98
+    },
+    {
+      "word": "update",
+      "count": 98
+    },
+    {
+      "word": "discover",
+      "count": 98
+    },
+    {
+      "word": "everything",
+      "count": 98
+    },
+    {
+      "word": "instructions",
+      "count": 97
+    },
+    {
+      "word": "off",
+      "count": 97
+    },
+    {
+      "word": "press",
+      "count": 97
+    },
+    {
+      "word": "all",
+      "count": 97
+    },
+    {
+      "word": "just",
+      "count": 96
+    },
+    {
+      "word": "uploaded",
+      "count": 96
+    },
+    {
+      "word": "brand",
+      "count": 93
+    },
+    {
+      "word": "today",
+      "count": 93
+    },
+    {
+      "word": "diving",
+      "count": 93
+    },
+    {
+      "word": "into",
+      "count": 93
+    },
+    {
+      "word": "friendly",
+      "count": 90
+    },
+    {
+      "word": "practical",
+      "count": 85
+    },
+    {
+      "word": "examples",
+      "count": 85
+    },
+    {
+      "word": "real",
+      "count": 75
+    },
+    {
+      "word": "world",
+      "count": 75
+    },
+    {
+      "word": "applications",
+      "count": 75
+    },
+    {
+      "word": "react",
+      "count": 68
+    },
+    {
+      "word": "features",
+      "count": 68
+    },
+    {
+      "word": "flutter",
+      "count": 68
+    },
+    {
+      "word": "academind",
+      "count": 35
+    },
+    {
+      "word": "know",
+      "count": 34
+    },
+    {
+      "word": "python",
+      "count": 34
+    },
+    {
+      "word": "what",
+      "count": 34
+    },
+    {
+      "word": "ai",
+      "count": 34
+    },
+    {
+      "word": "revolution",
+      "count": 34
+    },
+    {
+      "word": "chatgpt",
+      "count": 34
+    },
+    {
+      "word": "claude",
+      "count": 34
+    },
+    {
+      "word": "next",
+      "count": 34
+    },
+    {
+      "word": "js",
+      "count": 34
+    },
+    {
+      "word": "rust",
+      "count": 34
+    },
+    {
+      "word": "javascript",
+      "count": 34
+    },
+    {
+      "word": "developers",
+      "count": 34
+    },
+    {
+      "word": "docker",
+      "count": 34
+    }
+  ]
+}

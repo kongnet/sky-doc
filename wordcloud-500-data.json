@@ -1,0 +1,502 @@
+[
+  {
+    "text": "trending",
+    "value": 1670,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "latest",
+    "value": 1409,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "tutorial",
+    "value": 1286,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "guide",
+    "value": 1282,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "step",
+    "value": 1194,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "popular",
+    "value": 1154,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "learn",
+    "value": 1097,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "videos",
+    "value": 1000,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "fresh",
+    "value": 802,
+    "color": "#F8B739"
+  },
+  {
+    "text": "new",
+    "value": 787,
+    "color": "#52BE80"
+  },
+  {
+    "text": "beginner",
+    "value": 774,
+    "color": "#EC7063"
+  },
+  {
+    "text": "hot",
+    "value": 773,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "tips",
+    "value": 753,
+    "color": "#5499C7"
+  },
+  {
+    "text": "complete",
+    "value": 730,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "updated",
+    "value": 704,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "viral",
+    "value": 672,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "best",
+    "value": 671,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "practices",
+    "value": 671,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "watch",
+    "value": 668,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "development",
+    "value": 664,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "tricks",
+    "value": 658,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "comprehensive",
+    "value": 654,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "techniques",
+    "value": 605,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "video",
+    "value": 596,
+    "color": "#F8B739"
+  },
+  {
+    "text": "re",
+    "value": 593,
+    "color": "#52BE80"
+  },
+  {
+    "text": "content",
+    "value": 593,
+    "color": "#EC7063"
+  },
+  {
+    "text": "undefined",
+    "value": 500,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "featuring",
+    "value": 500,
+    "color": "#5499C7"
+  },
+  {
+    "text": "perfect",
+    "value": 500,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "anyone",
+    "value": 500,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "looking",
+    "value": 500,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "whether",
+    "value": 500,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "experienced",
+    "value": 500,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "ll",
+    "value": 500,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "find",
+    "value": 500,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "valuable",
+    "value": 500,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "insights",
+    "value": 500,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "keywords",
+    "value": 500,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "how",
+    "value": 500,
+    "color": "#F8B739"
+  },
+  {
+    "text": "education",
+    "value": 500,
+    "color": "#52BE80"
+  },
+  {
+    "text": "technology",
+    "value": 500,
+    "color": "#EC7063"
+  },
+  {
+    "text": "programming",
+    "value": 500,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "coding",
+    "value": 500,
+    "color": "#5499C7"
+  },
+  {
+    "text": "software",
+    "value": 500,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "news",
+    "value": 500,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "topics",
+    "value": 500,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "youtube",
+    "value": 500,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "recent",
+    "value": 500,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "uploads",
+    "value": 500,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "newest",
+    "value": 500,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "advanced",
+    "value": 259,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "about",
+    "value": 195,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "vs",
+    "value": 170,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "updates",
+    "value": 119,
+    "color": "#F8B739"
+  },
+  {
+    "text": "upload",
+    "value": 116,
+    "color": "#52BE80"
+  },
+  {
+    "text": "join",
+    "value": 116,
+    "color": "#EC7063"
+  },
+  {
+    "text": "explore",
+    "value": 116,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "performance",
+    "value": 115,
+    "color": "#5499C7"
+  },
+  {
+    "text": "optimization",
+    "value": 115,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "expert",
+    "value": 111,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "explained",
+    "value": 100,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "common",
+    "value": 98,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "mistakes",
+    "value": 98,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "avoid",
+    "value": 98,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "update",
+    "value": 98,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "discover",
+    "value": 98,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "everything",
+    "value": 98,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "instructions",
+    "value": 97,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "off",
+    "value": 97,
+    "color": "#F8B739"
+  },
+  {
+    "text": "press",
+    "value": 97,
+    "color": "#52BE80"
+  },
+  {
+    "text": "all",
+    "value": 97,
+    "color": "#EC7063"
+  },
+  {
+    "text": "just",
+    "value": 96,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "uploaded",
+    "value": 96,
+    "color": "#5499C7"
+  },
+  {
+    "text": "brand",
+    "value": 93,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "today",
+    "value": 93,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "diving",
+    "value": 93,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "into",
+    "value": 93,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "friendly",
+    "value": 90,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "practical",
+    "value": 85,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "examples",
+    "value": 85,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "real",
+    "value": 75,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "world",
+    "value": 75,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "applications",
+    "value": 75,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "react",
+    "value": 68,
+    "color": "#F8B739"
+  },
+  {
+    "text": "features",
+    "value": 68,
+    "color": "#52BE80"
+  },
+  {
+    "text": "flutter",
+    "value": 68,
+    "color": "#EC7063"
+  },
+  {
+    "text": "academind",
+    "value": 35,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "know",
+    "value": 34,
+    "color": "#5499C7"
+  },
+  {
+    "text": "python",
+    "value": 34,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "what",
+    "value": 34,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "ai",
+    "value": 34,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "revolution",
+    "value": 34,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "chatgpt",
+    "value": 34,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "claude",
+    "value": 34,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "next",
+    "value": 34,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "js",
+    "value": 34,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "rust",
+    "value": 34,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "javascript",
+    "value": 34,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "developers",
+    "value": 34,
+    "color": "#F8B739"
+  },
+  {
+    "text": "docker",
+    "value": 34,
+    "color": "#52BE80"
+  }
+]
