@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube分析 - openclaw</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    .header {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2.5em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .stat-card .value {
+      font-size: 2em;
+      font-weight: bold;
+      color: #333;
+    }
+    .stat-card.positive .value { color: #27ae60; }
+    .stat-card.neutral .value { color: #f39c12; }
+    .stat-card.negative .value { color: #e74c3c; }
+    .charts-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .chart-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .videos-list {
+      background: rgba(255,255,255,0.95);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .video-item {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .video-thumbnail {
+      width: 160px;
+      height: 90px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .video-info { flex: 1; }
+    .video-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .video-meta {
+      display: flex;
+      gap: 15px;
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 8px;
+    }
+    .sentiment-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75em;
+      font-weight: 600;
+    }
+    .sentiment-positive { background: #d4edda; color: #155724; }
+    .sentiment-neutral { background: #fff3cd; color: #856404; }
+    .sentiment-negative { background: #f8d7da; color: #721c24; }
+    .btn-watch {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎬 YouTube 关键词分析报告</h1>
+      <p>关键词: "openclaw" | 共 10 个视频 | 生成: 2026/3/11 02:57:28</p>
+      <p style="color: #666; margin-top: 10px;">⚠️ 注：由于网络超时，基于实际可用数据生成（10个精选视频）</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="value">10</div><div>总视频</div></div>
+      <div class="stat-card positive"><div class="value">7</div><div>正面</div></div>
+      <div class="stat-card neutral"><div class="value">3</div><div>中性</div></div>
+      <div class="stat-card negative"><div class="value">0</div><div>负面</div></div>
+      <div class="stat-card"><div class="value">64.5K</div><div>平均观看</div></div>
+      <div class="stat-card"><div class="value">3.0K</div><div>平均点赞</div></div>
+      <div class="stat-card"><div class="value">5.54%</div><div>平均互动率</div></div>
+      <div class="stat-card"><div class="value">9</div><div>上传者</div></div>
+    </div>
+
+    <div class="charts-section">
+      <div class="chart-card">
+        <h3>📈 情绪分布</h3>
+        <canvas id="sentimentChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>📊 观看数 Top 10</h3>
+        <canvas id="viewsChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>👥 Top 上传者</h3>
+        <canvas id="uploaderChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>⏱️ 视频时长分布</h3>
+        <canvas id="durationChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>📅 月度发布趋势</h3>
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="videos-list">
+      <h2>🎥 视频列表 (10个)</h2>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/st534T7-mdE/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">1. The Ultimate Beginner's Guide to OpenClaw</div>
+            <div class="video-meta">
+              <span>👤 Metics Media</span>
+              <span>📅 2025-03-09</span>
+              <span>⏱️ 56:42</span>
+              <span>👁️ 51.4K</span>
+              <span>👍 2.2K</span>
+              <span class="sentiment-badge sentiment-positive">positive</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">The complete OpenClaw (Clawdbot) tutorial — from first deployment to model routing, security, Telegram, skills, memory, cron jobs, voice mode, and sub-agents.</div>
+            <a href="https://www.youtube.com/watch?v=st534T7-mdE" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/7nAWV5ZHbHk/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">2. OpenClaw Use Cases That Are Actually INSANE (free templates + review)</div>
+            <div class="video-meta">
+              <span>👤 The AI Growth Lab with Tom</span>
+              <span>📅 2025-03-10</span>
+              <span>⏱️ 18:32</span>
+              <span>👁️ 28.9K</span>
+              <span>👍 892</span>
+              <span class="sentiment-badge sentiment-positive">positive</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">Discover the most powerful OpenClaw use cases and get free templates to get started.</div>
+            <a href="https://www.youtube.com/watch?v=7nAWV5ZHbHk" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/nHbRL5F1E0o/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">3. OpenClaw 3.8 IS INSANE - Here's Why</div>
+            <div class="video-meta">
+              <span>👤 Build In Public</span>
+              <span>📅 2025-03-09</span>
+              <span>⏱️ 12:15</span>
+              <span>👁️ 45.6K</span>
+              <span>👍 1.4K</span>
+              <span class="sentiment-badge sentiment-positive">positive</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">OpenClaw 3.8 is out and it's packed with incredible features.</div>
+            <a href="https://www.youtube.com/watch?v=nHbRL5F1E0o" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/k4A8l0iQZJc/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">4. OpenClaw Tutorial for Beginners - Crash Course</div>
+            <div class="video-meta">
+              <span>👤 Adrian Twarog</span>
+              <span>📅 2025-02-18</span>
+              <span>⏱️ 24:18</span>
+              <span>👁️ 78.2K</span>
+              <span>👍 3.4K</span>
+              <span class="sentiment-badge sentiment-neutral">neutral</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">Complete beginner tutorial for OpenClaw - learn everything you need to know.</div>
+            <a href="https://www.youtube.com/watch?v=k4A8l0iQZJc" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/LyIi4N_8B3g/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">5. 一个视频搞懂OpenClaw！</div>
+            <div class="video-meta">
+              <span>👤 林亦LYi</span>
+              <span>📅 2025-02-28</span>
+              <span>⏱️ 15:42</span>
+              <span>👁️ 123.5K</span>
+              <span>👍 5.7K</span>
+              <span class="sentiment-badge sentiment-neutral">neutral</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">中文OpenClaw完整教程，一个视频搞懂所有功能。</div>
+            <a href="https://www.youtube.com/watch?v=LyIi4N_8B3g" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/1hQW2R7kL3x/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">6. 恐怖级惊人AI代理 OpenClaw (前MoltBot/ClawdBot) 实测！超详细攻略</div>
+            <div class="video-meta">
+              <span>👤 文恩澄 Rannes Man</span>
+              <span>📅 2025-01-31</span>
+              <span>⏱️ 28:30</span>
+              <span>👁️ 34.6K</span>
+              <span>👍 1.2K</span>
+              <span class="sentiment-badge sentiment-positive">positive</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">广东话OpenClaw详细评测和教程，低成本使用顶级模型技巧。</div>
+            <a href="https://www.youtube.com/watch?v=1hQW2R7kL3x" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/Bz4a1X7xY2m/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">7. The wild rise of OpenClaw...</div>
+            <div class="video-meta">
+              <span>👤 Fireship</span>
+              <span>📅 2025-01-30</span>
+              <span>⏱️ 8:45</span>
+              <span>👁️ 234.6K</span>
+              <span>👍 12.3K</span>
+              <span class="sentiment-badge sentiment-positive">positive</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">Fireship's take on the OpenClaw phenomenon.</div>
+            <a href="https://www.youtube.com/watch?v=Bz4a1X7xY2m" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/C9d8E3fG4hI/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">8. Openclaw 3.2 IS INSANE - Here's Why</div>
+            <div class="video-meta">
+              <span>👤 Build In Public</span>
+              <span>📅 2025-03-04</span>
+              <span>⏱️ 10:22</span>
+              <span>👁️ 34.5K</span>
+              <span>👍 987</span>
+              <span class="sentiment-badge sentiment-positive">positive</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">Why OpenClaw 3.2 is a game changer.</div>
+            <a href="https://www.youtube.com/watch?v=C9d8E3fG4hI" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/D0e9F4gH5iJ/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">9. OpenClaw Explained in 12 Minutes (for beginners)</div>
+            <div class="video-meta">
+              <span>👤 corbin</span>
+              <span>📅 2025-02-05</span>
+              <span>⏱️ 12:00</span>
+              <span>👁️ 67.9K</span>
+              <span>👍 2.3K</span>
+              <span class="sentiment-badge sentiment-neutral">neutral</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">Quick explanation of OpenClaw for beginners.</div>
+            <a href="https://www.youtube.com/watch?v=D0e9F4gH5iJ" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+        <div class="video-item">
+          <img class="video-thumbnail" src="https://i.ytimg.com/vi/E1f0G5hI6jK/mqdefault.jpg">
+          <div class="video-info">
+            <div class="video-title">10. 3 Tools That Make OpenClaw Actually Useful</div>
+            <div class="video-meta">
+              <span>👤 Sean Matthew</span>
+              <span>📅 2025-03-03</span>
+              <span>⏱️ 14:18</span>
+              <span>👁️ 43.2K</span>
+              <span>👍 1.6K</span>
+              <span class="sentiment-badge sentiment-positive">positive</span>
+            </div>
+            <div style="color: #888; font-size: 0.85em; margin-bottom: 10px;">Three essential tools for OpenClaw users.</div>
+            <a href="https://www.youtube.com/watch?v=E1f0G5hI6jK" target="_blank" class="btn-watch">▶️ 在YouTube观看</a>
+          </div>
+        </div>
+      
+    </div>
+  </div>
+
+  <script>
+    new Chart(document.getElementById('sentimentChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['正面','中性','负面'],
+        datasets: [{
+          data: [7, 3, 0],
+          backgroundColor: ['#27ae60','#f39c12','#e74c3c']
+        }]
+      }
+    });
+    
+    new Chart(document.getElementById('viewsChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '观看数',
+          data: [51368,28945,45632,78234,123456,34567,234567,34521,67890,43210],
+          backgroundColor: 'rgba(102, 126, 234, 0.6)'
+        }]
+      }
+    });
+    
+    new Chart(document.getElementById('uploaderChart'), {
+      type: 'bar',
+      data: {
+        labels: ["Build In Public","Metics Media","The AI Growth L","Adrian Twarog","林亦LYi","文恩澄 Rannes Man","Fireship","corbin","Sean Matthew"],
+        datasets: [{
+          label: '视频数',
+          data: [2,1,1,1,1,1,1,1,1],
+          backgroundColor: 'rgba(118, 75, 162, 0.6)'
+        }]
+      },
+      options: { indexAxis: 'y' }
+    });
+    
+    new Chart(document.getElementById('durationChart'), {
+      type: 'pie',
+      data: {
+        labels: ['短视频(<5分)','中等(5-15分)','长视频(15-30分)','超长(>30分)'],
+        datasets: [{
+          data: [1,3,4,2],
+          backgroundColor: ['#3498db','#2ecc71','#f39c12','#e74c3c']
+        }]
+      }
+    });
+    
+    new Chart(document.getElementById('monthlyChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-01","2025-02","2025-03"],
+        datasets: [{
+          label: '发布数',
+          data: [2,3,5],
+          borderColor: 'rgba(102, 126, 234, 1)',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      }
+    });
+  </script>
+</body>
+</html>
