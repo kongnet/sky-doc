@@ -1,0 +1,23 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@notionhq/client':
+        specifier: ^5.11.1
+        version: 5.11.1
+
+packages:
+
+  '@notionhq/client@5.11.1':
+    resolution: {integrity: sha512-393XUAb4706eWKQx1xxg/tdn/rTY6+qj3PxTGyTr03D7ydO6e7B7tYyidxJCbKzNSSCVTUAth/bLoKNhm0VoUQ==}
+    engines: {node: '>=18'}
+
+snapshots:
+
+  '@notionhq/client@5.11.1': {}
