@@ -1,0 +1,502 @@
+[
+  {
+    "text": "step",
+    "value": 554,
+    "color": "#5499C7"
+  },
+  {
+    "text": "guide",
+    "value": 523,
+    "color": "#F8B739"
+  },
+  {
+    "text": "tips",
+    "value": 503,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "best",
+    "value": 490,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "practices",
+    "value": 490,
+    "color": "#EB984E"
+  },
+  {
+    "text": "insights",
+    "value": 441,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "techniques",
+    "value": 426,
+    "color": "#F8B739"
+  },
+  {
+    "text": "video",
+    "value": 336,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "tutorial",
+    "value": 320,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "analysis",
+    "value": 294,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "comprehensive",
+    "value": 287,
+    "color": "#9B59B6"
+  },
+  {
+    "text": "advanced",
+    "value": 283,
+    "color": "#F8B739"
+  },
+  {
+    "text": "explained",
+    "value": 272,
+    "color": "#2ECC71"
+  },
+  {
+    "text": "education",
+    "value": 268,
+    "color": "#3498DB"
+  },
+  {
+    "text": "learn",
+    "value": 266,
+    "color": "#9B59B6"
+  },
+  {
+    "text": "beginner",
+    "value": 254,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "friendly",
+    "value": 254,
+    "color": "#F8B739"
+  },
+  {
+    "text": "review",
+    "value": 253,
+    "color": "#52BE80"
+  },
+  {
+    "text": "tricks",
+    "value": 251,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "music",
+    "value": 250,
+    "color": "#9B59B6"
+  },
+  {
+    "text": "finance",
+    "value": 250,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "updated",
+    "value": 249,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "quick",
+    "value": 249,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "technology",
+    "value": 248,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "complete",
+    "value": 247,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "latest",
+    "value": 245,
+    "color": "#DC7633"
+  },
+  {
+    "text": "comparison",
+    "value": 245,
+    "color": "#52BE80"
+  },
+  {
+    "text": "entertainment",
+    "value": 244,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "practical",
+    "value": 241,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "examples",
+    "value": 241,
+    "color": "#EB984E"
+  },
+  {
+    "text": "actionable",
+    "value": 241,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "essential",
+    "value": 241,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "topics",
+    "value": 241,
+    "color": "#DC7633"
+  },
+  {
+    "text": "valuable",
+    "value": 241,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "easy",
+    "value": 237,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "gaming",
+    "value": 236,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "detailed",
+    "value": 236,
+    "color": "#45B7D1"
+  },
+  {
+    "text": "depth",
+    "value": 236,
+    "color": "#EB984E"
+  },
+  {
+    "text": "simple",
+    "value": 235,
+    "color": "#F8B739"
+  },
+  {
+    "text": "news",
+    "value": 232,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "common",
+    "value": 229,
+    "color": "#3498DB"
+  },
+  {
+    "text": "pitfalls",
+    "value": 229,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "real",
+    "value": 228,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "world",
+    "value": 228,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "industry",
+    "value": 227,
+    "color": "#3498DB"
+  },
+  {
+    "text": "experts",
+    "value": 227,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "re",
+    "value": 226,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "applications",
+    "value": 226,
+    "color": "#52BE80"
+  },
+  {
+    "text": "whether",
+    "value": 200,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "looking",
+    "value": 200,
+    "color": "#FF6B6B"
+  },
+  {
+    "text": "something",
+    "value": 200,
+    "color": "#9B59B6"
+  },
+  {
+    "text": "everyone",
+    "value": 200,
+    "color": "#2ECC71"
+  },
+  {
+    "text": "keywords",
+    "value": 200,
+    "color": "#5499C7"
+  },
+  {
+    "text": "discover",
+    "value": 83,
+    "color": "#F8B739"
+  },
+  {
+    "text": "ll",
+    "value": 70,
+    "color": "#EC7063"
+  },
+  {
+    "text": "subscribe",
+    "value": 68,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "content",
+    "value": 58,
+    "color": "#EB984E"
+  },
+  {
+    "text": "about",
+    "value": 57,
+    "color": "#52BE80"
+  },
+  {
+    "text": "like",
+    "value": 56,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "secrets",
+    "value": 51,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "beginners",
+    "value": 44,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "share",
+    "value": 43,
+    "color": "#9B59B6"
+  },
+  {
+    "text": "anyone",
+    "value": 43,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "find",
+    "value": 43,
+    "color": "#52BE80"
+  },
+  {
+    "text": "helpful",
+    "value": 43,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "cover",
+    "value": 41,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "provide",
+    "value": 41,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "contains",
+    "value": 41,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "leave",
+    "value": 40,
+    "color": "#EB984E"
+  },
+  {
+    "text": "vs",
+    "value": 38,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "comment",
+    "value": 38,
+    "color": "#3498DB"
+  },
+  {
+    "text": "thoughts",
+    "value": 38,
+    "color": "#9B59B6"
+  },
+  {
+    "text": "questions",
+    "value": 38,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "welcome",
+    "value": 36,
+    "color": "#3498DB"
+  },
+  {
+    "text": "ready",
+    "value": 36,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "explanations",
+    "value": 36,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "amazing",
+    "value": 35,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "every",
+    "value": 35,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "week",
+    "value": 35,
+    "color": "#5499C7"
+  },
+  {
+    "text": "forget",
+    "value": 33,
+    "color": "#85C1E2"
+  },
+  {
+    "text": "hit",
+    "value": 33,
+    "color": "#48C9B0"
+  },
+  {
+    "text": "notification",
+    "value": 33,
+    "color": "#BB8FCE"
+  },
+  {
+    "text": "bell",
+    "value": 33,
+    "color": "#FFA07A"
+  },
+  {
+    "text": "everything",
+    "value": 33,
+    "color": "#EB984E"
+  },
+  {
+    "text": "join",
+    "value": 32,
+    "color": "#F8B739"
+  },
+  {
+    "text": "vlog",
+    "value": 32,
+    "color": "#F8B739"
+  },
+  {
+    "text": "better",
+    "value": 32,
+    "color": "#F4D03F"
+  },
+  {
+    "text": "see",
+    "value": 30,
+    "color": "#EB984E"
+  },
+  {
+    "text": "simply",
+    "value": 30,
+    "color": "#4ECDC4"
+  },
+  {
+    "text": "ultimate",
+    "value": 30,
+    "color": "#98D8C8"
+  },
+  {
+    "text": "important",
+    "value": 30,
+    "color": "#DC7633"
+  },
+  {
+    "text": "show",
+    "value": 29,
+    "color": "#EB984E"
+  },
+  {
+    "text": "avoid",
+    "value": 29,
+    "color": "#EB984E"
+  },
+  {
+    "text": "thanks",
+    "value": 28,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "watching",
+    "value": 28,
+    "color": "#DC7633"
+  },
+  {
+    "text": "next",
+    "value": 28,
+    "color": "#F8B739"
+  },
+  {
+    "text": "building",
+    "value": 28,
+    "color": "#AF7AC5"
+  },
+  {
+    "text": "scratch",
+    "value": 28,
+    "color": "#F7DC6F"
+  },
+  {
+    "text": "years",
+    "value": 27,
+    "color": "#2ECC71"
+  },
+  {
+    "text": "experience",
+    "value": 27,
+    "color": "#2ECC71"
+  }
+]

@@ -1,0 +1,409 @@
+{
+  "metadata": {
+    "totalWords": 17507,
+    "uniqueWords": 261,
+    "generatedAt": "2026-03-10T14:28:42.592Z"
+  },
+  "topWords": [
+    {
+      "word": "step",
+      "count": 554
+    },
+    {
+      "word": "guide",
+      "count": 523
+    },
+    {
+      "word": "tips",
+      "count": 503
+    },
+    {
+      "word": "best",
+      "count": 490
+    },
+    {
+      "word": "practices",
+      "count": 490
+    },
+    {
+      "word": "insights",
+      "count": 441
+    },
+    {
+      "word": "techniques",
+      "count": 426
+    },
+    {
+      "word": "video",
+      "count": 336
+    },
+    {
+      "word": "tutorial",
+      "count": 320
+    },
+    {
+      "word": "analysis",
+      "count": 294
+    },
+    {
+      "word": "comprehensive",
+      "count": 287
+    },
+    {
+      "word": "advanced",
+      "count": 283
+    },
+    {
+      "word": "explained",
+      "count": 272
+    },
+    {
+      "word": "education",
+      "count": 268
+    },
+    {
+      "word": "learn",
+      "count": 266
+    },
+    {
+      "word": "beginner",
+      "count": 254
+    },
+    {
+      "word": "friendly",
+      "count": 254
+    },
+    {
+      "word": "review",
+      "count": 253
+    },
+    {
+      "word": "tricks",
+      "count": 251
+    },
+    {
+      "word": "music",
+      "count": 250
+    },
+    {
+      "word": "finance",
+      "count": 250
+    },
+    {
+      "word": "updated",
+      "count": 249
+    },
+    {
+      "word": "quick",
+      "count": 249
+    },
+    {
+      "word": "technology",
+      "count": 248
+    },
+    {
+      "word": "complete",
+      "count": 247
+    },
+    {
+      "word": "latest",
+      "count": 245
+    },
+    {
+      "word": "comparison",
+      "count": 245
+    },
+    {
+      "word": "entertainment",
+      "count": 244
+    },
+    {
+      "word": "practical",
+      "count": 241
+    },
+    {
+      "word": "examples",
+      "count": 241
+    },
+    {
+      "word": "actionable",
+      "count": 241
+    },
+    {
+      "word": "essential",
+      "count": 241
+    },
+    {
+      "word": "topics",
+      "count": 241
+    },
+    {
+      "word": "valuable",
+      "count": 241
+    },
+    {
+      "word": "easy",
+      "count": 237
+    },
+    {
+      "word": "gaming",
+      "count": 236
+    },
+    {
+      "word": "detailed",
+      "count": 236
+    },
+    {
+      "word": "depth",
+      "count": 236
+    },
+    {
+      "word": "simple",
+      "count": 235
+    },
+    {
+      "word": "news",
+      "count": 232
+    },
+    {
+      "word": "common",
+      "count": 229
+    },
+    {
+      "word": "pitfalls",
+      "count": 229
+    },
+    {
+      "word": "real",
+      "count": 228
+    },
+    {
+      "word": "world",
+      "count": 228
+    },
+    {
+      "word": "industry",
+      "count": 227
+    },
+    {
+      "word": "experts",
+      "count": 227
+    },
+    {
+      "word": "re",
+      "count": 226
+    },
+    {
+      "word": "applications",
+      "count": 226
+    },
+    {
+      "word": "whether",
+      "count": 200
+    },
+    {
+      "word": "looking",
+      "count": 200
+    },
+    {
+      "word": "something",
+      "count": 200
+    },
+    {
+      "word": "everyone",
+      "count": 200
+    },
+    {
+      "word": "keywords",
+      "count": 200
+    },
+    {
+      "word": "discover",
+      "count": 83
+    },
+    {
+      "word": "ll",
+      "count": 70
+    },
+    {
+      "word": "subscribe",
+      "count": 68
+    },
+    {
+      "word": "content",
+      "count": 58
+    },
+    {
+      "word": "about",
+      "count": 57
+    },
+    {
+      "word": "like",
+      "count": 56
+    },
+    {
+      "word": "secrets",
+      "count": 51
+    },
+    {
+      "word": "beginners",
+      "count": 44
+    },
+    {
+      "word": "share",
+      "count": 43
+    },
+    {
+      "word": "anyone",
+      "count": 43
+    },
+    {
+      "word": "find",
+      "count": 43
+    },
+    {
+      "word": "helpful",
+      "count": 43
+    },
+    {
+      "word": "cover",
+      "count": 41
+    },
+    {
+      "word": "provide",
+      "count": 41
+    },
+    {
+      "word": "contains",
+      "count": 41
+    },
+    {
+      "word": "leave",
+      "count": 40
+    },
+    {
+      "word": "vs",
+      "count": 38
+    },
+    {
+      "word": "comment",
+      "count": 38
+    },
+    {
+      "word": "thoughts",
+      "count": 38
+    },
+    {
+      "word": "questions",
+      "count": 38
+    },
+    {
+      "word": "welcome",
+      "count": 36
+    },
+    {
+      "word": "ready",
+      "count": 36
+    },
+    {
+      "word": "explanations",
+      "count": 36
+    },
+    {
+      "word": "amazing",
+      "count": 35
+    },
+    {
+      "word": "every",
+      "count": 35
+    },
+    {
+      "word": "week",
+      "count": 35
+    },
+    {
+      "word": "forget",
+      "count": 33
+    },
+    {
+      "word": "hit",
+      "count": 33
+    },
+    {
+      "word": "notification",
+      "count": 33
+    },
+    {
+      "word": "bell",
+      "count": 33
+    },
+    {
+      "word": "everything",
+      "count": 33
+    },
+    {
+      "word": "join",
+      "count": 32
+    },
+    {
+      "word": "vlog",
+      "count": 32
+    },
+    {
+      "word": "better",
+      "count": 32
+    },
+    {
+      "word": "see",
+      "count": 30
+    },
+    {
+      "word": "simply",
+      "count": 30
+    },
+    {
+      "word": "ultimate",
+      "count": 30
+    },
+    {
+      "word": "important",
+      "count": 30
+    },
+    {
+      "word": "show",
+      "count": 29
+    },
+    {
+      "word": "avoid",
+      "count": 29
+    },
+    {
+      "word": "thanks",
+      "count": 28
+    },
+    {
+      "word": "watching",
+      "count": 28
+    },
+    {
+      "word": "next",
+      "count": 28
+    },
+    {
+      "word": "building",
+      "count": 28
+    },
+    {
+      "word": "scratch",
+      "count": 28
+    },
+    {
+      "word": "years",
+      "count": 27
+    },
+    {
+      "word": "experience",
+      "count": 27
+    }
+  ]
+}
