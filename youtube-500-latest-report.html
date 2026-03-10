@@ -29,6 +29,23 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
+        .chart-container {
+            height: 350px;
+            position: relative;
+        }
+        .wordcloud-small {
+            height: 300px !important;
+        }
+        .chart-card {
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-card .card-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -66,96 +83,158 @@
             </div>
         </div>
 
-        <!-- 词云 -->
-        <div class="bg-white rounded-lg shadow-lg mb-8">
-            <div class="p-6 border-b bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-                <h2 class="text-2xl font-bold">☁️ 最新视频关键词词云</h2>
-                <p class="mt-1 opacity-90">500个最新视频描述的热门词汇</p>
-            </div>
-            <div class="p-6">
-                <div class="wordcloud-container">
-                    <canvas id="wordcloud-canvas"></canvas>
+        <!-- 三大图表 - 3列布局 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- 词云 -->
+            <div class="bg-white rounded-lg shadow-lg chart-card">
+                <div class="p-4 border-b bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                    <h2 class="text-lg font-bold">☁️ 关键词词云</h2>
+                    <p class="text-xs opacity-90 mt-1">500视频热门词汇</p>
                 </div>
-            </div>
-        </div>
-
-        <!-- 分类统计和饼图 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- 分类饼图 -->
-            <div class="bg-white rounded-lg shadow">
-                <div class="p-6 border-b">
-                    <h3 class="text-xl font-bold text-gray-800">📊 视频分类分布</h3>
-                </div>
-                <div class="p-6">
-                    <canvas id="categoryPieChart" height="300"></canvas>
-                </div>
-            </div>
-
-            <!-- 分类统计表格 -->
-            <div class="bg-white rounded-lg shadow">
-                <div class="p-6 border-b">
-                    <h3 class="text-xl font-bold text-gray-800">📁 分类统计详情</h3>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-3">
-                        
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div class="flex items-center">
-                                    <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold mr-3">
-                                        1
-                                    </span>
-                                    <span class="font-medium">Technology</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-3">
-                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 70.0%"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-600 font-bold">350</span>
-                                    <span class="text-xs text-gray-400 ml-1">(70.0%)</span>
-                                </div>
-                            </div>
-                        
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div class="flex items-center">
-                                    <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold mr-3">
-                                        2
-                                    </span>
-                                    <span class="font-medium">Education</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-3">
-                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 26.8%"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-600 font-bold">134</span>
-                                    <span class="text-xs text-gray-400 ml-1">(26.8%)</span>
-                                </div>
-                            </div>
-                        
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div class="flex items-center">
-                                    <span class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold mr-3">
-                                        3
-                                    </span>
-                                    <span class="font-medium">Finance</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-3">
-                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 3.2%"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-600 font-bold">16</span>
-                                    <span class="text-xs text-gray-400 ml-1">(3.2%)</span>
-                                </div>
-                            </div>
-                        
+                <div class="p-4 card-body">
+                    <div class="wordcloud-container wordcloud-small">
+                        <canvas id="wordcloud-canvas"></canvas>
                     </div>
                 </div>
             </div>
+
+            <!-- 分类饼图 -->
+            <div class="bg-white rounded-lg shadow-lg chart-card">
+                <div class="p-4 border-b bg-gradient-to-r from-green-500 to-teal-600 text-white">
+                    <h2 class="text-lg font-bold">📊 分类分布</h2>
+                    <p class="text-xs opacity-90 mt-1">视频分类占比</p>
+                </div>
+                <div class="p-4 card-body chart-container">
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 高频词汇TOP 50 -->
+            <div class="bg-white rounded-lg shadow-lg chart-card">
+                <div class="p-4 border-b bg-gradient-to-r from-orange-500 to-red-600 text-white">
+                    <h2 class="text-lg font-bold">🏆 高频词汇 TOP 20</h2>
+                    <p class="text-xs opacity-90 mt-1">出现频率最高的词汇</p>
+                </div>
+                <div class="p-4 overflow-y-auto" style="max-height: 300px;">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 sticky top-0">
+                            <tr>
+                                <th class="px-2 py-2 text-left text-xs font-medium text-gray-500">排名</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium text-gray-500">词汇</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium text-gray-500">次数</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50 bg-yellow-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-yellow-400 text-white text-xs font-bold">1</span></td>
+                                <td class="px-2 py-2 font-medium">trending</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">1670</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 bg-yellow-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-yellow-400 text-white text-xs font-bold">2</span></td>
+                                <td class="px-2 py-2 font-medium">latest</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">1409</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 bg-yellow-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-yellow-400 text-white text-xs font-bold">3</span></td>
+                                <td class="px-2 py-2 font-medium">tutorial</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">1286</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">4</span></td>
+                                <td class="px-2 py-2 font-medium">guide</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">1282</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">5</span></td>
+                                <td class="px-2 py-2 font-medium">step</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">1194</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">6</span></td>
+                                <td class="px-2 py-2 font-medium">popular</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">1154</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">7</span></td>
+                                <td class="px-2 py-2 font-medium">learn</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">1097</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">8</span></td>
+                                <td class="px-2 py-2 font-medium">videos</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">1000</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">9</span></td>
+                                <td class="px-2 py-2 font-medium">fresh</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">802</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">10</span></td>
+                                <td class="px-2 py-2 font-medium">new</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">787</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">11</span></td>
+                                <td class="px-2 py-2 font-medium">beginner</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">774</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">12</span></td>
+                                <td class="px-2 py-2 font-medium">hot</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">773</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">13</span></td>
+                                <td class="px-2 py-2 font-medium">tips</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">753</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">14</span></td>
+                                <td class="px-2 py-2 font-medium">complete</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">730</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">15</span></td>
+                                <td class="px-2 py-2 font-medium">updated</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">704</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">16</span></td>
+                                <td class="px-2 py-2 font-medium">viral</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">672</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">17</span></td>
+                                <td class="px-2 py-2 font-medium">best</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">671</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">18</span></td>
+                                <td class="px-2 py-2 font-medium">practices</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">671</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">19</span></td>
+                                <td class="px-2 py-2 font-medium">watch</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">668</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-2 py-2"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs font-bold">20</span></td>
+                                <td class="px-2 py-2 font-medium">development</td>
+                                <td class="px-2 py-2 font-bold text-blue-600">664</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <!-- 高频词汇TOP 50 -->
+        <!-- 完整高频词汇表 -->
         <div class="bg-white rounded-lg shadow mb-8">
             <div class="p-6 border-b">
-                <h3 class="text-xl font-bold text-gray-800">🏆 高频词汇 TOP 50</h3>
+                <h3 class="text-xl font-bold text-gray-800">🏆 高频词汇 TOP 50 完整列表</h3>
             </div>
             <div class="overflow-x-auto max-h-96 overflow-y-auto">
                 <table class="w-full">
