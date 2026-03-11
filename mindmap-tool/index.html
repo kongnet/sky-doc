@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>目录结构脑图生成器 - KityMinder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/kity@2.0.4/dist/kity.min.js"></script>
+  <script src="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/kityminder-core@1.4.50/dist/kityminder.core.css">
+  <style>
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      overflow: hidden;
+    }
+    #minder-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #minder-container svg {
+      background-color: transparent;
+    }
+
+    .left-panel {
+      width: 320px;
+      min-width: 320px;
+      max-width: 320px;
+      transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease;
+    }
+    .left-panel.collapsed {
+      width: 0;
+      min-width: 0;
+      max-width: 0;
+      overflow: hidden;
+    }
+    .sidebar-toggle {
+      position: absolute;
+      left: 320px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 48px;
+      background: #4F46E5;
+      border: none;
+      border-radius: 0 8px 8px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+      z-index: 200;
+      transition: left 0.3s ease;
+    }
+    .sidebar-toggle:hover {
+      background: #4338CA;
+    }
+    .left-panel.collapsed + .sidebar-toggle,
+    .left-panel.collapsed ~ .sidebar-toggle {
+      left: 0;
+    }
+    textarea::-webkit-scrollbar {
+      width: 8px;
+    }
+    textarea::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    textarea::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+    textarea::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+    }
+    .controls button {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .controls button:hover {
+      background: #f9fafb;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    /* 自定义模态框样式 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      animation: modalSlideIn 0.3s ease;
+    }
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 12px;
+    }
+    .modal-message {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .modal-close {
+      background: #4F46E5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: 14px;
+      cursor: pointer;
+      float: right;
+      transition: background 0.2s;
+    }
+    .modal-close:hover {
+      background: #4338CA;
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col bg-gray-50">
+  <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-3 shadow-lg">
+    <div class="flex items-center justify-between">
+      <h1 class="text-lg font-bold flex items-center">
+        <span class="text-2xl mr-2">🧠</span>
+        目录结构脑图生成器
+        <span class="ml-2 text-xs bg-white/20 px-2 py-1 rounded">Powered by KityMinder</span>
+      </h1>
+      <div class="flex items-center gap-3 text-sm">
+        <span class="opacity-80">KityMinder 脑图 | 专业美观 | 多种布局</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex-1 flex overflow-hidden">
+    <div class="left-panel bg-white border-r border-gray-200 flex flex-col">
+      <div class="p-3 bg-gray-50 border-b border-gray-200">
+        <h2 class="text-sm font-bold text-gray-700">📋 输入目录结构</h2>
+      </div>
+      <div class="flex-1 p-3">
+        <textarea 
+          id="input-text" 
+          class="w-full h-full p-3 font-mono text-sm bg-gray-50 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="请输入目录结构，支持以下格式：
+
+格式1 - 树形符号：
+项目目录
+├── 文件夹1
+│   ├── 文件1.txt
+│   └── 文件2.txt
+└── 文件夹2
+    └── 文件3.txt
+
+格式2 - 空格/Tab缩进：
+项目目录
+  文件夹1
+    文件1.txt
+    文件2.txt
+  文件夹2
+
+格式3 - 斜杠路径：
+/项目/文件夹1/文件1.txt
+/项目/文件夹2/文件3.txt"
+        ></textarea>
+      </div>
+      <div class="p-3 border-t border-gray-200 space-y-2">
+        <button id="generate-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition">
+          🎯 生成脑图
+        </button>
+        <div class="flex gap-2">
+          <button id="clear-btn" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-3 rounded transition text-sm">
+            清空
+          </button>
+          <button id="example-btn" class="flex-1 bg-purple-100 hover:bg-purple-200 text-purple-700 py-2 px-3 rounded transition text-sm">
+            加载示例
+          </button>
+        </div>
+        <div class="pt-2 border-t border-gray-200">
+          <label class="text-xs text-gray-600 block mb-1">选择布局:</label>
+          <select id="layout-select" class="w-full p-2 text-sm border border-gray-300 rounded">
+            <option value="minder">标准脑图</option>
+            <option value="filetree">文件树</option>
+            <option value="fish-bone">鱼骨图</option>
+            <option value="tianpan">天盘图</option>
+          </select>
+        </div>
+        <div class="pt-2">
+          <label class="text-xs text-gray-600 block mb-1">选择主题:</label>
+          <div id="theme-grid" class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition active" data-value="classic">经典</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="classic-compact">经典紧凑</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-blue">清新蓝</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-blue-compat">清新蓝紧凑</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-green">清新绿</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-green-compat">清新绿紧凑</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-pink">清新粉</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-pink-compat">清新粉紧凑</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-purple">清新紫</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-purple-compat">清新紫紧凑</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-red">清新红</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-red-compat">清新红紧凑</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-soil">清新棕</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="fresh-soil-compat">清新棕紧凑</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="snow">雪景</div>
+            <div class="theme-option cursor-pointer p-2 rounded border border-gray-300 hover:bg-gray-50 text-xs text-center transition" data-value="snow-compact">雪景紧凑</div>
+          </div>
+          <input type="hidden" id="theme-select" value="classic">
+          <style>
+            .theme-option.active {
+              background-color: #4F46E5;
+              color: white;
+              border-color: #4F46E5;
+            }
+            .theme-option:hover:not(.active) {
+              background-color: #f3f4f6;
+            }
+          </style>
+        </div>
+        <div class="pt-2 border-t border-gray-200">
+          <label class="text-xs text-gray-600 block mb-1">展开层级:</label>
+          <div class="flex gap-2">
+            <button onclick="expandToLevel(1)" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 px-2 rounded text-xs transition">1层</button>
+            <button onclick="expandToLevel(2)" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 px-2 rounded text-xs transition">2层</button>
+            <button onclick="expandToLevel(0)" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 px-2 rounded text-xs transition">全部</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="sidebar-toggle" onclick="toggleSidebar()" title="收起/展开侧边栏">
+      ◀
+    </button>
+
+    <div class="flex-1 relative" id="minder-wrapper">
+      <div id="minder-container"></div>
+      
+      <div class="controls">
+        <button onclick="zoomIn()" title="放大">➕</button>
+        <button onclick="zoomOut()" title="缩小">➖</button>
+        <button onclick="resetView()" title="重置">🎯</button>
+        <button onclick="exportImage()" title="导出图片">💾</button>
+      </div>
+      
+      <div id="empty-state" class="absolute inset-0 flex items-center justify-center pointer-events-none" style="background: #f8fafc;">
+        <div class="text-center">
+          <div class="text-6xl mb-4">🧠</div>
+          <p class="text-lg text-gray-600">在左侧输入目录结构</p>
+          <p class="text-sm mt-2 text-gray-400">点击"生成脑图"查看可视化结果</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let minder = null;
+
+    // 示例数据
+    const exampleData = `《精通API架构：设计、运维与演进》
+├── 第一部分：设计、构建和测试API
+│   ├── 1. API设计基础
+│   │   ├── API风格选择：REST、RPC、GraphQL
+│   │   ├── 使用OpenAPI规范定义接口
+│   │   └── API版本控制策略
+│   ├── 2. API测试策略
+│   │   ├── 单元测试 → 组件测试 → 契约测试 → 集成测试 → 端到端测试
+│   │   ├── 工具：Testcontainers、Pact（契约测试）
+│   │   └── 测试金字塔在API中的应用
+│   └── 3. 从单体到API：重构模式
+│       ├── 绞杀者模式（Strangler Pattern）
+│       └── 增量演进案例：会议系统
+├── 第二部分：API流量管理
+│   ├── 4. API网关
+│   │   ├── 网关的作用：路由、认证、限流、聚合
+│   │   ├── 网关类型：传统企业网关 vs. 微网关（如Kong、Ambassador）
+│   │   ├── 部署模式：中心化 vs. 去中心化
+│   │   └── 陷阱：避免网关变成ESB
+│   ├── 5. 服务网格
+│   │   ├── 什么是服务网格（如Istio、Linkerd）
+│   │   ├── 与API网关的分工：东西向流量 vs. 南北向流量
+│   │   ├── 可观测性：遥测、追踪
+│   │   └── 何时引入服务网格？
+│   └── 6. 流量治理
+│       ├── 负载均衡
+│       ├── 熔断、重试、超时
+│       └── 金丝雀发布与蓝绿部署
+├── 第三部分：API运维与安全
+│   ├── 7. 部署与发布
+│   │   ├── 容器化与Kubernetes基础
+│   │   ├── 发布策略：功能开关、特性标记
+│   │   ├── 流量切换：蓝绿部署、金丝雀发布（与流量管理结合）
+│   │   └── 部署与发布解耦
+│   ├── 8. 安全
+│   │   ├── 威胁建模（STRIDE模型）
+│   │   ├── 认证与授权：OAuth2、JWT、TLS/mTLS
+│   │   ├── API密钥管理
+│   │   └── 安全审计与合规
+│   └── 9. 可观测性
+│       ├── 日志
+│       ├── 指标（Metrics）：Prometheus
+│       ├── 分布式追踪：Jaeger、Zipkin
+│       └── 健康检查与SLO
+└── 第四部分：架构演进
+    ├── 10. 从遗留系统到API驱动
+    │   ├── 评估现有架构
+    │   ├── 定义演进目标
+    │   ├── 绞杀者模式深入实践
+    │   └── 数据拆分与同步
+    ├── 11. 演进到云平台
+    │   ├── 云原生原则
+    │   ├── 使用API基础设施平滑迁移
+    │   └── 混合云/多云策略
+    └── 12. 架构决策记录（ADR）
+        ├── 为什么要记录架构决策
+        ├── ADR模板示例
+        └── 案例：会议系统演进中的关键决策`;
+
+    function parseInput(text) {
+      if (!text.trim()) return null;
+      const lines = text.split('\n').filter(line => line.trim());
+      
+      const hasTreeSymbols = lines.some(l => /[│├└]/.test(l));
+      const hasPathFormat = lines[0].startsWith('/') || 
+                           (lines.length > 0 && lines.some(l => l.includes('/') && !hasTreeSymbols));
+      
+      if (hasPathFormat && !hasTreeSymbols) {
+        return parsePathFormat(lines);
+      } else if (hasTreeSymbols) {
+        return parseTreeFormat(lines);
+      } else {
+        return parseIndentFormat(lines);
+      }
+    }
+
+    function parseTreeFormat(lines) {
+      const root = { data: { text: lines[0].replace(/^[├└│─\s]+/, '').trim() }, children: [] };
+      const stack = [{ node: root, level: -1 }];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        const level = (line.match(/[│├└]/g) || []).length;
+        const text = line.replace(/^[│├└─\s]+/, '').trim();
+        
+        if (!text) continue;
+        const node = { data: { text: text }, children: [] };
+        while (stack.length > 1 && stack[stack.length - 1].level >= level) {
+          stack.pop();
+        }
+        stack[stack.length - 1].node.children.push(node);
+        stack.push({ node, level });
+      }
+      return root;
+    }
+
+    function parseIndentFormat(lines) {
+      let indentUnit = 2;
+      const indents = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const match = lines[i].match(/^(\s*)/);
+        if (match && match[1].length > 0) indents.push(match[1].length);
+      }
+      
+      if (indents.length > 0) {
+        const minIndent = Math.min(...indents);
+        if (minIndent >= 4 && indents.some(i => i % 4 === 0)) indentUnit = 4;
+        else if (minIndent >= 2 && indents.some(i => i % 2 === 0)) indentUnit = 2;
+      }
+
+      const root = { data: { text: lines[0].trim() }, children: [] };
+      const stack = [{ node: root, level: -1 }];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        const match = line.match(/^(\s*)/);
+        const leadingSpaces = match ? match[1].length : 0;
+        const text = line.trim();
+        
+        if (!text) continue;
+        const level = Math.floor(leadingSpaces / indentUnit);
+        const node = { data: { text: text }, children: [] };
+        while (stack.length > 1 && stack[stack.length - 1].level >= level) {
+          stack.pop();
+        }
+        stack[stack.length - 1].node.children.push(node);
+        stack.push({ node, level });
+      }
+      return root;
+    }
+
+    function parsePathFormat(lines) {
+      const root = { data: { text: 'Root' }, children: [] };
+      lines.forEach(line => {
+        const parts = line.replace(/^\//, '').split('/').filter(p => p);
+        let current = root;
+        parts.forEach(part => {
+          let child = current.children.find(c => c.data.text === part);
+          if (!child) {
+            child = { data: { text: part }, children: [] };
+            current.children.push(child);
+          }
+          current = child;
+        });
+      });
+      return root.children.length === 1 ? root.children[0] : root;
+    }
+
+    // Pre-process data to set expandState before import
+    function preprocessExpandState(data, maxLevel) {
+      let nodeCount = 0;
+      
+      function traverse(node, level) {
+        nodeCount++;
+        if (node.children) {
+          node.children.forEach(child => {
+            // Set expandState: expand if below maxLevel, collapse otherwise
+            if (child.data) {
+              child.data.expandState = level < maxLevel ? 'expand' : 'collapse';
+            }
+            traverse(child, level + 1);
+          });
+        }
+      }
+      
+      traverse(data, 0);
+      return nodeCount;
+    }
+
+    // Limit nodes for performance - truncate deep nodes when count is high
+    function limitNodes(data, maxTotalNodes = 300, maxDepth = 4) {
+      let count = 0;
+      let truncated = false;
+      
+      function traverse(node, depth) {
+        count++;
+        if (count > maxTotalNodes) {
+          truncated = true;
+          return false;
+        }
+        
+        if (depth >= maxDepth && node.children && node.children.length > 0) {
+          // Truncate deep nodes
+          const childCount = node.children.length;
+          node.children = [{
+            data: { 
+              text: `... (${childCount} more)`,
+              expandState: 'collapse'
+            },
+            children: []
+          }];
+          count++;
+          return true;
+        }
+        
+        if (node.children) {
+          for (let i = node.children.length - 1; i >= 0; i--) {
+            if (!traverse(node.children[i], depth + 1)) {
+              node.children.splice(i, 1);
+            }
+          }
+        }
+        return true;
+      }
+      
+      traverse(data, 0);
+      return { count, truncated };
+    }
+
+    // Get optimal settings based on node count
+    function getOptimalSettings(nodeCount) {
+      if (nodeCount > 2500) {
+        return {
+          disableAnimation: true,
+          expandLevel: 1,
+          useCompactTheme: true,
+          useFiletreeLayout: true,
+          limitNodes: true
+        };
+      } else if (nodeCount > 1500) {
+        return {
+          disableAnimation: true,
+          expandLevel: 1,
+          useCompactTheme: false,
+          useFiletreeLayout: false,
+          limitNodes: false
+        };
+      } else if (nodeCount > 500) {
+        return {
+          disableAnimation: true,
+          expandLevel: 2,
+          useCompactTheme: false,
+          useFiletreeLayout: false,
+          limitNodes: false
+        };
+      }
+      return {
+        disableAnimation: false,
+        expandLevel: 2,
+        useCompactTheme: false,
+        useFiletreeLayout: false,
+        limitNodes: false
+      };
+    }
+
+    function generateMindmap() {
+      const text = document.getElementById('input-text').value;
+      const data = parseInput(text);
+
+      if (!data) {
+        showModal('请输入有效的目录结构', '错误');
+        return;
+      }
+
+      document.getElementById('empty-state').style.display = 'none';
+
+      const container = document.getElementById('minder-container');
+      container.innerHTML = '';
+
+      // Check if KityMinder is loaded
+      if (typeof window.kityminder === 'undefined') {
+        console.error('KityMinder library not loaded');
+        showModal('KityMinder 库加载失败，请检查网络连接', '错误');
+        return;
+      }
+
+      // Get selected layout and theme
+      const layout = document.getElementById('layout-select').value;
+      const theme = document.getElementById('theme-select').value;
+
+      try {
+        // Count nodes first
+        let nodeCount = 0;
+        function countNodes(node) {
+          nodeCount++;
+          if (node.children) {
+            node.children.forEach(countNodes);
+          }
+        }
+        countNodes(data);
+        console.log('Total nodes:', nodeCount);
+
+        // Get optimal settings based on node count
+        const settings = getOptimalSettings(nodeCount);
+        
+        // Limit nodes for very large datasets
+        if (settings.limitNodes) {
+          const result = limitNodes(data, 3000, 6);
+          nodeCount = result.count;
+          if (result.truncated) {
+            console.log('Data truncated for performance. Showing', nodeCount, 'nodes');
+          }
+        }
+
+        // Pre-process expand state
+        preprocessExpandState(data, settings.expandLevel);
+
+        // Create KityMinder instance
+        minder = new window.kityminder.Minder({
+          renderTo: container
+        });
+
+        // Disable animation for large datasets
+        if (settings.disableAnimation) {
+          minder.disableAnimation();
+          console.log('Animation disabled for', nodeCount, 'nodes');
+        }
+
+        // Use optimal layout for large datasets (filetree is faster)
+        const effectiveLayout = settings.useFiletreeLayout ? 'filetree' : layout;
+        const effectiveTheme = settings.useCompactTheme ? 
+          (theme === 'classic' ? 'classic-compact' : theme.replace(/-compact$/, '') + '-compact') : 
+          theme;
+
+        // Import data (with expandState already set)
+        minder.importData('json', JSON.stringify(data));
+        
+        // Use execCommand to set layout and theme
+        setTimeout(() => {
+          if (effectiveLayout && effectiveLayout !== 'minder') {
+            minder.execCommand('layout', effectiveLayout);
+          }
+          
+          // Apply theme
+          if (effectiveTheme) {
+            minder.execCommand('theme', effectiveTheme);
+          }
+          
+          // Set background based on effective theme
+          const svg = container.querySelector('svg');
+          if (svg) {
+            if (effectiveTheme === 'classic' || effectiveTheme === 'classic-compact') {
+              svg.style.background = '#f5f5f5';
+              svg.style.backgroundImage = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDowQzg5QTQ0NDhENzgxMUUzOENGREE4QTg0RDgzRTZDNyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDowQzg5QTQ0NThENzgxMUUzOENGREE4QTg0RDgzRTZDNyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMwOEQ1NDRGOEQ3NzExRTM4Q0ZEQThBODREODNFNkM3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkMwOEQ1NDUwOEQ3NzExRTM4Q0ZEQThBODREODNFNkM3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+e9P33AAAACVJREFUeNpisXJ0YUACTAyoAMr/+eM7EGGRZ4FPQ7BycEAZAgAEAHbEGtkoQm/wAAAAASUVORK5CYII=")';
+              svg.style.backgroundRepeat = 'repeat';
+            } else if (effectiveTheme === 'snow' || effectiveTheme === 'snow-compact') {
+              svg.style.background = '#1a1a1a';
+            } else {
+              svg.style.background = '#ffffff';
+            }
+          }
+        }, 100);
+
+        console.log('KityMinder created with layout:', layout, 'theme:', theme);
+      } catch (error) {
+        console.error('Error creating KityMinder:', error);
+        showModal('创建脑图失败: ' + error.message, '错误');
+      }
+    }
+
+    function updateTheme(newTheme) {
+      if (!minder) return;
+      
+      // Disable animation for faster theme switching
+      minder.disableAnimation();
+      
+      // Update hidden input
+      document.getElementById('theme-select').value = newTheme;
+      
+      // Apply theme to existing minder
+      minder.execCommand('theme', newTheme);
+      
+      // Update background
+      const container = document.getElementById('minder-container');
+      const svg = container.querySelector('svg');
+      if (svg) {
+        if (newTheme === 'classic') {
+          svg.style.background = '#f5f5f5';
+          svg.style.backgroundImage = 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDowQzg5QTQ0NDhENzgxMUUzOENGREE4QTg0RDgzRTZDNyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDowQzg5QTQ0NThENzgxMUUzOENGREE4QTg0RDgzRTZDNyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMwOEQ1NDRGOEQ3NzExRTM4Q0ZEQThBODREODNFNkM3IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkMwOEQ1NDUwOEQ3NzExRTM4Q0ZEQThBODREODNFNkM3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+e9P33AAAACVJREFUeNpisXJ0YUACTAyoAMr/+eM7EGGRZ4FQ7BycEAZAgAEAHbEGtkoQm/wAAAAASUVORK5CYII=")';
+          svg.style.backgroundRepeat = 'repeat';
+        } else if (newTheme === 'classic-compact') {
+          svg.style.background = '';
+        } else if (newTheme === 'snow' || newTheme === 'snow-compact') {
+          svg.style.background = '#1a1a1a';
+        } else {
+          svg.style.background = '#ffffff';
+        }
+      }
+      
+      // Re-enable animation after a short delay
+      setTimeout(() => {
+        minder.enableAnimation();
+      }, 100);
+      
+      console.log('Theme updated to:', newTheme);
+    }
+
+    function zoomIn() {
+      if (minder) {
+        const zoom = minder.getZoomValue() || 1;
+        minder.setZoomValue(zoom * 1.2);
+      }
+    }
+
+    function zoomOut() {
+      if (minder) {
+        const zoom = minder.getZoomValue() || 1;
+        minder.setZoomValue(zoom * 0.8);
+      }
+    }
+
+    function resetView() {
+      if (minder) {
+        minder.setZoomValue(1);
+        minder.camera.center();
+      }
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.left-panel');
+      const toggleBtn = document.querySelector('.sidebar-toggle');
+      
+      sidebar.classList.toggle('collapsed');
+      
+      // 切换按钮图标
+      if (sidebar.classList.contains('collapsed')) {
+        toggleBtn.innerHTML = '▶';
+        toggleBtn.title = '展开侧边栏';
+      } else {
+        toggleBtn.innerHTML = '◀';
+        toggleBtn.title = '收起侧边栏';
+      }
+    }
+
+      // Quick node counter - stops at limit to avoid freezing
+    function quickCountNodes(root, limit = 3000) {
+      let count = 0;
+      const stack = [root];
+      while (stack.length > 0 && count < limit) {
+        const node = stack.pop();
+        count++;
+        const children = node.getChildren ? node.getChildren() : [];
+        for (let i = children.length - 1; i >= 0; i--) {
+          stack.push(children[i]);
+        }
+      }
+      return { count, hasMore: count >= limit };
+    }
+
+    function expandToLevel(targetLevel) {
+      if (!minder) {
+        showModal('请先生成脑图', '提示');
+        return;
+      }
+      
+      const root = minder.getRoot();
+      if (!root) return;
+      
+      // Quick count to check total nodes (limit 3000 for performance)
+      const { count: totalNodes, hasMore } = quickCountNodes(root, 3000);
+      console.log('Total nodes:', hasMore ? '3000+' : totalNodes);
+      
+      // For large datasets (>2500 nodes), only allow level 1 (but level 0 means "all", check separately)
+      if (totalNodes > 2500 && targetLevel > 1 && targetLevel !== 0) {
+        console.warn('Large dataset detected, limiting to level 1');
+        targetLevel = 1;
+      }
+      
+      // If "expand all" is requested but there are too many nodes (>3000), limit to level 2
+      if (targetLevel === 0 && hasMore) {
+        console.warn('Too many nodes (>3000) for "expand all", limiting to level 2');
+        targetLevel = 2;
+      }
+      
+      // Disable animation for large datasets (>800 nodes)
+      if (totalNodes > 800) {
+        minder.disableAnimation();
+      }
+      
+      // Simple iterative expand - process nodes level by level
+      let processed = 0;
+      
+      function processLevel(levelNodes, currentLevel) {
+        // targetLevel === 0 means "expand all", so we never collapse based on currentLevel
+        if (targetLevel !== 0 && currentLevel >= targetLevel) {
+          // Collapse all nodes at this level
+          levelNodes.forEach(node => {
+            if (node.getChildren && node.getChildren().length > 0) {
+              try { node.collapse(); } catch(e) {}
+            }
+          });
+          return;
+        }
+        
+        // Expand nodes at this level
+        const nextLevelNodes = [];
+        levelNodes.forEach(node => {
+          const children = node.getChildren ? node.getChildren() : [];
+          if (children.length > 0) {
+            try { 
+              node.expand();
+              processed++;
+            } catch(e) {}
+            nextLevelNodes.push(...children);
+          }
+        });
+        
+        // Process next level
+        if (nextLevelNodes.length > 0) {
+          processLevel(nextLevelNodes, currentLevel + 1);
+        }
+      }
+      
+      // Start from root children (level 1)
+      const rootChildren = root.getChildren ? root.getChildren() : [];
+      if (rootChildren.length > 0) {
+        processLevel(rootChildren, 1);
+      }
+      
+      minder.refresh();
+      if (totalNodes <= 800) {
+        minder.enableAnimation();
+      }
+      
+      console.log('Expanded to level:', targetLevel, 'Processed:', processed, 'nodes');
+    }
+
+    function exportImage() {
+      if (minder) {
+        minder.exportData('png').then(function(data) {
+          const link = document.createElement('a');
+          link.download = 'mindmap.png';
+          link.href = data;
+          link.click();
+        });
+      }
+    }
+
+    function clearInput() {
+      document.getElementById('input-text').value = '';
+      document.getElementById('minder-container').innerHTML = '';
+      document.getElementById('empty-state').style.display = 'flex';
+      minder = null;
+    }
+
+    function loadExample() {
+      document.getElementById('input-text').value = exampleData;
+      generateMindmap();
+    }
+
+    // 绑定事件
+    document.getElementById('generate-btn').addEventListener('click', generateMindmap);
+    document.getElementById('clear-btn').addEventListener('click', clearInput);
+    document.getElementById('example-btn').addEventListener('click', loadExample);
+    document.getElementById('layout-select').addEventListener('change', function() {
+      if (document.getElementById('input-text').value.trim()) {
+        generateMindmap();
+      }
+    });
+    // 主题网格选择事件
+    document.querySelectorAll('.theme-option').forEach(option => {
+      option.addEventListener('click', function() {
+        const selectedTheme = this.dataset.value;
+        
+        // 移除其他选项的active状态
+        document.querySelectorAll('.theme-option').forEach(opt => {
+          opt.classList.remove('active');
+        });
+        // 添加当前选项的active状态
+        this.classList.add('active');
+        
+        // 如果minder存在，更新主题而不重新生成
+        if (minder) {
+          updateTheme(selectedTheme);
+        } else {
+          // 仅更新隐藏input，下次生成时应用
+          document.getElementById('theme-select').value = selectedTheme;
+        }
+      });
+    });
+  </script>
+
+  <!-- 自定义模态框 -->
+  <div id="customModal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-title">提示</div>
+      <div class="modal-message" id="modalMessage"></div>
+      <button class="modal-close" onclick="closeModal()">确定</button>
+    </div>
+  </div>
+
+  <script>
+    // 显示模态框
+    function showModal(message, title = '提示') {
+      const modal = document.getElementById('customModal');
+      const modalTitle = modal.querySelector('.modal-title');
+      const modalMessage = document.getElementById('modalMessage');
+      
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      modal.classList.add('active');
+    }
+    
+    // 关闭模态框
+    function closeModal(event) {
+      // 如果点击的是关闭按钮或遮罩层，则关闭
+      if (!event || event.target === document.getElementById('customModal') || event.target.classList.contains('modal-close')) {
+        document.getElementById('customModal').classList.remove('active');
+      }
+    }
+  </script>
+</body>
+</html>
