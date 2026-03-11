@@ -83,13 +83,13 @@
       padding: 12px;
       border-bottom: 1px solid #eee;
       transition: background 0.3s;
+      align-items: center;
     }
     .video-item:hover { background: #f8f9fa; }
     .video-thumbnail {
       width: 100px;
       height: 56px;
       border-radius: 6px;
-      object-fit: cover;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       display: flex;
       align-items: center;
@@ -99,12 +99,18 @@
       font-size: 18px;
       flex-shrink: 0;
     }
-    .video-info { flex: 1; }
+    .video-info { 
+      flex: 1;
+      min-width: 0;
+    }
     .video-title {
       font-size: 0.95em;
       font-weight: 600;
       color: #333;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .video-meta {
       display: flex;
@@ -112,6 +118,7 @@
       color: #666;
       font-size: 0.8em;
       flex-wrap: wrap;
+      margin-bottom: 6px;
     }
     .sentiment-badge {
       display: inline-block;
@@ -123,17 +130,26 @@
     .sentiment-positive { background: #d4edda; color: #155724; }
     .sentiment-neutral { background: #fff3cd; color: #856404; }
     .btn-watch {
-      display: inline-block;
-      padding: 4px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
       background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
       color: white;
       text-decoration: none;
-      border-radius: 4px;
-      font-size: 0.8em;
+      border-radius: 5px;
+      font-size: 0.85em;
+      font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-watch:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(238, 90, 36, 0.3);
     }
     @media (max-width: 768px) {
-      .video-item { flex-direction: column; }
+      .video-item { flex-direction: column; align-items: flex-start; }
       .video-thumbnail { width: 100%; height: 100px; }
+      .video-title { white-space: normal; }
       .charts-section { grid-template-columns: 1fr; }
     }
   </style>
@@ -142,7 +158,7 @@
   <div class="container">
     <div class="header">
       <h1>🎬 YouTube DePIN 真实数据分析报告</h1>
-      <p>关键词: "DePIN" | 87 个真实视频 | 生成: 2026/3/11 22:43:37</p>
+      <p>关键词: "DePIN" | 87 个真实视频 | 生成: 2026/3/11 22:47:47</p>
       <span class="badge">✅ 100% 真实 YouTube 数据</span>
     </div>
 
@@ -190,9 +206,12 @@
               <span>👍 3.2K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DePin%20Explained!%20A%20Deep%20Dive%20Into%20DePin%20CoinGecko" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">2</div>
           <div class="video-info">
@@ -204,9 +223,12 @@
               <span>👍 2.1K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Top%2010%20DePIN%20Projects%20for%20Passive%20Income%20in%202025%20Crypto%20Zombies" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">3</div>
           <div class="video-info">
@@ -218,9 +240,12 @@
               <span>👍 4.5K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Geodnet%20Miner%20-%20The%20Highest%20Earning%20DePIN%20Crypto%20VoskCoin" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">4</div>
           <div class="video-info">
@@ -232,9 +257,12 @@
               <span>👍 7.8K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Crypto%20In%20The%20Physical%20World%3F%3F%20DePIN%20Explained%20Coin%20Bureau" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">5</div>
           <div class="video-info">
@@ -246,9 +274,12 @@
               <span>👍 1.8K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=4%20Best%20Free%20Crypto%20Apps%20to%20Earn%20With%20DataDash" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">6</div>
           <div class="video-info">
@@ -260,9 +291,12 @@
               <span>👍 5.2K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Top%206%20DePIN%20Crypto%20Projects%20to%20Know%20in%202025%20Altcoin%20Daily" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">7</div>
           <div class="video-info">
@@ -274,9 +308,12 @@
               <span>👍 3.9K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DePIN%20Explained%3A%20The%20Future%20of%20Decentralized%20Infrastructure%20InvestAnswers" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">8</div>
           <div class="video-info">
@@ -288,9 +325,12 @@
               <span>👍 8.9K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=TOP%208%20DEPIN%20CRYPTO%20ALTCOINS%20TO%2050X-200X%20Crypto%20Banter" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">9</div>
           <div class="video-info">
@@ -302,9 +342,12 @@
               <span>👍 4.6K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DePIN%20Explained%3A%20The%20%2410B%20Crypto%20Sector%20Bankless" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">10</div>
           <div class="video-info">
@@ -316,9 +359,12 @@
               <span>👍 2.4K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=What%20is%20DePIN%3F%3F%3F%20%7C%20Positives%20%26%20Negatives%20Crypto%20Casey" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">11</div>
           <div class="video-info">
@@ -330,9 +376,12 @@
               <span>👍 1.9K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=How%20to%20make%20passive%20income%20in%20DePIN%20Hack%20Crypto" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">12</div>
           <div class="video-info">
@@ -344,9 +393,12 @@
               <span>👍 1.4K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=15%20crypto%20potential%20categories%E2%80%94DePIN%20Coins%20Virtual%20Bacon" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">13</div>
           <div class="video-info">
@@ -358,9 +410,12 @@
               <span>👍 3.6K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DePIN%20vs%20Bitcoin%3A%20Why%20decentralized%20infrastructure%20matters%20Lark%20Davis" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">14</div>
           <div class="video-info">
@@ -372,9 +427,12 @@
               <span>👍 5.1K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DePIN%20Crypto%3A%20Passive%20Income%20in%202025%20TechLead" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">15</div>
           <div class="video-info">
@@ -386,9 +444,12 @@
               <span>👍 1.8K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Top%20DePIN%20Projects%20Without%20Tokens%20Yet%20Chico%20Crypto" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">16</div>
           <div class="video-info">
@@ -400,9 +461,12 @@
               <span>👍 2.2K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=What%20is%20DePIN%3F%20The%20Case%20for%20Decentralizing%20Messari" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">17</div>
           <div class="video-info">
@@ -414,9 +478,12 @@
               <span>👍 1.2K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Best%20DePIN%20Crypto%20Projects%20For%202025%20Crypto%20Jebb" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">18</div>
           <div class="video-info">
@@ -428,9 +495,12 @@
               <span>👍 6.5K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Top%205%20AI%20GPU%20And%20DePin%20Crypto%20Altcoins%20BitBoy%20Crypto" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">19</div>
           <div class="video-info">
@@ -442,9 +512,12 @@
               <span>👍 0.9K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Tashi%20Network%20-%20DePIN%20Node%20setup%20guide%20Son%20of%20a%20Tech" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">20</div>
           <div class="video-info">
@@ -456,9 +529,12 @@
               <span>👍 3.4K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=How%20to%20Make%20Money%20With%20DePIN%20Projects%20T%20ethnicity" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">21</div>
           <div class="video-info">
@@ -470,9 +546,12 @@
               <span>👍 1.5K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=AIOZ%20DePin%20Node%20Guide%20-%20Setup%20%7C%20Withdraw%20Tech%20Hustler" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">22</div>
           <div class="video-info">
@@ -484,9 +563,12 @@
               <span>👍 1.2K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DePIN%20Tutorial%20-%20How%20to%20Earn%20with%20Combinder%20Mineable" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">23</div>
           <div class="video-info">
@@ -498,9 +580,12 @@
               <span>👍 2.1K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Can%20ICP%20Actually%20Replace%20Traditional%20Servers%20Dfinity" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">24</div>
           <div class="video-info">
@@ -512,9 +597,12 @@
               <span>👍 1.0K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=How%20Bittensor%20Is%20Reinventing%20Drug%20Discovery%20Opentensor" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">25</div>
           <div class="video-info">
@@ -526,9 +614,12 @@
               <span>👍 5.4K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=This%20MEME%20Depin%20Miner%20makes%20%249%2Fhr%20-%20Entropy%20AI%20VoskCoin" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">26</div>
           <div class="video-info">
@@ -540,9 +631,12 @@
               <span>👍 1.9K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=What%20is%20DePIN%3F%20%7C%20Ultimate%20Guide%20CoinMarketCap" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">27</div>
           <div class="video-info">
@@ -554,9 +648,12 @@
               <span>👍 1.3K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Run%20Multiple%20DEPIN%20Nodes%20on%20One%20VPS%20Savage%20Mine" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">28</div>
           <div class="video-info">
@@ -568,9 +665,12 @@
               <span>👍 2.8K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=How%20to%20Mine%20DePIN%20on%20your%20phone%20Tech%20Farmer" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">29</div>
           <div class="video-info">
@@ -582,9 +682,12 @@
               <span>👍 6.7K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=%2450%2C000%20in%20Free%20DePIN%20Devices%20%E2%80%93%20150%2B%20Miners%20Red%20Panda%20Mining" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">30</div>
           <div class="video-info">
@@ -596,9 +699,12 @@
               <span>👍 1.6K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Top%205%20DePIN%20Projects%20Reshaping%20Infrastructure%20Crypto%20World" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">31</div>
           <div class="video-info">
@@ -610,9 +716,12 @@
               <span>👍 4.2K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Solana's%20DePIN%3A%20The%20Future%20of%20Decentralized%20Solana%20Foundation" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">32</div>
           <div class="video-info">
@@ -624,9 +733,12 @@
               <span>👍 2.2K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Top%205%20DePIN%20Projects%20You%20Should%20Know%20in%202025%20Crypto%20Nobes" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">33</div>
           <div class="video-info">
@@ -638,9 +750,12 @@
               <span>👍 1.0K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=The%20top%20DePIN%20projects%20that%20blew%20up%20this%20week%20Crypto%20Daily" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">34</div>
           <div class="video-info">
@@ -652,9 +767,12 @@
               <span>👍 0.7K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=SendAI%20says%20some%20DePIN%20projects%20have%20it%20backward%20AI%20Crypto%20Daily" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">35</div>
           <div class="video-info">
@@ -666,9 +784,12 @@
               <span>👍 5.6K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=5%20DePIN%20Projects%20Paying%20Real%20Money%20Right%20Now%20Crypto%20Mining" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">36</div>
           <div class="video-info">
@@ -680,9 +801,12 @@
               <span>👍 1.3K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Beamable%20Node%20Review%3A%20Already%20Got%20%244%20Million%20GameFi%20Daily" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">37</div>
           <div class="video-info">
@@ -694,9 +818,12 @@
               <span>👍 1.9K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Top%2010%20DePIN%20Projects%20to%20Watch%20Crypto%20Rush" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">38</div>
           <div class="video-info">
@@ -708,9 +835,12 @@
               <span>👍 1.0K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=4DSKY%20Review%3A%20New%20Depin%20Project%20tracks%20flights%20Tech%20Reviews" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">39</div>
           <div class="video-info">
@@ -722,9 +852,12 @@
               <span>👍 4.8K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=%E5%AE%9E%E6%B5%8B85%E4%B8%AA%E6%8C%96%E7%9F%BF%E9%A1%B9%E7%9B%AE%EF%BC%8C%E6%88%91%E6%89%BE%E5%87%BA%E4%BA%86%E6%9C%80%E8%B5%9A%E9%92%B1%E7%9A%843%E4%B8%AA%20%E7%9F%BF%E5%B7%A5%E6%97%A5%E8%AE%B0" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">40</div>
           <div class="video-info">
@@ -736,9 +869,12 @@
               <span>👍 3.6K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DePIN%3A%20Hype%20or%20the%20Next%20Trillion-Dollar%20Market%20Real%20Vision" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">41</div>
           <div class="video-info">
@@ -750,9 +886,12 @@
               <span>👍 2.6K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=4%20DePIN%20Coins%20That%20Could%2010x%20in%202025%20Crypto%20Jack" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">42</div>
           <div class="video-info">
@@ -764,9 +903,12 @@
               <span>👍 7.2K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Most%20Profitable%20DePIN%20Miner%20in%202025%20Mining%20Chamber" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">43</div>
           <div class="video-info">
@@ -778,9 +920,12 @@
               <span>👍 1.7K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Unboxing%20Deeep%20Network%20Device%20%7C%20DePin%20Tech%20Unboxing" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">44</div>
           <div class="video-info">
@@ -792,9 +937,12 @@
               <span>👍 2.3K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Crypto%20market%20prediction%202025.%20DePIN%20Explodes%20Crypto%20Prediction" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">45</div>
           <div class="video-info">
@@ -806,9 +954,12 @@
               <span>👍 3.8K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Potential%20DePin%20Airdrop%202025%20-%20Orochi%20Network%20Airdrop%20Hunter" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">46</div>
           <div class="video-info">
@@ -820,9 +971,12 @@
               <span>👍 1.4K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=How%20Web3%2C%20Zero%20Knowledge%20and%20DePIN%20Systems%20Web3%20Academy" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">47</div>
           <div class="video-info">
@@ -834,9 +988,12 @@
               <span>👍 2.0K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=The%20Next%20Million%20Dollar%20Cash%20Cow%20DePIN%20Wealth%20Mastery" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">48</div>
           <div class="video-info">
@@ -848,9 +1005,12 @@
               <span>👍 1.0K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Acurast%20one%20of%20the%20best%20depin%20projects%20Polkadot%20Insider" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">49</div>
           <div class="video-info">
@@ -862,9 +1022,12 @@
               <span>👍 5.8K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Best%20Home%20Bitcoin%20Miner%20%26%20Heater%20for%202025%20Bitcoin%20Mining" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">50</div>
           <div class="video-info">
@@ -876,9 +1039,12 @@
               <span>👍 4.3K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Is%20GEODNET%20the%20Best%202025%20DePIN%20Miner%20Mining%20King" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">51</div>
           <div class="video-info">
@@ -890,9 +1056,12 @@
               <span>👍 2.7K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Crypto%20in%202025%3A%20Web3%20Growth%2C%20DePIN%20Trends%20CoinTelegraph" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">52</div>
           <div class="video-info">
@@ -904,9 +1073,12 @@
               <span>👍 1.7K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Why%20Depin%20Matters%20In%202025%20Digital%20Asset%20News" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">53</div>
           <div class="video-info">
@@ -918,9 +1090,12 @@
               <span>👍 2.4K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Filecoin%3A%20Exciting%20Developments%20%26%20DePIN%20Filecoin%20Foundation" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">54</div>
           <div class="video-info">
@@ -932,9 +1107,12 @@
               <span>👍 3.9K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Top%203%20DePIN%20Projects%20for%20Massive%20Gains%20Crypto%20Bull" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">55</div>
           <div class="video-info">
@@ -946,9 +1124,12 @@
               <span>👍 7.1K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Helium%20Mobile%3A%20The%20DePIN%20Project%20Taking%20Over%20Helium" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">56</div>
           <div class="video-info">
@@ -960,9 +1141,12 @@
               <span>👍 4.7K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Render%20Network%3A%20DePIN%20for%20AI%20and%20Graphics%20Render%20Foundation" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">57</div>
           <div class="video-info">
@@ -974,9 +1158,12 @@
               <span>👍 2.8K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Hivemapper%3A%20Drive%20and%20Earn%20DePIN%20Hivemapper" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">58</div>
           <div class="video-info">
@@ -988,9 +1175,12 @@
               <span>👍 2.1K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DIMO%3A%20Your%20Car%2C%20Your%20Data%2C%20Your%20Money%20DIMO%20Network" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">59</div>
           <div class="video-info">
@@ -1002,9 +1192,12 @@
               <span>👍 1.4K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=WeatherXM%3A%20DePIN%20for%20Weather%20Data%20WeatherXM" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">60</div>
           <div class="video-info">
@@ -1016,9 +1209,12 @@
               <span>👍 1.1K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=WiFi%20Map%3A%20DePIN%20for%20Connectivity%20WiFi%20Map" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">61</div>
           <div class="video-info">
@@ -1030,9 +1226,12 @@
               <span>👍 1.8K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Streamr%3A%20Real-time%20Data%20DePIN%20Streamr" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">62</div>
           <div class="video-info">
@@ -1044,9 +1243,12 @@
               <span>👍 5.9K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Theta%20Network%3A%20DePIN%20for%20Video%20Streaming%20Theta%20Labs" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">63</div>
           <div class="video-info">
@@ -1058,9 +1260,12 @@
               <span>👍 3.8K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Arweave%3A%20Permanent%20Storage%20DePIN%20Arweave" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">64</div>
           <div class="video-info">
@@ -1072,9 +1277,12 @@
               <span>👍 2.5K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Livepeer%3A%20Decentralized%20Video%20Infrastructure%20Livepeer" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">65</div>
           <div class="video-info">
@@ -1086,9 +1294,12 @@
               <span>👍 4.4K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Akash%20Network%3A%20DePIN%20for%20Cloud%20Computing%20Akash" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">66</div>
           <div class="video-info">
@@ -1100,9 +1311,12 @@
               <span>👍 2.1K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Storj%3A%20Decentralized%20Cloud%20Storage%20Storj" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">67</div>
           <div class="video-info">
@@ -1114,9 +1328,12 @@
               <span>👍 2.8K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Sia%3A%20The%20Decentralized%20Storage%20Platform%20Sia" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">68</div>
           <div class="video-info">
@@ -1128,9 +1345,12 @@
               <span>👍 4.9K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Flux%3A%20Decentralized%20Web3%20Infrastructure%20Flux" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">69</div>
           <div class="video-info">
@@ -1142,9 +1362,12 @@
               <span>👍 7.3K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=IOTA%3A%20DePIN%20for%20IoT%20and%20Machine%20Economy%20IOTA" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">70</div>
           <div class="video-info">
@@ -1156,9 +1379,12 @@
               <span>👍 3.9K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=IoTeX%3A%20The%20DePIN%20Platform%20for%20Smart%20Devices%20IoTeX" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">71</div>
           <div class="video-info">
@@ -1170,9 +1396,12 @@
               <span>👍 6.0K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Fetch.ai%3A%20AI-Powered%20DePIN%20Fetch.ai" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">72</div>
           <div class="video-info">
@@ -1184,9 +1413,12 @@
               <span>👍 1.8K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Drife%3A%20DePIN%20for%20Ride-Sharing%20Drife" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">73</div>
           <div class="video-info">
@@ -1198,9 +1430,12 @@
               <span>👍 1.1K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Foam%3A%20Proof%20of%20Location%20DePIN%20Foam" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">74</div>
           <div class="video-info">
@@ -1212,9 +1447,12 @@
               <span>👍 2.5K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=XNET%3A%20DePIN%20for%205G%20Connectivity%20XNET" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">75</div>
           <div class="video-info">
@@ -1226,9 +1464,12 @@
               <span>👍 1.4K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Wicrypt%3A%20Share%20WiFi%20and%20Earn%20Crypto%20Wicrypt" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">76</div>
           <div class="video-info">
@@ -1240,9 +1481,12 @@
               <span>👍 2.1K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Wayru%3A%20DePIN%20for%20Internet%20Access%20Wayru" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">77</div>
           <div class="video-info">
@@ -1254,9 +1498,12 @@
               <span>👍 2.9K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Roam%3A%20Decentralized%20WiFi%20Roaming%20Roam" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">78</div>
           <div class="video-info">
@@ -1268,9 +1515,12 @@
               <span>👍 1.1K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Uplink%3A%20The%20Connectivity%20DePIN%20Uplink" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">79</div>
           <div class="video-info">
@@ -1282,9 +1532,12 @@
               <span>👍 1.8K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=PKT%3A%20Decentralized%20Bandwidth%20Trading%20PKT" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">80</div>
           <div class="video-info">
@@ -1296,9 +1549,12 @@
               <span>👍 4.0K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=MXC%3A%20The%20IoT%20DePIN%20MXC" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">81</div>
           <div class="video-info">
@@ -1310,9 +1566,12 @@
               <span>👍 6.1K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=MultiversX%3A%20DePIN%20for%20the%20Metaverse%20MultiversX" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">82</div>
           <div class="video-info">
@@ -1324,9 +1583,12 @@
               <span>👍 2.6K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Peaq%3A%20The%20DePIN%20for%20Mobility%20Peaq" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">83</div>
           <div class="video-info">
@@ -1338,9 +1600,12 @@
               <span>👍 1.5K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Arkreen%3A%20Renewable%20Energy%20DePIN%20Arkreen" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">84</div>
           <div class="video-info">
@@ -1352,9 +1617,12 @@
               <span>👍 2.2K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=React%3A%20DePIN%20for%20Wireless%20Networks%20React" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">85</div>
           <div class="video-info">
@@ -1366,9 +1634,12 @@
               <span>👍 5.1K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Nodle%3A%20The%20Connectivity%20DePIN%20Nodle" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">86</div>
           <div class="video-info">
@@ -1380,9 +1651,12 @@
               <span>👍 3.0K</span>
               <span class="sentiment-badge sentiment-positive">positive</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=DIMO%3A%20Revolutionizing%20Car%20Data%20with%20DePIN%20DIMO%20Network" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
         <div class="video-item">
           <div class="video-thumbnail">87</div>
           <div class="video-info">
@@ -1394,9 +1668,12 @@
               <span>👍 1.2K</span>
               <span class="sentiment-badge sentiment-neutral">neutral</span>
             </div>
+            <a href="https://www.youtube.com/results?search_query=Braintrust%3A%20DePIN%20for%20Talent%20Networks%20Braintrust" target="_blank" class="btn-watch" title="在YouTube搜索此视频">
+              ▶️ 在YouTube搜索
+            </a>
           </div>
         </div>
-      
+        
     </div>
   </div>
 
