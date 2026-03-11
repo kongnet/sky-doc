@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube DePIN 深度数据分析报告</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #e2e4e7;
+      min-height: 100vh;
+      padding: 15px;
+    }
+    .container { max-width: 1600px; margin: 0 auto; }
+    
+    /* Header */
+    .header {
+      background: rgba(255,255,255,0.95);
+      border-radius: 8px;
+      padding: 8px 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+    }
+    .header h1 {
+      font-size: 1.2em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 2px;
+    }
+    .header p {
+      font-size: 0.75em;
+      color: #666;
+      margin: 0;
+    }
+    .badge {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      background: #27ae60;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 0.6em;
+      font-weight: bold;
+    }
+    .analysis-summary {
+      margin-top: 4px;
+      padding: 3px 8px;
+      background: #f8f9fa;
+      border-radius: 3px;
+      font-size: 0.7em;
+      color: #666;
+    }
+    
+    /* Theme Selector */
+    .theme-selector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0 15px 0;
+      padding: 8px 15px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .theme-label {
+      font-size: 0.75em;
+      color: #666;
+      margin-right: 5px;
+    }
+    .theme-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.65em;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .theme-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .theme-btn.active {
+      border-color: #333;
+      box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 4px;
+      padding: 4px 4px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      line-height: 1.2;
+    }
+    .stat-card .value {
+      font-size: 1em;
+      font-weight: bold;
+      color: #333;
+      line-height: 1.1;
+    }
+    .stat-card .label {
+      font-size: 0.6em;
+      color: #666;
+      margin-top: 1px;
+      line-height: 1.1;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-card .value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #333;
+    }
+    .stat-card .label {
+      font-size: 0.85em;
+      color: #666;
+      margin-top: 5px;
+    }
+    .stat-card.positive .value { color: #27ae60; }
+    .stat-card.neutral .value { color: #f39c12; }
+    .stat-card.blue .value { color: #3498db; }
+    .stat-card.purple .value { color: #9b59b6; }
+    .stat-card.red .value { color: #e74c3c; }
+    
+    /* Charts Section - 分类分组 */
+    .charts-section {
+      margin-bottom: 16px;
+    }
+    
+    /* Charts Grid - 统一4列布局 */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .chart-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 200px;
+      width: 100%;
+    }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+      height: 32px;
+    }
+    .chart-category {
+      font-size: 0.6em;
+      font-weight: 600;
+      color: white;
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .chart-card h3 {
+      font-size: 0.75em;
+      color: #333;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      line-height: 1.2;
+    }
+    .chart-body {
+      flex: 1;
+      padding: 6px;
+      min-height: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chart-body canvas {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 150px;
+    }
+    
+    /* Category Legend */
+    .category-legend {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8em;
+      color: white;
+      background: rgba(0,0,0,0.2);
+      padding: 4px 10px;
+      border-radius: 16px;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    
+    /* Video Section */
+    .videos-section {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    .videos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .videos-header h2 {
+      font-size: 1.1em;
+      color: #333;
+    }
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .sort-controls label {
+      font-size: 0.75em;
+      color: #666;
+      margin-right: 4px;
+    }
+    .sort-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 0.7em;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .sort-btn:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    .sort-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+    .video-count {
+      font-size: 0.85em;
+      color: #888;
+    }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    
+    /* Video Card */
+    .video-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      scroll-margin-top: 100px;
+    }
+    .video-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    }
+    .video-card.highlighted {
+      box-shadow: 0 0 0 3px #f39c12, 0 4px 15px rgba(243, 156, 18, 0.3);
+      transform: translateY(-2px);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px #f39c12, 0 8px 25px rgba(243, 156, 18, 0.3); }
+      50% { box-shadow: 0 0 0 6px #f39c12, 0 12px 30px rgba(243, 156, 18, 0.4); }
+    }
+    .clickable-bar {
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .clickable-bar:hover {
+      opacity: 0.8;
+    }
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .card-thumbnail {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      background: #000;
+    }
+    .card-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .video-card:hover .card-thumbnail img {
+      transform: scale(1.05);
+    }
+    .card-duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .card-content {
+      padding: 8px;
+    }
+    .card-title {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 4px;
+      height: 2.3em;
+    }
+    .card-channel {
+      font-size: 0.75em;
+      color: #606060;
+      margin-bottom: 3px;
+    }
+    .card-meta {
+      display: flex;
+      gap: 8px;
+      font-size: 0.7em;
+      color: #606060;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .card-time {
+      font-family: monospace;
+      font-size: 0.9em;
+      color: #888;
+    }
+    .card-sentiment {
+      padding: 0px 3px;
+      border-radius: 3px;
+      font-size: 0.5em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: auto;
+      line-height: 1.2;
+    }
+    .sentiment-positive { background: #dcfce7; color: #166534; }
+    .sentiment-neutral { background: #f3f4f6; color: #374151; }
+    .sentiment-negative { background: #fee2e2; color: #991b1b; }
+    
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .charts-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 1000px) {
+      .charts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.2em; }
+      .badge { font-size: 0.55em; padding: 1px 5px; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 220px; }
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+      .category-legend { gap: 8px; }
+      .legend-item { font-size: 0.75em; padding: 3px 6px; }
+    }
+    @media (max-width: 480px) {
+      .videos-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 200px; }
+    }
+    @media (max-width: 1200px) {
+      .charts-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .charts-grid { grid-template-columns: repeat(2, 1fr); }
+      .chart-card { height: 240px; }
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.8em; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 300px; }
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+      .category-legend { gap: 10px; }
+      .legend-item { font-size: 0.8em; padding: 4px 8px; }
+    }
+    @media (max-width: 480px) {
+      .videos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🎬 YouTube DePIN 深度数据分析报告</h1>
+      <p>关键词: "DePIN" | 99 个真实视频 | 生成: 2026/3/12 04:49:41</p>
+      <span class="badge">✅ 100% 真实 YouTube 数据</span>
+      <div class="analysis-summary">
+        📊 本报告包含 99 个视频的 21 维度深度分析 | 频道集中度: 分散 | 
+        数据时间跨度: 0 个月
+      </div>
+    </div>
+
+    <!-- 关键指标 -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="value">99</div><div class="label">总视频</div></div>
+      <div class="stat-card positive"><div class="value">10</div><div class="label">正面评价</div></div>
+      <div class="stat-card neutral"><div class="value">89</div><div class="label">中性评价</div></div>
+      <div class="stat-card blue"><div class="value">1.8M</div><div class="label">总观看</div></div>
+      <div class="stat-card purple"><div class="value">116.9K</div><div class="label">总点赞</div></div>
+      <div class="stat-card"><div class="value">17.8K</div><div class="label">平均观看</div></div>
+      <div class="stat-card red"><div class="value">6.62%</div><div class="label">互动率</div></div>
+      <div class="stat-card"><div class="value">11:31</div><div class="label">平均时长</div></div>
+    </div>
+
+    <!-- 主题色选择器 -->
+    <div class="theme-selector">
+      <span class="theme-label">主题色:</span>
+      <button class="theme-btn active" data-theme="blue" style="background: linear-gradient(135deg, #3B82F6, #0891B2)">蓝</button>
+      <button class="theme-btn" data-theme="purple" style="background: linear-gradient(135deg, #8B5CF6, #EC4899)">紫</button>
+      <button class="theme-btn" data-theme="green" style="background: linear-gradient(135deg, #10B981, #059669)">绿</button>
+      <button class="theme-btn" data-theme="orange" style="background: linear-gradient(135deg, #F59E0B, #EA580C)">橙</button>
+      <button class="theme-btn" data-theme="dark" style="background: linear-gradient(135deg, #374151, #1F2937)">深灰</button>
+    </div>
+
+    <!-- 图表按分类分组 -->
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>📊 情绪分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="sentimentChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>📈 观看数区间分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="viewRangeChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>⏱️ 视频时长分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="durationChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>👍 点赞率分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="likeRateChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>📅 每月视频发布趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="uploadTrendChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>👁️ 每月观看数量趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="monthlyViewsChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>👍 每月点赞数量趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="monthlyLikesChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>📆 年度对比分析</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="yearComparisonChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>📊 观看数 Top 10</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="viewsChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>👥 Top 10 上传者</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="uploaderChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>🏆 高互动率视频 Top 10</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="engagementChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>📈 频道平均表现</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="channelAvgChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>🔤 热门关键词 Top 15</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="keywordChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>📝 标题长度分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="titleLengthChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>📊 频道观看占比</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="channelShareChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>⏱️ 时长 vs 观看数</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="durationViewChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>💭 情感 vs 平均表现</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="sentimentPerformanceChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>📊 长尾分析 (Pareto)</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="paretoChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>📅 发布星期分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="hourChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="异常">异常</span>
+          <h3>⚠️ 高观看低互动</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="highViewLowEngageChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="异常">异常</span>
+          <h3>⚠️ 低观看高互动</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="lowViewHighEngageChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+
+    <!-- 视频列表 -->
+    <div class="videos-section">
+      <div class="videos-header">
+        <h2>🎥 视频列表</h2>
+        <div class="sort-controls">
+          <label>排序:</label>
+          <button class="sort-btn active" data-sort="time-desc">⏱️ 最新</button>
+          <button class="sort-btn" data-sort="time-asc">⏱️ 最早</button>
+          <button class="sort-btn" data-sort="views-desc">👁️ 高→低</button>
+          <button class="sort-btn" data-sort="views-asc">👁️ 低→高</button>
+          <button class="sort-btn" data-sort="likes-desc">👍 高→低</button>
+          <button class="sort-btn" data-sort="likes-asc">👍 低→高</button>
+          <span class="video-count">共99个视频, 2026-03-12 - 2026-03-12, 时间跨度0个月</span>
+        </div>
+      </div>
+      <div id="videosGrid" class="videos-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 视频数据与排序 ==========
+    const videosData = [{"id":"038GG0BAueE","title":"DePin Explained! A Deep Dive Into DePin (Decentralized Physical Infrastructure)","uploader":"CoinMarketCap","duration":"282","viewCount":28532,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=038GG0BAueE","thumbnail":"https://i.ytimg.com/vi/038GG0BAueE/mqdefault.jpg","sentiment":"neutral"},{"id":"jLZk69gs9cE","title":"Massive DePIN Update!  Q4 2025","uploader":"DePIN Connection","duration":"2703","viewCount":372,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=jLZk69gs9cE","thumbnail":"https://i.ytimg.com/vi/jLZk69gs9cE/mqdefault.jpg","sentiment":"neutral"},{"id":"FmlCCimsSqc","title":"DePIN: The Internet Built by YOU!","uploader":"cPen","duration":"92","viewCount":58420,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=FmlCCimsSqc","thumbnail":"https://i.ytimg.com/vi/FmlCCimsSqc/mqdefault.jpg","sentiment":"neutral"},{"id":"PyKjhM81b1k","title":"Navigating the Future: A Deep Dive into Decentralized Physical Infrastructure Networks (DePin)","uploader":"Economics Design","duration":"1249","viewCount":5923,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=PyKjhM81b1k","thumbnail":"https://i.ytimg.com/vi/PyKjhM81b1k/mqdefault.jpg","sentiment":"neutral"},{"id":"TItXeSumwBQ","title":"Top 10 DePIN Projects for Passive Income in 2026 (Start for $0!)","uploader":"Your Friend Andy","duration":"980","viewCount":13844,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=TItXeSumwBQ","thumbnail":"https://i.ytimg.com/vi/TItXeSumwBQ/mqdefault.jpg","sentiment":"positive"},{"id":"tjmVv_jOV_A","title":"The DePIN Reset Nobody Is Talking About","uploader":"Your Friend Andy and DePIN Connection","duration":"1995","viewCount":1623,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=tjmVv_jOV_A","thumbnail":"https://i.ytimg.com/vi/tjmVv_jOV_A/mqdefault.jpg","sentiment":"neutral"},{"id":"PRxGuEdwrBQ","title":"DePIN: Decentralized Physical Infrastructure Network (Simply Explained)","uploader":"Sucryptoz","duration":"727","viewCount":1069,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=PRxGuEdwrBQ","thumbnail":"https://i.ytimg.com/vi/PRxGuEdwrBQ/mqdefault.jpg","sentiment":"neutral"},{"id":"b3vndSjUSfY","title":"What is DePIN? The Case for Decentralizing the Real World — with Guy Wuollet","uploader":"a16z crypto","duration":"1379","viewCount":1819,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=b3vndSjUSfY","thumbnail":"https://i.ytimg.com/vi/b3vndSjUSfY/mqdefault.jpg","sentiment":"neutral"},{"id":"qmw5DorMr6E","title":"Crypto In The Physical World?? DePIN Explained!","uploader":"CoinGecko","duration":"556","viewCount":25120,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qmw5DorMr6E","thumbnail":"https://i.ytimg.com/vi/qmw5DorMr6E/mqdefault.jpg","sentiment":"neutral"},{"id":"23YrN6PVnis","title":"What is DePin - Decentralized Physical Infrastructure","uploader":"Interaxis","duration":"716","viewCount":2143,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=23YrN6PVnis","thumbnail":"https://i.ytimg.com/vi/23YrN6PVnis/mqdefault.jpg","sentiment":"neutral"},{"id":"W0uEYrF1N1I","title":"Ye Hai Crypto ","uploader":"","duration":"0","viewCount":0,"likeCount":0,"uploadDate":"2026-03-12","url":"447.0","thumbnail":"https://i.ytimg.com/vi/W0uEYrF1N1I/mqdefault.jpg","sentiment":"neutral"},{"id":"xr6ZLHwuo2w","title":"DePIN: Hype or the Next Trillion-Dollar Market? - TOKEN2049 Singapore 2025","uploader":"TOKEN2049","duration":"2467","viewCount":920,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=xr6ZLHwuo2w","thumbnail":"https://i.ytimg.com/vi/xr6ZLHwuo2w/mqdefault.jpg","sentiment":"neutral"},{"id":"Du-YjRPgItk","title":"Top 5 Best DEPIN Miners for Home Mining in 2026!","uploader":"The Hobbyist Miner","duration":"927","viewCount":4593,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Du-YjRPgItk","thumbnail":"https://i.ytimg.com/vi/Du-YjRPgItk/mqdefault.jpg","sentiment":"positive"},{"id":"wfVjDIRhOsI","title":"5 Real-World DePIN Projects That Don't Require You to Be Rich","uploader":"Deciphering Crypto","duration":"996","viewCount":1081,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=wfVjDIRhOsI","thumbnail":"https://i.ytimg.com/vi/wfVjDIRhOsI/mqdefault.jpg","sentiment":"neutral"},{"id":"_tJo2Fc7JRg","title":"What is DePIN? How does it work? 🤔","uploader":"Onchain","duration":"127","viewCount":590,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=_tJo2Fc7JRg","thumbnail":"https://i.ytimg.com/vi/_tJo2Fc7JRg/mqdefault.jpg","sentiment":"neutral"},{"id":"3uW4okBYUOo","title":"What is Depin?! Super easy explanation of DePin!","uploader":"CryptoWendyO","duration":"155","viewCount":5176,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=3uW4okBYUOo","thumbnail":"https://i.ytimg.com/vi/3uW4okBYUOo/mqdefault.jpg","sentiment":"positive"},{"id":"x2m_0sUdzHQ","title":"3 DePIN Miners Still Paying $1–$2 Every Day in This Bear Market (Live Proof)","uploader":"Nordic Crypto","duration":"399","viewCount":2213,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=x2m_0sUdzHQ","thumbnail":"https://i.ytimg.com/vi/x2m_0sUdzHQ/mqdefault.jpg","sentiment":"neutral"},{"id":"Y73yhKve1zQ","title":"Geodnet Miner - The Highest Earning DePIN Crypto Project","uploader":"Nordic Crypto","duration":"254","viewCount":122718,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Y73yhKve1zQ","thumbnail":"https://i.ytimg.com/vi/Y73yhKve1zQ/mqdefault.jpg","sentiment":"neutral"},{"id":"HMdaSiPm2wo","title":"Turn 1 Location Into a Crypto Income Stack ($940/month)","uploader":"Your Friend Andy","duration":"700","viewCount":7121,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=HMdaSiPm2wo","thumbnail":"https://i.ytimg.com/vi/HMdaSiPm2wo/mqdefault.jpg","sentiment":"neutral"},{"id":"aUkW7esgvE4","title":"What Is DePIN (Decentralized  Physical Infrastructure Network)","uploader":"Answer This","duration":"107","viewCount":2160,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=aUkW7esgvE4","thumbnail":"https://i.ytimg.com/vi/aUkW7esgvE4/mqdefault.jpg","sentiment":"neutral"},{"id":"ZHKFmOWi6jY","title":"Depin is Dead!","uploader":"Tech Hustler","duration":"738","viewCount":1717,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ZHKFmOWi6jY","thumbnail":"https://i.ytimg.com/vi/ZHKFmOWi6jY/mqdefault.jpg","sentiment":"neutral"},{"id":"kSEq9C7RrLg","title":"The Power of DePin: Revolutionizing Infrastructure Networks - TOKEN2049 Singapore 2024","uploader":"TOKEN2049","duration":"2171","viewCount":1596,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=kSEq9C7RrLg","thumbnail":"https://i.ytimg.com/vi/kSEq9C7RrLg/mqdefault.jpg","sentiment":"neutral"},{"id":"TOtdI0_KMWw","title":"Helium, Hivemapper, Multicoin: The Founding Fathers of DePIN ","uploader":" ACC 1.6","duration":"0","viewCount":0,"likeCount":1087,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=TOtdI0_KMWw","thumbnail":"https://i.ytimg.com/vi/TOtdI0_KMWw/mqdefault.jpg","sentiment":"neutral"},{"id":"CrXQcLrT8Ik","title":"DePIN on Solana: Jambo's $99 Crypto Phone Expanding Financial Inclusion ft. CEO James Zhang","uploader":"Solana","duration":"149","viewCount":1167,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=CrXQcLrT8Ik","thumbnail":"https://i.ytimg.com/vi/CrXQcLrT8Ik/mqdefault.jpg","sentiment":"neutral"},{"id":"gkKbwT8P5So","title":"Turn Your Junk into Cash – DePIN Revolution!","uploader":"BeCEXY","duration":"171","viewCount":1553,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=gkKbwT8P5So","thumbnail":"https://i.ytimg.com/vi/gkKbwT8P5So/mqdefault.jpg","sentiment":"neutral"},{"id":"aNaTGpVkKbk","title":"The AI And DePIN Revolution Will Be Huge - Powered By THETA","uploader":"Crazy 4 Cryptos","duration":"537","viewCount":14980,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=aNaTGpVkKbk","thumbnail":"https://i.ytimg.com/vi/aNaTGpVkKbk/mqdefault.jpg","sentiment":"neutral"},{"id":"JVE-gLtSNSg","title":"DePIN on Solana: Onocoy, Decentralized High Precision Positioning Network","uploader":"Solana","duration":"127","viewCount":64528,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=JVE-gLtSNSg","thumbnail":"https://i.ytimg.com/vi/JVE-gLtSNSg/mqdefault.jpg","sentiment":"neutral"},{"id":"2LmI2NVXkcg","title":"Lesson 3: What is DePIN?","uploader":"Fecoxa","duration":"719","viewCount":15293,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=2LmI2NVXkcg","thumbnail":"https://i.ytimg.com/vi/2LmI2NVXkcg/mqdefault.jpg","sentiment":"neutral"},{"id":"Y7KXaqwupis","title":"8 DePIN Crypto Airdrops With HUGE Reward Potential!","uploader":"Veteran Crypto","duration":"969","viewCount":700,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Y7KXaqwupis","thumbnail":"https://i.ytimg.com/vi/Y7KXaqwupis/mqdefault.jpg","sentiment":"neutral"},{"id":"wuWyZkh1NGc","title":"🔥AWS Crashed, but These AI & DePIN Cryptos Could Save the Internet!Trillion-Dollar Takeover!🔥","uploader":"DXB Crypto   ","duration":"1351","viewCount":2550,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=wuWyZkh1NGc","thumbnail":"https://i.ytimg.com/vi/wuWyZkh1NGc/mqdefault.jpg","sentiment":"neutral"},{"id":"goJE9FQzjn8","title":"Cryptos That Could Go 100x!! This DePIN Report Reveals It All!","uploader":"Coin Bureau","duration":"1392","viewCount":297765,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=goJE9FQzjn8","thumbnail":"https://i.ytimg.com/vi/goJE9FQzjn8/mqdefault.jpg","sentiment":"neutral"},{"id":"KI2NHIpbkpk","title":"Why Helium Is Setting the Standard for DePIN Transparency ","uploader":" Carl Vogel, 6th Man Ventures","duration":"0","viewCount":0,"likeCount":184,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=KI2NHIpbkpk","thumbnail":"https://i.ytimg.com/vi/KI2NHIpbkpk/mqdefault.jpg","sentiment":"neutral"},{"id":"hM-htGmL1pI","title":"Decentralized Physical Infrastructure Networks (DePIN) Explained with Pokémon ","uploader":" Web3 Tokenomics News","duration":"0","viewCount":0,"likeCount":56,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=hM-htGmL1pI","thumbnail":"https://i.ytimg.com/vi/hM-htGmL1pI/mqdefault.jpg","sentiment":"neutral"},{"id":"vxdagSr8MfY","title":"What is DePIN? ","uploader":" peaq","duration":"0","viewCount":0,"likeCount":9843,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=vxdagSr8MfY","thumbnail":"https://i.ytimg.com/vi/vxdagSr8MfY/mqdefault.jpg","sentiment":"neutral"},{"id":"Vx3wjhRfHmY","title":"The Bull Case For DePIN, RWAs on Hyperliquid & The Onchain Endgame ","uploader":" Weekly Roundup","duration":"0","viewCount":0,"likeCount":1660,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Vx3wjhRfHmY","thumbnail":"https://i.ytimg.com/vi/Vx3wjhRfHmY/mqdefault.jpg","sentiment":"neutral"},{"id":"BnhwTRFRovE","title":"Top 6 DePIN Crypto Projects to Know in 2025","uploader":"BingX","duration":"435","viewCount":5549,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=BnhwTRFRovE","thumbnail":"https://i.ytimg.com/vi/BnhwTRFRovE/mqdefault.jpg","sentiment":"positive"},{"id":"JOB4b4XvPaE","title":"This is how much I made DePIN Mining in September 2025 ","uploader":" Monthly Earnings","duration":"0","viewCount":0,"likeCount":663,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=JOB4b4XvPaE","thumbnail":"https://i.ytimg.com/vi/JOB4b4XvPaE/mqdefault.jpg","sentiment":"neutral"},{"id":"Uy5vqkYQgaY","title":"DePIN Crypto Tier List 2026","uploader":"Our Crypto Talk","duration":"392","viewCount":197,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Uy5vqkYQgaY","thumbnail":"https://i.ytimg.com/vi/Uy5vqkYQgaY/mqdefault.jpg","sentiment":"neutral"},{"id":"kCcYKNJZZgE","title":"Robotaxis - These DePIN Projects Will Explode!","uploader":"DePIN Connection","duration":"527","viewCount":502,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=kCcYKNJZZgE","thumbnail":"https://i.ytimg.com/vi/kCcYKNJZZgE/mqdefault.jpg","sentiment":"neutral"},{"id":"opKNxvzhMQQ","title":"Anyone.io Relay: DePIN Project Review & Breakdown","uploader":"Coach Helder -Crypto","duration":"737","viewCount":635,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=opKNxvzhMQQ","thumbnail":"https://i.ytimg.com/vi/opKNxvzhMQQ/mqdefault.jpg","sentiment":"neutral"},{"id":"SIH8-_scH_k","title":"Every DePIN Device Under 3 min","uploader":"HeliumDeploy ASIC Miners & Tools","duration":"197","viewCount":5344,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=SIH8-_scH_k","thumbnail":"https://i.ytimg.com/vi/SIH8-_scH_k/mqdefault.jpg","sentiment":"neutral"},{"id":"U2hMTdfLtAs","title":"The Infrastructure Flippening DePIN Cost Parity and the Infrastructure Flippening","uploader":"DCA Kingdom","duration":"371","viewCount":9,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=U2hMTdfLtAs","thumbnail":"https://i.ytimg.com/vi/U2hMTdfLtAs/mqdefault.jpg","sentiment":"neutral"},{"id":"SBg6oz9dp6Y","title":"“DePIN vs Big Tech: The Infrastructure Revolution You’re Not Watching”","uploader":"InvestKonnect","duration":"244","viewCount":4,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=SBg6oz9dp6Y","thumbnail":"https://i.ytimg.com/vi/SBg6oz9dp6Y/mqdefault.jpg","sentiment":"neutral"},{"id":"OudOUpVBX8U","title":"3 Crypto Narratives You Must Know: Layer-1, DePIN, and AI Coins (Next Big Pump?)","uploader":"MrNasdog","duration":"468","viewCount":3188,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=OudOUpVBX8U","thumbnail":"https://i.ytimg.com/vi/OudOUpVBX8U/mqdefault.jpg","sentiment":"neutral"},{"id":"hN-f1kLc2WE","title":"Alpha AI Drone DePIN","uploader":"Alpha AI","duration":"64","viewCount":17,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=hN-f1kLc2WE","thumbnail":"https://i.ytimg.com/vi/hN-f1kLc2WE/mqdefault.jpg","sentiment":"neutral"},{"id":"9arQw72tFx4","title":"DePIN on Solana: DePIN Science Fair Accelerate NYC 2025","uploader":"Solana","duration":"53","viewCount":1439,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=9arQw72tFx4","thumbnail":"https://i.ytimg.com/vi/9arQw72tFx4/mqdefault.jpg","sentiment":"neutral"},{"id":"mqUOS48mkvw","title":"DePIN on Solana: Fuse's Decentralized Energy Network with cofounders Alan Chang and Charles Orr","uploader":"Solana","duration":"144","viewCount":2058,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=mqUOS48mkvw","thumbnail":"https://i.ytimg.com/vi/mqUOS48mkvw/mqdefault.jpg","sentiment":"neutral"},{"id":"07o3nM5HxAY","title":"Aro Network DePIN Project ","uploader":" Earn by Sharing Internet ","duration":"0","viewCount":0,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=07o3nM5HxAY","thumbnail":"https://i.ytimg.com/vi/07o3nM5HxAY/mqdefault.jpg","sentiment":"neutral"},{"id":"xQG1ZNoFXNY","title":"4DSKY Review: New Depin Project tracks flights & Pays in Crypto ","uploader":"Passive Crypto Mining","duration":"999","viewCount":934,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=xQG1ZNoFXNY","thumbnail":"https://i.ytimg.com/vi/xQG1ZNoFXNY/mqdefault.jpg","sentiment":"neutral"},{"id":"lPa2ERDIeBw","title":"I Took Back My Internet with DAWN! ","uploader":" DePin Internet Revolution 2025","duration":"0","viewCount":0,"likeCount":59,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=lPa2ERDIeBw","thumbnail":"https://i.ytimg.com/vi/lPa2ERDIeBw/mqdefault.jpg","sentiment":"neutral"},{"id":"zwlNXUneAxo","title":"Beamable Node Review: Already Got $4 Million ARR and 100 Customers!","uploader":"Nordic Crypto","duration":"566","viewCount":1176,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=zwlNXUneAxo","thumbnail":"https://i.ytimg.com/vi/zwlNXUneAxo/mqdefault.jpg","sentiment":"neutral"},{"id":"fQMfeLifN3s","title":"Earn $$$ Passively from a $4 VPS","uploader":"DEPINspirationHUB","duration":"1278","viewCount":2408,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=fQMfeLifN3s","thumbnail":"https://i.ytimg.com/vi/fQMfeLifN3s/mqdefault.jpg","sentiment":"neutral"},{"id":"vJflvST8h1M","title":"5 DePIN Projects Paying Real Money Right Now","uploader":"Deciphering Crypto","duration":"630","viewCount":645,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=vJflvST8h1M","thumbnail":"https://i.ytimg.com/vi/vJflvST8h1M/mqdefault.jpg","sentiment":"neutral"},{"id":"1kwSycnYIq4","title":"Top 5 DePIN Projects That Could 50x in 2026 (Don't Miss These!)","uploader":"Crypto Safehouse","duration":"458","viewCount":91,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=1kwSycnYIq4","thumbnail":"https://i.ytimg.com/vi/1kwSycnYIq4/mqdefault.jpg","sentiment":"positive"},{"id":"12nDC3Pt7Pk","title":"NEW Fractionalized Assets Opportunity!🔥 (DOMA DEPIN.AI SALE)","uploader":"Cilinix Crypto","duration":"491","viewCount":182,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=12nDC3Pt7Pk","thumbnail":"https://i.ytimg.com/vi/12nDC3Pt7Pk/mqdefault.jpg","sentiment":"neutral"},{"id":"UwSoX7HkIhY","title":"Les projets DePIN survivront ils sans clients réels ? Analyse explosive","uploader":"Makertronic - Crypto & Mining","duration":"830","viewCount":1426,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=UwSoX7HkIhY","thumbnail":"https://i.ytimg.com/vi/UwSoX7HkIhY/mqdefault.jpg","sentiment":"neutral"},{"id":"1zEwJVk90e8","title":"This DePIN Pioneer Is Back ","uploader":" XYO’s Biggest Move Yet","duration":"0","viewCount":0,"likeCount":1992,"uploadDate":"Data-Da-sh","url":"https://www.youtube.com/watch?v=1zEwJVk90e8","thumbnail":"https://i.ytimg.com/vi/1zEwJVk90e8/mqdefault.jpg","sentiment":"neutral"},{"id":"pF2fLeK64HY","title":"Web3’s Secret Weapon: DePIN’s Decentralized Magic!","uploader":"BeCEXY","duration":"141","viewCount":9336,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=pF2fLeK64HY","thumbnail":"https://i.ytimg.com/vi/pF2fLeK64HY/mqdefault.jpg","sentiment":"neutral"},{"id":"o_LivgzU8qU","title":"DePIN Crypto Narrative : Course Preview","uploader":"Hitesh Malviya","duration":"641","viewCount":1525,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=o_LivgzU8qU","thumbnail":"https://i.ytimg.com/vi/o_LivgzU8qU/mqdefault.jpg","sentiment":"neutral"},{"id":"VNnfB6fsD1c","title":"Is DePIN the future of Internet? ","uploader":" Blockchains ","duration":"0","viewCount":0,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=VNnfB6fsD1c","thumbnail":"https://i.ytimg.com/vi/VNnfB6fsD1c/mqdefault.jpg","sentiment":"neutral"},{"id":"lZpUhwUiVNg","title":"Daily DePIN/Crypto News","uploader":"HeliumDeploy ASIC Miners & Tools","duration":"1280","viewCount":114,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=lZpUhwUiVNg","thumbnail":"https://i.ytimg.com/vi/lZpUhwUiVNg/mqdefault.jpg","sentiment":"neutral"},{"id":"KOhcxGpieKA","title":"New to Combinder? Turning everyday electrical devices into income #Depin","uploader":"Airdrop Mining Update","duration":"707","viewCount":9,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=KOhcxGpieKA","thumbnail":"https://i.ytimg.com/vi/KOhcxGpieKA/mqdefault.jpg","sentiment":"neutral"},{"id":"dDGWtq1fWGA","title":"Bringing DePIN to the Dark Continent","uploader":"Proof of Coverage Media","duration":"749","viewCount":40,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=dDGWtq1fWGA","thumbnail":"https://i.ytimg.com/vi/dDGWtq1fWGA/mqdefault.jpg","sentiment":"neutral"},{"id":"knaqYuerXRk","title":"NAAI DEPIN","uploader":"NADI","duration":"63","viewCount":12,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=knaqYuerXRk","thumbnail":"https://i.ytimg.com/vi/knaqYuerXRk/mqdefault.jpg","sentiment":"neutral"},{"id":"H_gU2PUOnvA","title":"🎃 DePIN Updates, Sales and Giveaways 🎃","uploader":"Down Home Crypto","duration":"657","viewCount":813,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=H_gU2PUOnvA","thumbnail":"https://i.ytimg.com/vi/H_gU2PUOnvA/mqdefault.jpg","sentiment":"neutral"},{"id":"o8ZanVTzBdU","title":"(𝐃𝐄𝐏𝐈𝐍 𝐍𝐀𝐍𝐆 𝐌𝐀𝐊 𝐊𝐇𝐑𝐈𝐒𝐓𝐀 𝐍𝐆𝐎𝐔 𝐋𝐔𝐃𝐀) 𝐋𝐢𝐯𝐞 𝐏𝐞𝐫𝐟𝐨𝐫𝐦𝐚𝐧𝐜𝐞 𝐁𝐲 𝐋𝐮𝐧𝐠𝐬𝐚𝐧𝐠𝐜𝐡𝐢𝐥𝐞 𝐊𝐮𝐚𝐦𝐞 𝐀𝐭 𝐊𝐚𝐭𝐚𝐧𝐠𝐛𝐞𝐮𝐤𝐚𝐦","uploader":"Chika Daime","duration":"327","viewCount":3617,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=o8ZanVTzBdU","thumbnail":"https://i.ytimg.com/vi/o8ZanVTzBdU/mqdefault.jpg","sentiment":"neutral"},{"id":"n1z6zJh5nUE","title":"Top DePIN Projects Without Tokens Yet – The Next Big Airdrops","uploader":"THE BLOCK ANALYST","duration":"1707","viewCount":374,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=n1z6zJh5nUE","thumbnail":"https://i.ytimg.com/vi/n1z6zJh5nUE/mqdefault.jpg","sentiment":"positive"},{"id":"7iDcHlg1hIw","title":"Filecoin Onchain Cloud Launch at DePIN Day Buenos Aires 2025","uploader":"CoinDesk","duration":"4866","viewCount":1236,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=7iDcHlg1hIw","thumbnail":"https://i.ytimg.com/vi/7iDcHlg1hIw/mqdefault.jpg","sentiment":"neutral"},{"id":"TxoZJL_19qc","title":"DePIN Hub - 011 - Geodnet - The Global Earth Observation Decentralized Network","uploader":"Hotspotty ","duration":"2153","viewCount":1423,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=TxoZJL_19qc","thumbnail":"https://i.ytimg.com/vi/TxoZJL_19qc/mqdefault.jpg","sentiment":"neutral"},{"id":"U0BHxrEBzSE","title":"Tashi Network - DePIN Node setup guide for Windows","uploader":"Crypto Hunter","duration":"294","viewCount":389,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=U0BHxrEBzSE","thumbnail":"https://i.ytimg.com/vi/U0BHxrEBzSE/mqdefault.jpg","sentiment":"positive"},{"id":"zyhF7j4rEpM","title":"DePIN Roundtable Ep.2 with Helium ","uploader":" Amir Haleem, Santiago Santos, Jason Badeaux, Mahesh Ramakrishnan","duration":"0","viewCount":0,"likeCount":471,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=zyhF7j4rEpM","thumbnail":"https://i.ytimg.com/vi/zyhF7j4rEpM/mqdefault.jpg","sentiment":"neutral"},{"id":"Qo8IF8SyX2Q","title":"The State of Crypto 2026: DePIN, RWA & Web3 Jobs Explained","uploader":"Keeping Up With Crypto","duration":"301","viewCount":417,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Qo8IF8SyX2Q","thumbnail":"https://i.ytimg.com/vi/Qo8IF8SyX2Q/mqdefault.jpg","sentiment":"neutral"},{"id":"KR0vFwsognw","title":"DePIN on Solana: Dawn Internet's Decentralized Broadband Network with Andrena CEO Neil Chatterjee","uploader":"Solana","duration":"140","viewCount":2640,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=KR0vFwsognw","thumbnail":"https://i.ytimg.com/vi/KR0vFwsognw/mqdefault.jpg","sentiment":"neutral"},{"id":"lLZih-v8oIM","title":"DeCharge: Revolutionize EV Charging with DePIN & Earn Crypto Rewards! ⚡️🚗\"","uploader":"Jonathan William. AsGad","duration":"91","viewCount":256,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=lLZih-v8oIM","thumbnail":"https://i.ytimg.com/vi/lLZih-v8oIM/mqdefault.jpg","sentiment":"neutral"},{"id":"6sETCuKdc0I","title":"Spotlight: Intro to DePin","uploader":"Solana","duration":"1101","viewCount":4259,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=6sETCuKdc0I","thumbnail":"https://i.ytimg.com/vi/6sETCuKdc0I/mqdefault.jpg","sentiment":"neutral"},{"id":"tqxUHeiuWKQ","title":"The Great Merge — When AI, RWA, and DePIN Unite in 2026","uploader":"What is this coin","duration":"540","viewCount":6,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=tqxUHeiuWKQ","thumbnail":"https://i.ytimg.com/vi/tqxUHeiuWKQ/mqdefault.jpg","sentiment":"positive"},{"id":"w3OrsLbkB0A","title":"Step-by-Step Guide: How to De-pin Connectors like a Pro","uploader":"50plusdad","duration":"496","viewCount":832812,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=w3OrsLbkB0A","thumbnail":"https://i.ytimg.com/vi/w3OrsLbkB0A/mqdefault.jpg","sentiment":"positive"},{"id":"h7PX27HQy_s","title":"3 New Depin Projects to Look into If you Like to Be Early !","uploader":"The Grumpy Dad","duration":"1895","viewCount":552,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=h7PX27HQy_s","thumbnail":"https://i.ytimg.com/vi/h7PX27HQy_s/mqdefault.jpg","sentiment":"neutral"},{"id":"pELf2s0xPAs","title":"How To Remove / Depin Terminals From 5 Pin Relay Connector ","uploader":" @WiringRescue","duration":"0","viewCount":0,"likeCount":99093,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=pELf2s0xPAs","thumbnail":"https://i.ytimg.com/vi/pELf2s0xPAs/mqdefault.jpg","sentiment":"neutral"},{"id":"KwbpbTUvIE8","title":"TRD Network: An Overview of Its AI-Enhanced DePIN System","uploader":"Crypto Sister","duration":"350","viewCount":7912,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=KwbpbTUvIE8","thumbnail":"https://i.ytimg.com/vi/KwbpbTUvIE8/mqdefault.jpg","sentiment":"neutral"},{"id":"zCEec1xzNQs","title":"DePIN Explained (2025) ","uploader":" Build Passive Income with Decentralized WiFi Mining","duration":"0","viewCount":0,"likeCount":49,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=zCEec1xzNQs","thumbnail":"https://i.ytimg.com/vi/zCEec1xzNQs/mqdefault.jpg","sentiment":"neutral"},{"id":"_kN83h54XDg","title":"Depinning a Honda ECU Connector","uploader":"PJ's Customs, LLC","duration":"105","viewCount":25491,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=_kN83h54XDg","thumbnail":"https://i.ytimg.com/vi/_kN83h54XDg/mqdefault.jpg","sentiment":"neutral"},{"id":"cv9WKJFFelQ","title":"Why I'm So Bullish on This Crypto DePIN (DIMO)","uploader":"Your Friend Andy","duration":"2698","viewCount":5450,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=cv9WKJFFelQ","thumbnail":"https://i.ytimg.com/vi/cv9WKJFFelQ/mqdefault.jpg","sentiment":"neutral"},{"id":"chEyZMmZISM","title":"DePIN on Solana  Dawn Internet's Decentralized Broadband Network with Andrena CEO Neil Chatterjee","uploader":"Solana","duration":"140","viewCount":11,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=chEyZMmZISM","thumbnail":"https://i.ytimg.com/vi/chEyZMmZISM/mqdefault.jpg","sentiment":"neutral"},{"id":"eGv0oNLGJmA","title":"How To Earn $5–$10 Daily With Ignite Node (Full Depin Setup Guide)","uploader":"Young Investor ","duration":"217","viewCount":49,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=eGv0oNLGJmA","thumbnail":"https://i.ytimg.com/vi/eGv0oNLGJmA/mqdefault.jpg","sentiment":"positive"},{"id":"OfPMEqYWJb8","title":"iGam3 AI + DePIN NODE!","uploader":"CryptoJar","duration":"381","viewCount":2243,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=OfPMEqYWJb8","thumbnail":"https://i.ytimg.com/vi/OfPMEqYWJb8/mqdefault.jpg","sentiment":"neutral"},{"id":"FVLfg-FWUQw","title":"Mining is Dead. Do This Instead: Rent Your GPU to AI (DePIN 2026)","uploader":"Digital Gold","duration":"127","viewCount":79,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=FVLfg-FWUQw","thumbnail":"https://i.ytimg.com/vi/FVLfg-FWUQw/mqdefault.jpg","sentiment":"neutral"},{"id":"9PQ3ZrEXL8I","title":"🌐✨ Naai DePIN — AI power at your fingertips, linking global nodes for a decentralized future.","uploader":"NADI","duration":"156","viewCount":3,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=9PQ3ZrEXL8I","thumbnail":"https://i.ytimg.com/vi/9PQ3ZrEXL8I/mqdefault.jpg","sentiment":"neutral"},{"id":"Fyz2FOnPfCw","title":"Fireside Chat: Building the Future of DePIN with Helium","uploader":"Helium","duration":"1945","viewCount":153,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Fyz2FOnPfCw","thumbnail":"https://i.ytimg.com/vi/Fyz2FOnPfCw/mqdefault.jpg","sentiment":"neutral"},{"id":"Bwd7v5jPD-A","title":"I Built This DePin Crypto Mining Phone Farm + Free Giveaway!","uploader":"Passive Crypto Mining","duration":"740","viewCount":147937,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Bwd7v5jPD-A","thumbnail":"https://i.ytimg.com/vi/Bwd7v5jPD-A/mqdefault.jpg","sentiment":"neutral"},{"id":"6nqMQNCRigU","title":"DePIN Happy Hour - DePIN ATHs, Markets Roar, Whats Next?","uploader":"DePIN Connection","duration":"6002","viewCount":163,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=6nqMQNCRigU","thumbnail":"https://i.ytimg.com/vi/6nqMQNCRigU/mqdefault.jpg","sentiment":"neutral"},{"id":"4MNrh8Em4NQ","title":"Why I Quit DePin Mining!","uploader":"Tech Hustler","duration":"758","viewCount":1474,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=4MNrh8Em4NQ","thumbnail":"https://i.ytimg.com/vi/4MNrh8Em4NQ/mqdefault.jpg","sentiment":"neutral"},{"id":"nLrgAOpuWls","title":"Yannik Schrade on Tokens, Privacy for DePIN, and Building Arcium on Solana","uploader":"Helium","duration":"701","viewCount":262,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=nLrgAOpuWls","thumbnail":"https://i.ytimg.com/vi/nLrgAOpuWls/mqdefault.jpg","sentiment":"neutral"},{"id":"HxQBF8kkApw","title":"A Deep Dive Into The DeEEP Network ","uploader":" A DePIN Project","duration":"0","viewCount":0,"likeCount":806,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=HxQBF8kkApw","thumbnail":"https://i.ytimg.com/vi/HxQBF8kkApw/mqdefault.jpg","sentiment":"neutral"},{"id":"bGqu-MDR9do","title":"How VCs See the Future of DePIN 🇦🇷 DePIN Day Buenos Aires","uploader":"Fluence","duration":"1865","viewCount":63,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=bGqu-MDR9do","thumbnail":"https://i.ytimg.com/vi/bGqu-MDR9do/mqdefault.jpg","sentiment":"neutral"},{"id":"QRRF-x-xHO4","title":"🚀 WHAT IS DEPIN IN HINDI ","uploader":" TOP DEPIN PROJECTS EXPLAINED 🔥","duration":"0","viewCount":0,"likeCount":188,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=QRRF-x-xHO4","thumbnail":"https://i.ytimg.com/vi/QRRF-x-xHO4/mqdefault.jpg","sentiment":"neutral"},{"id":"Vt_rAIKPlWA","title":"🛠 How To De-pin Connectors ","uploader":" TECHNICALLY SPEAKING ","duration":"0","viewCount":0,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Vt_rAIKPlWA","thumbnail":"https://i.ytimg.com/vi/Vt_rAIKPlWA/mqdefault.jpg","sentiment":"neutral"},{"id":"mvj-F35rCZY","title":"LBank's DePIN + AI Investment Strategy You Can't Miss #LBank Partner","uploader":"ReferCoin Lab","duration":"33","viewCount":2582,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=mvj-F35rCZY","thumbnail":"https://i.ytimg.com/vi/mvj-F35rCZY/mqdefault.jpg","sentiment":"neutral"},{"id":"80zLCM-EoJY","title":"Solana Foundation: The Future of DePIN On Solana ","uploader":" Amira Valliani","duration":"0","viewCount":0,"likeCount":743,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=80zLCM-EoJY","thumbnail":"https://i.ytimg.com/vi/80zLCM-EoJY/mqdefault.jpg","sentiment":"neutral"}];
+    
+    const formatNumber = (num) => {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    };
+    
+    const formatDuration = (seconds) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return mins + ':' + secs.toString().padStart(2, '0');
+    };
+    
+    function renderVideos(videos, highlightId = null) {
+      const grid = document.getElementById('videosGrid');
+      grid.innerHTML = videos.map((video) => {
+        const isHighlighted = video.id === highlightId;
+        const highlightClass = isHighlighted ? "highlighted" : "";
+        const cardHTML = '<div class="video-card ' + highlightClass + '" data-video-id="' + video.id + '" id="video-' + video.id + '">' +
+          '<a href="' + video.url + '" target="_blank" class="card-link">' +
+            '<div class="card-thumbnail">' +
+              '<img src="' + video.thumbnail + '" alt="' + video.title + '" loading="lazy">' +
+              '<span class="card-duration">' + formatDuration(video.duration) + '</span>' +
+            '</div>' +
+            '<div class="card-content">' +
+              '<div class="card-title" title="' + video.title + '">' + video.title + '</div>' +
+              '<div class="card-channel">' + video.uploader + '</div>' +
+              '<div class="card-meta">' +
+                '<span>👁 ' + formatNumber(video.viewCount) + '</span>' +
+                '<span>👍 ' + formatNumber(video.likeCount) + '</span>' +
+                '<span class="card-time">' + video.uploadDate.replace(/-/g, '') + '</span>' +
+                '<span class="card-sentiment sentiment-' + video.sentiment + '">' + video.sentiment + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</a>' +
+        '</div>';
+        return cardHTML;
+      }).join('');
+    }
+    
+    // 滚动到指定视频并高亮
+    function scrollToVideo(videoId) {
+      // 找到对应的视频数据
+      const video = videosData.find(v => v.id === videoId);
+      if (!video) return;
+      
+      // 将该视频排到列表最前面，其他保持原顺序
+      const otherVideos = videosData.filter(v => v.id !== videoId);
+      const sortedVideos = [video].concat(otherVideos);
+      
+      // 重新渲染，并高亮
+      renderVideos(sortedVideos, videoId);
+      
+      // 滚动到视频列表区域
+      const videoSection = document.querySelector('.videos-section');
+      const videoElement = document.getElementById('video-' + videoId);
+      
+      if (videoSection && videoElement) {
+        // 先滚动到视频列表区域
+        videoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // 稍微延迟后高亮闪烁
+        setTimeout(function() {
+          videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // 3秒后移除高亮
+          setTimeout(function() {
+            videoElement.classList.remove('highlighted');
+          }, 3000);
+        }, 500);
+      }
+    }
+    
+    function sortVideos(sortType) {
+      let sorted = [...videosData];
+      switch(sortType) {
+        case 'time-desc':
+          sorted.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+          break;
+        case 'time-asc':
+          sorted.sort((a, b) => new Date(a.uploadDate) - new Date(b.uploadDate));
+          break;
+        case 'views-desc':
+          sorted.sort((a, b) => b.viewCount - a.viewCount);
+          break;
+        case 'views-asc':
+          sorted.sort((a, b) => a.viewCount - b.viewCount);
+          break;
+        case 'likes-desc':
+          sorted.sort((a, b) => b.likeCount - a.likeCount);
+          break;
+        case 'likes-asc':
+          sorted.sort((a, b) => a.likeCount - b.likeCount);
+          break;
+      }
+      renderVideos(sorted);
+    }
+    
+    // 排序按钮点击事件
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // 移除所有active状态
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        // 添加当前按钮active状态
+        e.target.classList.add('active');
+        // 执行排序
+        sortVideos(e.target.dataset.sort);
+      });
+    });
+    
+    sortVideos('time-desc');
+
+    // ========== 主题切换功能 ==========
+    function updateThemeColors(themeName) {
+      const theme = themes[themeName];
+      if (!theme) return;
+      
+      // 更新分类标签颜色
+      document.querySelectorAll('.chart-category').forEach(el => {
+        const category = el.dataset.category;
+        if (theme.categoryColors[category]) {
+          el.style.background = theme.categoryColors[category];
+        }
+      });
+      
+      // 销毁并重新创建所有图表
+      Object.values(Chart.instances).forEach(chart => chart.destroy());
+      createAllCharts();
+    }
+    
+    // 主题按钮点击事件
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentTheme = e.target.dataset.theme;
+        updateThemeColors(currentTheme);
+      });
+    });
+    
+    // ========== Chart.js 配置 ==========
+    Chart.defaults.font.size = 10;
+    Chart.defaults.plugins.legend.labels.boxWidth = 8;
+    Chart.defaults.plugins.legend.labels.font = { size: 9 };
+    
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { size: 9 } } } }
+    };
+    
+    const barOptions = {
+      ...commonOptions,
+      plugins: { ...commonOptions.plugins, legend: { display: false } },
+      scales: { 
+        y: { beginAtZero: true, ticks: { font: { size: 9 } } }, 
+        x: { ticks: { font: { size: 8 } } } 
+      }
+    };
+
+    // 1. 情绪分布
+    new Chart(document.getElementById('sentimentChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['正面','中性','负面'],
+        datasets: [{
+          data: [10, 89, 0],
+          backgroundColor: ['#27ae60','#f39c12','#e74c3c'],
+          borderWidth: 0
+        }]
+      },
+      options: { ...commonOptions, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } } } }
+    });
+
+    // 2. 观看数区间分布
+    new Chart(document.getElementById('viewRangeChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['0-1K','1K-10K','10K-100K','100K-1M','1M+'],
+        datasets: [{
+          data: [51,36,8,4,0],
+          backgroundColor: ['#ecf0f1','#3498db','#2ecc71','#f39c12','#e74c3c'],
+          borderWidth: 0
+        }]
+      },
+      options: { ...commonOptions, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } } } }
+    });
+
+    // 3. 视频时长分布
+    new Chart(document.getElementById('durationChart'), {
+      type: 'bar',
+      data: {
+        labels: ["< 1分钟","1-5分钟","5-15分钟","15-30分钟","> 30分钟"],
+        datasets: [{
+          label: '视频数',
+          data: [20,23,32,13,11],
+          backgroundColor: 'rgba(155, 89, 182, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: barOptions
+    });
+
+    // 4. 点赞率分布
+    new Chart(document.getElementById('likeRateChart'), {
+      type: 'bar',
+      data: {
+        labels: ["< 1%","1-3%","3-5%","5-10%","> 10%"],
+        datasets: [{
+          label: '视频数',
+          data: [99,0,0,0,0],
+          backgroundColor: 'rgba(231, 76, 60, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: barOptions
+    });
+
+    // 5. 每月视频发布趋势
+    new Chart(document.getElementById('uploadTrendChart'), {
+      type: 'line',
+      data: {
+        labels: ["2026-03"],
+        datasets: [{
+          label: '视频数',
+          data: [98],
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#667eea',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { display: false } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 6. 每月观看数量趋势
+    new Chart(document.getElementById('monthlyViewsChart'), {
+      type: 'line',
+      data: {
+        labels: ["2026-03"],
+        datasets: [{
+          label: '观看数',
+          data: [1766792],
+          borderColor: '#3498db',
+          backgroundColor: 'rgba(52, 152, 219, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#3498db',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '观看: ' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 7. 每月点赞数量趋势
+    new Chart(document.getElementById('monthlyLikesChart'), {
+      type: 'line',
+      data: {
+        labels: ["2026-03"],
+        datasets: [{
+          label: '点赞数',
+          data: [114902],
+          borderColor: '#e74c3c',
+          backgroundColor: 'rgba(231, 76, 60, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#e74c3c',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '点赞: ' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 8. 年度对比分析
+    new Chart(document.getElementById('yearComparisonChart'), {
+      type: 'bar',
+      data: {
+        labels: ["2026"],
+        datasets: [
+          {
+            label: '视频数',
+            data: [98],
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderRadius: 2
+          },
+          {
+            label: '观看数(千)',
+            data: [1767],
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { labels: { font: { size: 9 }, boxWidth: 8 } } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 9. 观看数Top 10
+    new Chart(document.getElementById('viewsChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '观看数',
+          data: [832812,297765,147937,122718,64528,58420,28532,25491,25120,15293],
+          backgroundColor: 'rgba(102, 126, 234, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const titles = ["Step-by-Step Guide: How to De-","Cryptos That Could Go 100x!! T","I Built This DePin Crypto Mini","Geodnet Miner - The Highest Ea","DePIN on Solana: Onocoy, Decen","DePIN: The Internet Built by Y","DePin Explained! A Deep Dive I","Depinning a Honda ECU Connecto","Crypto In The Physical World??","Lesson 3: What is DePIN?"];
+                return titles[context.dataIndex] + '...';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 10. Top上传者
+    new Chart(document.getElementById('uploaderChart'), {
+      type: 'bar',
+      data: {
+        labels: ["Solana","DePIN Co","Your Fri","Nordic C","TOKEN204","Decipher","Tech Hus","BeCEXY","HeliumDe","Passive "],
+        datasets: [{
+          label: '视频数',
+          data: [7,3,3,3,2,2,2,2,2,2],
+          backgroundColor: 'rgba(118, 75, 162, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 11. 高互动率视频
+    new Chart(document.getElementById('engagementChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '点赞率(%)',
+          data: ["0.00","0.00","0.00","0.00","0.00","0.00","0.00","0.00","0.00","0.00"],
+          backgroundColor: 'rgba(39, 174, 96, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const titles = ["DePin Explained! A Deep Dive I","Massive DePIN Update!  Q4 2025","DePIN: The Internet Built by Y","Navigating the Future: A Deep ","Top 10 DePIN Projects for Pass","The DePIN Reset Nobody Is Talk","DePIN: Decentralized Physical ","What is DePIN? The Case for De","Crypto In The Physical World??","What is DePin - Decentralized "];
+                return titles[context.dataIndex] + '...';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 12. 频道平均表现
+    new Chart(document.getElementById('channelAvgChart'), {
+      type: 'bar',
+      data: {
+        labels: ["Passive ","Nordic C","Solana","Your Fri","BeCEXY","HeliumDe","Tech Hus","TOKEN204"],
+        datasets: [{
+          label: '平均观看',
+          data: [74436,42036,10872,8805,5445,2729,1596,1258],
+          backgroundColor: 'rgba(52, 152, 219, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const counts = [2,3,7,3,2,2,2,2];
+                return '视频数: ' + counts[context.dataIndex];
+              }
+            }
+          }
+        },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 13. 热门关键词
+    new Chart(document.getElementById('keywordChart'), {
+      type: 'bar',
+      data: {
+        labels: ["decentra","network","infrastr","solana","projects","2025","2026","into","physical","explaine","internet","future","top","mining","next"],
+        datasets: [{
+          label: '出现次数',
+          data: [13,11,10,9,8,7,7,7,7,6,6,6,5,5,4],
+          backgroundColor: 'rgba(155, 89, 182, 0.7)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 14. 标题长度分布
+    new Chart(document.getElementById('titleLengthChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["很短(<30)","短(30-50)","中等(50-70)","长(70-100)","很长(>100)"],
+        datasets: [{
+          data: [16,24,35,23,1],
+          backgroundColor: ['#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          legend: { 
+            position: 'right', 
+            labels: { font: { size: 8 }, boxWidth: 8 } 
+          } 
+        } 
+      }
+    });
+
+    // 15. 频道观看占比
+    new Chart(document.getElementById('channelShareChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["50plusda","Coin Bur","Passive ","Nordic C","Solana","其他"],
+        datasets: [{
+          data: [832812,297765,148871,126107,76102,285135],
+          backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#95a5a6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          legend: { 
+            position: 'right', 
+            labels: { font: { size: 8 }, boxWidth: 8 } 
+          } 
+        } 
+      }
+    });
+
+    // 16. 时长 vs 观看数 散点图
+    new Chart(document.getElementById('durationViewChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: '视频',
+          data: [{"x":5,"y":28532,"title":"DePin Explained! A Deep Dive I"},{"x":45,"y":372,"title":"Massive DePIN Update!  Q4 2025"},{"x":2,"y":58420,"title":"DePIN: The Internet Built by Y"},{"x":21,"y":5923,"title":"Navigating the Future: A Deep "},{"x":16,"y":13844,"title":"Top 10 DePIN Projects for Pass"},{"x":33,"y":1623,"title":"The DePIN Reset Nobody Is Talk"},{"x":12,"y":1069,"title":"DePIN: Decentralized Physical "},{"x":23,"y":1819,"title":"What is DePIN? The Case for De"},{"x":9,"y":25120,"title":"Crypto In The Physical World??"},{"x":12,"y":2143,"title":"What is DePin - Decentralized "},{"x":41,"y":920,"title":"DePIN: Hype or the Next Trilli"},{"x":15,"y":4593,"title":"Top 5 Best DEPIN Miners for Ho"},{"x":17,"y":1081,"title":"5 Real-World DePIN Projects Th"},{"x":2,"y":590,"title":"What is DePIN? How does it wor"},{"x":3,"y":5176,"title":"What is Depin?! Super easy exp"},{"x":7,"y":2213,"title":"3 DePIN Miners Still Paying $1"},{"x":4,"y":122718,"title":"Geodnet Miner - The Highest Ea"},{"x":12,"y":7121,"title":"Turn 1 Location Into a Crypto "},{"x":2,"y":2160,"title":"What Is DePIN (Decentralized  "},{"x":12,"y":1717,"title":"Depin is Dead!"},{"x":36,"y":1596,"title":"The Power of DePin: Revolution"},{"x":2,"y":1167,"title":"DePIN on Solana: Jambo's $99 C"},{"x":3,"y":1553,"title":"Turn Your Junk into Cash – DeP"},{"x":9,"y":14980,"title":"The AI And DePIN Revolution Wi"},{"x":2,"y":64528,"title":"DePIN on Solana: Onocoy, Decen"},{"x":12,"y":15293,"title":"Lesson 3: What is DePIN?"},{"x":16,"y":700,"title":"8 DePIN Crypto Airdrops With H"},{"x":23,"y":2550,"title":"🔥AWS Crashed, but These AI & "},{"x":23,"y":297765,"title":"Cryptos That Could Go 100x!! T"},{"x":7,"y":5549,"title":"Top 6 DePIN Crypto Projects to"},{"x":7,"y":197,"title":"DePIN Crypto Tier List 2026"},{"x":9,"y":502,"title":"Robotaxis - These DePIN Projec"},{"x":12,"y":635,"title":"Anyone.io Relay: DePIN Project"},{"x":3,"y":5344,"title":"Every DePIN Device Under 3 min"},{"x":6,"y":9,"title":"The Infrastructure Flippening "},{"x":4,"y":4,"title":"“DePIN vs Big Tech: The Infras"},{"x":8,"y":3188,"title":"3 Crypto Narratives You Must K"},{"x":1,"y":17,"title":"Alpha AI Drone DePIN"},{"x":1,"y":1439,"title":"DePIN on Solana: DePIN Science"},{"x":2,"y":2058,"title":"DePIN on Solana: Fuse's Decent"},{"x":17,"y":934,"title":"4DSKY Review: New Depin Projec"},{"x":9,"y":1176,"title":"Beamable Node Review: Already "},{"x":21,"y":2408,"title":"Earn $$$ Passively from a $4 V"},{"x":11,"y":645,"title":"5 DePIN Projects Paying Real M"},{"x":8,"y":91,"title":"Top 5 DePIN Projects That Coul"},{"x":8,"y":182,"title":"NEW Fractionalized Assets Oppo"},{"x":14,"y":1426,"title":"Les projets DePIN survivront i"},{"x":2,"y":9336,"title":"Web3’s Secret Weapon: DePIN’s "},{"x":11,"y":1525,"title":"DePIN Crypto Narrative : Cours"},{"x":21,"y":114,"title":"Daily DePIN/Crypto News"},{"x":12,"y":9,"title":"New to Combinder? Turning ever"},{"x":12,"y":40,"title":"Bringing DePIN to the Dark Con"},{"x":1,"y":12,"title":"NAAI DEPIN"},{"x":11,"y":813,"title":"🎃 DePIN Updates, Sales and Gi"},{"x":5,"y":3617,"title":"(𝐃𝐄𝐏𝐈𝐍 𝐍𝐀𝐍𝐆 𝐌𝐀𝐊 𝐊"},{"x":28,"y":374,"title":"Top DePIN Projects Without Tok"},{"x":81,"y":1236,"title":"Filecoin Onchain Cloud Launch "},{"x":36,"y":1423,"title":"DePIN Hub - 011 - Geodnet - Th"},{"x":5,"y":389,"title":"Tashi Network - DePIN Node set"},{"x":5,"y":417,"title":"The State of Crypto 2026: DePI"},{"x":2,"y":2640,"title":"DePIN on Solana: Dawn Internet"},{"x":2,"y":256,"title":"DeCharge: Revolutionize EV Cha"},{"x":18,"y":4259,"title":"Spotlight: Intro to DePin"},{"x":9,"y":6,"title":"The Great Merge — When AI, RWA"},{"x":8,"y":832812,"title":"Step-by-Step Guide: How to De-"},{"x":32,"y":552,"title":"3 New Depin Projects to Look i"},{"x":6,"y":7912,"title":"TRD Network: An Overview of It"},{"x":2,"y":25491,"title":"Depinning a Honda ECU Connecto"},{"x":45,"y":5450,"title":"Why I'm So Bullish on This Cry"},{"x":2,"y":11,"title":"DePIN on Solana  Dawn Internet"},{"x":4,"y":49,"title":"How To Earn $5–$10 Daily With "},{"x":6,"y":2243,"title":"iGam3 AI + DePIN NODE!"},{"x":2,"y":79,"title":"Mining is Dead. Do This Instea"},{"x":3,"y":3,"title":"🌐✨ Naai DePIN — AI power at y"},{"x":32,"y":153,"title":"Fireside Chat: Building the Fu"},{"x":12,"y":147937,"title":"I Built This DePin Crypto Mini"},{"x":100,"y":163,"title":"DePIN Happy Hour - DePIN ATHs,"},{"x":13,"y":1474,"title":"Why I Quit DePin Mining!"},{"x":12,"y":262,"title":"Yannik Schrade on Tokens, Priv"},{"x":31,"y":63,"title":"How VCs See the Future of DePI"},{"x":1,"y":2582,"title":"LBank's DePIN + AI Investment "}],
+          backgroundColor: 'rgba(102, 126, 234, 0.5)',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.raw.title + ': ' + context.raw.y.toLocaleString() + ' 观看';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { 
+            title: { display: true, text: '时长(分钟)', font: { size: 9 } },
+            ticks: { font: { size: 9 } }
+          },
+          y: { 
+            title: { display: true, text: '观看数', font: { size: 9 } },
+            ticks: { font: { size: 9 } },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // 17. 情感 vs 平均表现
+    new Chart(document.getElementById('sentimentPerformanceChart'), {
+      type: 'bar',
+      data: {
+        labels: ['正面', '中性', '负面'],
+        datasets: [
+          {
+            label: '平均观看',
+            data: [86288, 10156, 0],
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderRadius: 2
+          },
+          {
+            label: '平均点赞',
+            data: [0, 1313, 0],
+            backgroundColor: 'rgba(231, 76, 60, 0.6)',
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { labels: { font: { size: 9 }, boxWidth: 8 } } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+
+    // 18. 长尾分析 - 真实数据
+    const paretoTopViews = Math.round((1465760 / 1766792) * 100);
+    const paretoOtherViews = 100 - paretoTopViews;
+    new Chart(document.getElementById('paretoChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Top ' + 5 + ' 视频', '其他 ' + 94 + ' 视频'],
+        datasets: [{
+          data: [paretoTopViews, paretoOtherViews],
+          backgroundColor: ['#e74c3c', '#95a5a6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          title: { display: true, text: '观看量分布 (真实数据)', font: { size: 10 } },
+          legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + '% 观看量';
+              }
+            }
+          }
+        } 
+      }
+    });
+
+    // 19. 发布星期分布
+    const dayOfWeekData = {"周一":0,"周二":0,"周三":0,"周四":98,"周五":0,"周六":0,"周日":0};
+    new Chart(document.getElementById('hourChart'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(dayOfWeekData),
+        datasets: [{
+          label: '视频数',
+          data: Object.values(dayOfWeekData),
+          backgroundColor: [
+            'rgba(231, 76, 60, 0.7)',   // 周日 - 红
+            'rgba(52, 152, 219, 0.7)',  // 周一 - 蓝
+            'rgba(46, 204, 113, 0.7)',  // 周二 - 绿
+            'rgba(243, 156, 18, 0.7)',  // 周三 - 橙
+            'rgba(155, 89, 182, 0.7)',  // 周四 - 紫
+            'rgba(26, 188, 156, 0.7)',  // 周五 - 青
+            'rgba(231, 76, 60, 0.7)'    // 周六 - 红
+          ],
+          borderRadius: 3
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                const day = days[context.dataIndex];
+                const count = context.parsed.y;
+                const percentage = ((count / 99) * 100).toFixed(1);
+                return day + ': ' + count + '个视频 (' + percentage + '%)';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 20. 高观看低互动 - 带点击查看功能
+    const highViewLowEngageData = [{"id":"038GG0BAueE","title":"DePin Explained! A Deep Dive Into DePin (Decentralized Physical Infrastructure)","uploader":"CoinMarketCap","duration":"282","viewCount":28532,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=038GG0BAueE","thumbnail":"https://i.ytimg.com/vi/038GG0BAueE/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"FmlCCimsSqc","title":"DePIN: The Internet Built by YOU!","uploader":"cPen","duration":"92","viewCount":58420,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=FmlCCimsSqc","thumbnail":"https://i.ytimg.com/vi/FmlCCimsSqc/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"TItXeSumwBQ","title":"Top 10 DePIN Projects for Passive Income in 2026 (Start for $0!)","uploader":"Your Friend Andy","duration":"980","viewCount":13844,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=TItXeSumwBQ","thumbnail":"https://i.ytimg.com/vi/TItXeSumwBQ/mqdefault.jpg","sentiment":"positive","rate":0},{"id":"qmw5DorMr6E","title":"Crypto In The Physical World?? DePIN Explained!","uploader":"CoinGecko","duration":"556","viewCount":25120,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qmw5DorMr6E","thumbnail":"https://i.ytimg.com/vi/qmw5DorMr6E/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"Y73yhKve1zQ","title":"Geodnet Miner - The Highest Earning DePIN Crypto Project","uploader":"Nordic Crypto","duration":"254","viewCount":122718,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Y73yhKve1zQ","thumbnail":"https://i.ytimg.com/vi/Y73yhKve1zQ/mqdefault.jpg","sentiment":"neutral","rate":0}];
+    new Chart(document.getElementById('highViewLowEngageChart'), {
+      type: 'bar',
+      data: {
+        labels: highViewLowEngageData.map((v, i) => '#' + (i + 1)),
+        datasets: [
+          {
+            label: '观看数(点击跳转)',
+            data: highViewLowEngageData.map(v => v.viewCount),
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y',
+            barPercentage: 0.8
+          },
+          {
+            label: '点赞率(%)',
+            data: highViewLowEngageData.map(v => parseFloat(v.rate.toFixed(2))),
+            backgroundColor: 'rgba(231, 76, 60, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y1',
+            barPercentage: 0.8
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const videoId = highViewLowEngageData[index].id;
+            scrollToVideo(videoId);
+          }
+        },
+        onHover: (e, elements) => {
+          e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+        plugins: { 
+          legend: { labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const index = context[0].dataIndex;
+                return highViewLowEngageData[index].title.substring(0, 30) + '...';
+              },
+              afterLabel: function() {
+                return '💡 点击查看视频';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 21. 低观看高互动 - 带点击查看功能
+    const lowViewHighEngageData = [{"id":"jLZk69gs9cE","title":"Massive DePIN Update!  Q4 2025","uploader":"DePIN Connection","duration":"2703","viewCount":372,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=jLZk69gs9cE","thumbnail":"https://i.ytimg.com/vi/jLZk69gs9cE/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"tjmVv_jOV_A","title":"The DePIN Reset Nobody Is Talking About","uploader":"Your Friend Andy and DePIN Connection","duration":"1995","viewCount":1623,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=tjmVv_jOV_A","thumbnail":"https://i.ytimg.com/vi/tjmVv_jOV_A/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"PRxGuEdwrBQ","title":"DePIN: Decentralized Physical Infrastructure Network (Simply Explained)","uploader":"Sucryptoz","duration":"727","viewCount":1069,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=PRxGuEdwrBQ","thumbnail":"https://i.ytimg.com/vi/PRxGuEdwrBQ/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"b3vndSjUSfY","title":"What is DePIN? The Case for Decentralizing the Real World — with Guy Wuollet","uploader":"a16z crypto","duration":"1379","viewCount":1819,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=b3vndSjUSfY","thumbnail":"https://i.ytimg.com/vi/b3vndSjUSfY/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"23YrN6PVnis","title":"What is DePin - Decentralized Physical Infrastructure","uploader":"Interaxis","duration":"716","viewCount":2143,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=23YrN6PVnis","thumbnail":"https://i.ytimg.com/vi/23YrN6PVnis/mqdefault.jpg","sentiment":"neutral","rate":0}];
+    new Chart(document.getElementById('lowViewHighEngageChart'), {
+      type: 'bar',
+      data: {
+        labels: lowViewHighEngageData.map((v, i) => '#' + (i + 1)),
+        datasets: [
+          {
+            label: '观看数(点击跳转)',
+            data: lowViewHighEngageData.map(v => v.viewCount),
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y',
+            barPercentage: 0.8
+          },
+          {
+            label: '点赞率(%)',
+            data: lowViewHighEngageData.map(v => parseFloat(v.rate.toFixed(2))),
+            backgroundColor: 'rgba(39, 174, 96, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y1',
+            barPercentage: 0.8
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const videoId = lowViewHighEngageData[index].id;
+            scrollToVideo(videoId);
+          }
+        },
+        onHover: (e, elements) => {
+          e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+        plugins: { 
+          legend: { labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const index = context[0].dataIndex;
+                return lowViewHighEngageData[index].title.substring(0, 30) + '...';
+              },
+              afterLabel: function() {
+                return '💡 点击查看视频';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
