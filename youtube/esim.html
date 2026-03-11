@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube DePIN 深度数据分析报告</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #e2e4e7;
+      min-height: 100vh;
+      padding: 15px;
+    }
+    .container { max-width: 1600px; margin: 0 auto; }
+    
+    /* Header */
+    .header {
+      background: rgba(255,255,255,0.95);
+      border-radius: 8px;
+      padding: 8px 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+    }
+    .header h1 {
+      font-size: 1.2em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 2px;
+    }
+    .header p {
+      font-size: 0.75em;
+      color: #666;
+      margin: 0;
+    }
+    .badge {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      background: #27ae60;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 0.6em;
+      font-weight: bold;
+    }
+    .analysis-summary {
+      margin-top: 4px;
+      padding: 3px 8px;
+      background: #f8f9fa;
+      border-radius: 3px;
+      font-size: 0.7em;
+      color: #666;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 4px;
+      padding: 4px 4px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      line-height: 1.2;
+    }
+    .stat-card .value {
+      font-size: 1em;
+      font-weight: bold;
+      color: #333;
+      line-height: 1.1;
+    }
+    .stat-card .label {
+      font-size: 0.6em;
+      color: #666;
+      margin-top: 1px;
+      line-height: 1.1;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-card .value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #333;
+    }
+    .stat-card .label {
+      font-size: 0.85em;
+      color: #666;
+      margin-top: 5px;
+    }
+    .stat-card.positive .value { color: #27ae60; }
+    .stat-card.neutral .value { color: #f39c12; }
+    .stat-card.blue .value { color: #3498db; }
+    .stat-card.purple .value { color: #9b59b6; }
+    .stat-card.red .value { color: #e74c3c; }
+    
+    /* Charts Section - 分类分组 */
+    .charts-section {
+      margin-bottom: 16px;
+    }
+    
+    /* Charts Grid - 统一4列布局 */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .chart-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 200px;
+      width: 100%;
+    }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+      height: 32px;
+    }
+    .chart-category {
+      font-size: 0.6em;
+      font-weight: 600;
+      color: white;
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .chart-card h3 {
+      font-size: 0.75em;
+      color: #333;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      line-height: 1.2;
+    }
+    .chart-body {
+      flex: 1;
+      padding: 6px;
+      min-height: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chart-body canvas {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 150px;
+    }
+    
+    /* Category Legend */
+    .category-legend {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8em;
+      color: white;
+      background: rgba(0,0,0,0.2);
+      padding: 4px 10px;
+      border-radius: 16px;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    
+    /* Video Section */
+    .videos-section {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    .videos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .videos-header h2 {
+      font-size: 1.1em;
+      color: #333;
+    }
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .sort-controls label {
+      font-size: 0.75em;
+      color: #666;
+      margin-right: 4px;
+    }
+    .sort-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 0.7em;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .sort-btn:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    .sort-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+    .video-count {
+      font-size: 0.85em;
+      color: #888;
+    }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    
+    /* Video Card */
+    .video-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      scroll-margin-top: 100px;
+    }
+    .video-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    }
+    .video-card.highlighted {
+      box-shadow: 0 0 0 3px #f39c12, 0 4px 15px rgba(243, 156, 18, 0.3);
+      transform: translateY(-2px);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px #f39c12, 0 8px 25px rgba(243, 156, 18, 0.3); }
+      50% { box-shadow: 0 0 0 6px #f39c12, 0 12px 30px rgba(243, 156, 18, 0.4); }
+    }
+    .clickable-bar {
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .clickable-bar:hover {
+      opacity: 0.8;
+    }
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .card-thumbnail {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      background: #000;
+    }
+    .card-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .video-card:hover .card-thumbnail img {
+      transform: scale(1.05);
+    }
+    .card-duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .card-content {
+      padding: 8px;
+    }
+    .card-title {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 4px;
+      height: 2.3em;
+    }
+    .card-channel {
+      font-size: 0.75em;
+      color: #606060;
+      margin-bottom: 3px;
+    }
+    .card-meta {
+      display: flex;
+      gap: 8px;
+      font-size: 0.7em;
+      color: #606060;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .card-time {
+      font-family: monospace;
+      font-size: 0.9em;
+      color: #888;
+    }
+    .card-sentiment {
+      padding: 0px 3px;
+      border-radius: 3px;
+      font-size: 0.5em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: auto;
+      line-height: 1.2;
+    }
+    .sentiment-positive { background: #dcfce7; color: #166534; }
+    .sentiment-neutral { background: #f3f4f6; color: #374151; }
+    .sentiment-negative { background: #fee2e2; color: #991b1b; }
+    
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .charts-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 1000px) {
+      .charts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.2em; }
+      .badge { font-size: 0.55em; padding: 1px 5px; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 220px; }
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+      .category-legend { gap: 8px; }
+      .legend-item { font-size: 0.75em; padding: 3px 6px; }
+    }
+    @media (max-width: 480px) {
+      .videos-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 200px; }
+    }
+    @media (max-width: 1200px) {
+      .charts-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .charts-grid { grid-template-columns: repeat(2, 1fr); }
+      .chart-card { height: 240px; }
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.8em; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 300px; }
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+      .category-legend { gap: 10px; }
+      .legend-item { font-size: 0.8em; padding: 4px 8px; }
+    }
+    @media (max-width: 480px) {
+      .videos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🎬 YouTube DePIN 深度数据分析报告</h1>
+      <p>关键词: "DePIN" | 100 个真实视频 | 生成: 2026/3/12 05:31:56</p>
+      <span class="badge">✅ 100% 真实 YouTube 数据</span>
+      <div class="analysis-summary">
+        📊 本报告包含 100 个视频的 21 维度深度分析 | 频道集中度: 分散 | 
+        数据时间跨度: 83 个月
+      </div>
+    </div>
+
+    <!-- 关键指标 -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="value">100</div><div class="label">总视频</div></div>
+      <div class="stat-card positive"><div class="value">38</div><div class="label">正面评价</div></div>
+      <div class="stat-card neutral"><div class="value">61</div><div class="label">中性评价</div></div>
+      <div class="stat-card blue"><div class="value">58.2M</div><div class="label">总观看</div></div>
+      <div class="stat-card purple"><div class="value">419.0K</div><div class="label">总点赞</div></div>
+      <div class="stat-card"><div class="value">581.9K</div><div class="label">平均观看</div></div>
+      <div class="stat-card red"><div class="value">0.72%</div><div class="label">互动率</div></div>
+      <div class="stat-card"><div class="value">7:17</div><div class="label">平均时长</div></div>
+    </div>
+
+    <!-- 图表按分类分组 -->
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>📊 情绪分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="sentimentChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>📈 观看数区间分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="viewRangeChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>⏱️ 视频时长分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="durationChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>👍 点赞率分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="likeRateChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>📅 每月视频发布趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="uploadTrendChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>👁️ 每月观看数量趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="monthlyViewsChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>👍 每月点赞数量趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="monthlyLikesChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>📆 年度对比分析</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="yearComparisonChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>📊 观看数 Top 10</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="viewsChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>👥 Top 10 上传者</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="uploaderChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>🏆 高互动率视频 Top 10</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="engagementChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>📈 频道平均表现</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="channelAvgChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>🔤 热门关键词 Top 15</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="keywordChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>📝 标题长度分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="titleLengthChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>📊 频道观看占比</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="channelShareChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>⏱️ 时长 vs 观看数</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="durationViewChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>💭 情感 vs 平均表现</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="sentimentPerformanceChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>📊 长尾分析 (Pareto)</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="paretoChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>📅 发布星期分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="hourChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="异常">异常</span>
+          <h3>⚠️ 高观看低互动</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="highViewLowEngageChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="异常">异常</span>
+          <h3>⚠️ 低观看高互动</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="lowViewHighEngageChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+
+    <!-- 视频列表 -->
+    <div class="videos-section">
+      <div class="videos-header">
+        <h2>🎥 视频列表</h2>
+        <div class="sort-controls">
+          <label>排序:</label>
+          <button class="sort-btn active" data-sort="time-desc">⏱️ 最新</button>
+          <button class="sort-btn" data-sort="time-asc">⏱️ 最早</button>
+          <button class="sort-btn" data-sort="views-desc">👁️ 高→低</button>
+          <button class="sort-btn" data-sort="views-asc">👁️ 低→高</button>
+          <button class="sort-btn" data-sort="likes-desc">👍 高→低</button>
+          <button class="sort-btn" data-sort="likes-asc">👍 低→高</button>
+          <span class="video-count">共100个视频, 2019-06-14 - 2026-03-11, 时间跨度83个月</span>
+        </div>
+      </div>
+      <div id="videosGrid" class="videos-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 视频数据与排序 ==========
+    const videosData = [{"id":"RI7Qn9ILBPg","title":"What is eSIM? Quick Guide for iPhone & Android","uploader":"UnlockRiver","duration":"174","viewCount":78761,"likeCount":523,"uploadDate":"2025-06-11","url":"https://www.youtube.com/watch?v=RI7Qn9ILBPg","thumbnail":"https://i.ytimg.com/vi/RI7Qn9ILBPg/mqdefault.jpg","sentiment":"positive"},{"id":"IF1ziJ10Axk","title":"Are there eSIM Hidden Dangers?","uploader":"Rob Braxman Tech","duration":"1150","viewCount":149088,"likeCount":4616,"uploadDate":"2024-04-10","url":"https://www.youtube.com/watch?v=IF1ziJ10Axk","thumbnail":"https://i.ytimg.com/vi/IF1ziJ10Axk/mqdefault.jpg","sentiment":"neutral"},{"id":"XBtq3aZwHeQ","title":"eSIM and iSIM Explained","uploader":"Techquickie","duration":"262","viewCount":689068,"likeCount":24507,"uploadDate":"2023-05-09","url":"https://www.youtube.com/watch?v=XBtq3aZwHeQ","thumbnail":"https://i.ytimg.com/vi/XBtq3aZwHeQ/mqdefault.jpg","sentiment":"neutral"},{"id":"_5ffg6TEejo","title":"What Is an eSIM: How Does eSIM Works and Why Its Important","uploader":"Consumer Buddy","duration":"332","viewCount":20030,"likeCount":415,"uploadDate":"2025-04-23","url":"https://www.youtube.com/watch?v=_5ffg6TEejo","thumbnail":"https://i.ytimg.com/vi/_5ffg6TEejo/mqdefault.jpg","sentiment":"neutral"},{"id":"1wZKD25dQdY","title":"你需要eSim嗎?｜eSim簡介與經驗分享｜生活科技5分鐘","uploader":"MrBoris Techs","duration":"604","viewCount":397082,"likeCount":8606,"uploadDate":"2025-03-17","url":"https://www.youtube.com/watch?v=1wZKD25dQdY","thumbnail":"https://i.ytimg.com/vi/1wZKD25dQdY/mqdefault.jpg","sentiment":"neutral"},{"id":"XhLtuY7jCJ4","title":"Airalo eSIM review & tutorial | The most flexible travel eSIM?","uploader":"Cybernews","duration":"325","viewCount":231872,"likeCount":2361,"uploadDate":"2024-07-05","url":"https://www.youtube.com/watch?v=XhLtuY7jCJ4","thumbnail":"https://i.ytimg.com/vi/XhLtuY7jCJ4/mqdefault.jpg","sentiment":"positive"},{"id":"9JBceM2Dqjs","title":"【新手教學】eSIM 懶人包！超詳細優缺點分析＋香港本地/旅行用 eSIM 教學｜iPhone Air/17 買前必睇","uploader":"Maviskuku 雞蛋妹","duration":"680","viewCount":155765,"likeCount":4015,"uploadDate":"2025-09-15","url":"https://www.youtube.com/watch?v=9JBceM2Dqjs","thumbnail":"https://i.ytimg.com/vi/9JBceM2Dqjs/mqdefault.jpg","sentiment":"neutral"},{"id":"k4thtipNfN8","title":"How To Install & Activate an eSIM On iPhone (2025 Guide)","uploader":"Technically Money","duration":"243","viewCount":59532,"likeCount":396,"uploadDate":"2025-04-11","url":"https://www.youtube.com/watch?v=k4thtipNfN8","thumbnail":"https://i.ytimg.com/vi/k4thtipNfN8/mqdefault.jpg","sentiment":"positive"},{"id":"t7RgKysKcPI","title":"一分鐘開通！出國必備 eSIM 網路 重要注意事項⚠️ 詳細教學","uploader":"Apple Mei","duration":"575","viewCount":251350,"likeCount":2506,"uploadDate":"2025-07-05","url":"https://www.youtube.com/watch?v=t7RgKysKcPI","thumbnail":"https://i.ytimg.com/vi/t7RgKysKcPI/mqdefault.jpg","sentiment":"neutral"},{"id":"8HxWyjIRSVo","title":"BEST International eSIMs Compared (5 Continents, 21 Months)","uploader":"Project Untethered","duration":"633","viewCount":750190,"likeCount":33619,"uploadDate":"2024-01-12","url":"https://www.youtube.com/watch?v=8HxWyjIRSVo","thumbnail":"https://i.ytimg.com/vi/8HxWyjIRSVo/mqdefault.jpg","sentiment":"positive"},{"id":"nWVg934tg5M","title":"Find the Perfect eSIM for Your Japan Trip 2025 (Tested & Compared)","uploader":"Kensho Quest","duration":"1479","viewCount":163361,"likeCount":3490,"uploadDate":"2025-03-23","url":"https://www.youtube.com/watch?v=nWVg934tg5M","thumbnail":"https://i.ytimg.com/vi/nWVg934tg5M/mqdefault.jpg","sentiment":"positive"},{"id":"0fRAUKhan38","title":"What Is eSIM? eSIM Pros & Cons Explained","uploader":"MoneyZG","duration":"259","viewCount":310173,"likeCount":3078,"uploadDate":"2020-06-30","url":"https://www.youtube.com/watch?v=0fRAUKhan38","thumbnail":"https://i.ytimg.com/vi/0fRAUKhan38/mqdefault.jpg","sentiment":"neutral"},{"id":"oqIoTomIai8","title":"eSIM Explained? How does eSIM work | Benefits of eSim ?","uploader":"Basic Gyaan","duration":"268","viewCount":365780,"likeCount":6465,"uploadDate":"2023-12-05","url":"https://www.youtube.com/watch?v=oqIoTomIai8","thumbnail":"https://i.ytimg.com/vi/oqIoTomIai8/mqdefault.jpg","sentiment":"neutral"},{"id":"z2SzgysjoGg","title":"How To Activate & Use an eSIM on iPhone: Step-by-step guide","uploader":"Technically Money","duration":"280","viewCount":298690,"likeCount":1945,"uploadDate":"2024-07-19","url":"https://www.youtube.com/watch?v=z2SzgysjoGg","thumbnail":"https://i.ytimg.com/vi/z2SzgysjoGg/mqdefault.jpg","sentiment":"positive"},{"id":"1oEXSGiFjlk","title":"Saily eSIM Review & Tutorial | How to use this BEST eSIM in 2026?","uploader":"VPNpro","duration":"325","viewCount":56999,"likeCount":778,"uploadDate":"2025-07-11","url":"https://www.youtube.com/watch?v=1oEXSGiFjlk","thumbnail":"https://i.ytimg.com/vi/1oEXSGiFjlk/mqdefault.jpg","sentiment":"positive"},{"id":"K1J9y7_n4hE","title":"How to Use an eSim for International Travel (for Beginners)","uploader":"Danny Packs","duration":"882","viewCount":172849,"likeCount":3294,"uploadDate":"2025-02-12","url":"https://www.youtube.com/watch?v=K1J9y7_n4hE","thumbnail":"https://i.ytimg.com/vi/K1J9y7_n4hE/mqdefault.jpg","sentiment":"positive"},{"id":"iUikKF2GBWQ","title":"Best eSIM for travel | Get cheap data abroad!","uploader":"Cybernews","duration":"356","viewCount":73918,"likeCount":805,"uploadDate":"2024-06-29","url":"https://www.youtube.com/watch?v=iUikKF2GBWQ","thumbnail":"https://i.ytimg.com/vi/iUikKF2GBWQ/mqdefault.jpg","sentiment":"positive"},{"id":"rPAboXSVCGY","title":"5款 eSIM 免费送！无需信用卡，注册直接用，最高白拿 2 年 15GB+ 全球流量！ | 零度解说","uploader":"零度解说","duration":"708","viewCount":113437,"likeCount":1826,"uploadDate":"2026-02-25","url":"https://www.youtube.com/watch?v=rPAboXSVCGY","thumbnail":"https://i.ytimg.com/vi/rPAboXSVCGY/mqdefault.jpg","sentiment":"neutral"},{"id":"uKJCFXYAE40","title":"How to set up eSIM on iPhone | Apple Support","uploader":"Apple Support","duration":"229","viewCount":290333,"likeCount":1912,"uploadDate":"2025-09-30","url":"https://www.youtube.com/watch?v=uKJCFXYAE40","thumbnail":"https://i.ytimg.com/vi/uKJCFXYAE40/mqdefault.jpg","sentiment":"neutral"},{"id":"DLILlKdELEk","title":"iPhone 14 eSIM Controversy Explained","uploader":"Unbox Therapy","duration":"935","viewCount":1898927,"likeCount":40981,"uploadDate":"2022-09-12","url":"https://www.youtube.com/watch?v=DLILlKdELEk","thumbnail":"https://i.ytimg.com/vi/DLILlKdELEk/mqdefault.jpg","sentiment":"neutral"},{"id":"eRPFkzUwA14","title":"Best eSIM for Europe 2026 | Saily or Airalo?","uploader":"Cybernews","duration":"304","viewCount":23204,"likeCount":228,"uploadDate":"2025-07-17","url":"https://www.youtube.com/watch?v=eRPFkzUwA14","thumbnail":"https://i.ytimg.com/vi/eRPFkzUwA14/mqdefault.jpg","sentiment":"positive"},{"id":"9ykbZbAlRqE","title":"BEST Travel eSIMs Compared 2026 (25 Countries, 45 Months)","uploader":"Project Untethered","duration":"712","viewCount":48107,"likeCount":3036,"uploadDate":"2026-01-17","url":"https://www.youtube.com/watch?v=9ykbZbAlRqE","thumbnail":"https://i.ytimg.com/vi/9ykbZbAlRqE/mqdefault.jpg","sentiment":"positive"},{"id":"EPflaN_p3d8","title":"eSIM vs Physical SIM — Which One Should You Use?","uploader":"Explaining Tech Like You're Five","duration":"489","viewCount":72565,"likeCount":2592,"uploadDate":"2025-12-30","url":"https://www.youtube.com/watch?v=EPflaN_p3d8","thumbnail":"https://i.ytimg.com/vi/EPflaN_p3d8/mqdefault.jpg","sentiment":"neutral"},{"id":"bOJmIr4a7pk","title":"How To Transfer eSIM from one iPhone to Another iPhone!","uploader":"Daniel About Tech","duration":"374","viewCount":407048,"likeCount":2085,"uploadDate":"2024-11-15","url":"https://www.youtube.com/watch?v=bOJmIr4a7pk","thumbnail":"https://i.ytimg.com/vi/bOJmIr4a7pk/mqdefault.jpg","sentiment":"neutral"},{"id":"dIYTRCuN3NY","title":"What is eSIM? eSIM Security? Advantages Of eSIM Explained! 🔥🔥🔥","uploader":"Technical Guruji","duration":"671","viewCount":267449,"likeCount":6518,"uploadDate":"2025-09-23","url":"https://www.youtube.com/watch?v=dIYTRCuN3NY","thumbnail":"https://i.ytimg.com/vi/dIYTRCuN3NY/mqdefault.jpg","sentiment":"neutral"},{"id":"S5V6KaO_-bM","title":"eSIM 101: Filipinos Quick Guide To Digital SIMs","uploader":"Charles Duante","duration":"179","viewCount":136865,"likeCount":755,"uploadDate":"2023-07-12","url":"https://www.youtube.com/watch?v=S5V6KaO_-bM","thumbnail":"https://i.ytimg.com/vi/S5V6KaO_-bM/mqdefault.jpg","sentiment":"positive"},{"id":"O2hGwPV4K_s","title":"How To Use Airalo | Review, eSIM Activation & iPhone Tutorial","uploader":"Technically Money","duration":"651","viewCount":649155,"likeCount":14338,"uploadDate":"2023-12-19","url":"https://www.youtube.com/watch?v=O2hGwPV4K_s","thumbnail":"https://i.ytimg.com/vi/O2hGwPV4K_s/mqdefault.jpg","sentiment":"positive"},{"id":"kxrxm_RMo0k","title":"How to Set Up eSIM on iPhone 17/17 Pro","uploader":"ITJungles","duration":"161","viewCount":53546,"likeCount":143,"uploadDate":"2025-09-20","url":"https://www.youtube.com/watch?v=kxrxm_RMo0k","thumbnail":"https://i.ytimg.com/vi/kxrxm_RMo0k/mqdefault.jpg","sentiment":"neutral"},{"id":"KKXtQBn8Yd0","title":"PAANO GAWING ESIM ANG PHYSICAL SIM CARD?","uploader":"JFG Tech","duration":"159","viewCount":56104,"likeCount":333,"uploadDate":"2025-04-06","url":"https://www.youtube.com/watch?v=KKXtQBn8Yd0","thumbnail":"https://i.ytimg.com/vi/KKXtQBn8Yd0/mqdefault.jpg","sentiment":"neutral"},{"id":"f0J13bL_HSU","title":"How to Activate T-Mobile Line on eSIM","uploader":"Stetson Doggett","duration":"298","viewCount":479284,"likeCount":4174,"uploadDate":"2021-01-22","url":"https://www.youtube.com/watch?v=f0J13bL_HSU","thumbnail":"https://i.ytimg.com/vi/f0J13bL_HSU/mqdefault.jpg","sentiment":"neutral"},{"id":"xUEKIQM0VFg","title":"How eSIM Works (The Phone Feature Nobody Explains)","uploader":"The Tech Roost","duration":"414","viewCount":2540,"likeCount":244,"uploadDate":"2026-02-23","url":"https://www.youtube.com/watch?v=xUEKIQM0VFg","thumbnail":"https://i.ytimg.com/vi/xUEKIQM0VFg/mqdefault.jpg","sentiment":"neutral"},{"id":"_Gu9NcxZC3A","title":"How To Use eSIMs When Traveling!","uploader":"foXnoMad","duration":"458","viewCount":104540,"likeCount":1593,"uploadDate":"2023-12-21","url":"https://www.youtube.com/watch?v=_Gu9NcxZC3A","thumbnail":"https://i.ytimg.com/vi/_Gu9NcxZC3A/mqdefault.jpg","sentiment":"neutral"},{"id":"s21mVJiZyCE","title":"How to use eSIM while traveling with your iPhone | Apple Support","uploader":"Apple Support","duration":"220","viewCount":259287,"likeCount":4231,"uploadDate":"2025-10-27","url":"https://www.youtube.com/watch?v=s21mVJiZyCE","thumbnail":"https://i.ytimg.com/vi/s21mVJiZyCE/mqdefault.jpg","sentiment":"neutral"},{"id":"s_t6DbLrQL8","title":"Choosing an eSIM for Japan Travel: Don't Make These MISTAKES","uploader":"Kensho Quest","duration":"502","viewCount":50813,"likeCount":1042,"uploadDate":"2025-06-13","url":"https://www.youtube.com/watch?v=s_t6DbLrQL8","thumbnail":"https://i.ytimg.com/vi/s_t6DbLrQL8/mqdefault.jpg","sentiment":"neutral"},{"id":"__1p4WqeIdg","title":"Airalo eSIM Activation – Proper installation and Setup Guide for iPhone & Android","uploader":"UnlockRiver","duration":"405","viewCount":93100,"likeCount":751,"uploadDate":"2025-07-09","url":"https://www.youtube.com/watch?v=__1p4WqeIdg","thumbnail":"https://i.ytimg.com/vi/__1p4WqeIdg/mqdefault.jpg","sentiment":"positive"},{"id":"nX0B4aRCrX0","title":"I Tested Japan's Top eSIMs So You Don't Have To! 2026","uploader":"Kensho Quest","duration":"755","viewCount":17211,"likeCount":662,"uploadDate":"2026-03-07","url":"https://www.youtube.com/watch?v=nX0B4aRCrX0","thumbnail":"https://i.ytimg.com/vi/nX0B4aRCrX0/mqdefault.jpg","sentiment":"positive"},{"id":"P4XtVZV6YvA","title":"How To Activate eSim On Android! (2023)","uploader":"LoFi Alpaca","duration":"176","viewCount":619748,"likeCount":2088,"uploadDate":"2023-05-30","url":"https://www.youtube.com/watch?v=P4XtVZV6YvA","thumbnail":"https://i.ytimg.com/vi/P4XtVZV6YvA/mqdefault.jpg","sentiment":"neutral"},{"id":"AVazdMKnyPI","title":"How To Use Airalo eSim on iPhone (Purchase, Installation & Activation)","uploader":"KnowledgeBase","duration":"598","viewCount":42807,"likeCount":521,"uploadDate":"2025-08-12","url":"https://www.youtube.com/watch?v=AVazdMKnyPI","thumbnail":"https://i.ytimg.com/vi/AVazdMKnyPI/mqdefault.jpg","sentiment":"neutral"},{"id":"Oz-S9DmDGpQ","title":"How to Convert Physical SIM to eSIM","uploader":"The Freelance Channel","duration":"517","viewCount":79542,"likeCount":561,"uploadDate":"2024-10-20","url":"https://www.youtube.com/watch?v=Oz-S9DmDGpQ","thumbnail":"https://i.ytimg.com/vi/Oz-S9DmDGpQ/mqdefault.jpg","sentiment":"neutral"},{"id":"cp23nMLBHpI","title":"Best eSIM for USA: Tested on Real U.S. Networks","uploader":"The Tech Roost","duration":"413","viewCount":2815,"likeCount":245,"uploadDate":"2026-02-12","url":"https://www.youtube.com/watch?v=cp23nMLBHpI","thumbnail":"https://i.ytimg.com/vi/cp23nMLBHpI/mqdefault.jpg","sentiment":"positive"},{"id":"ioR2pN6o-_Q","title":"The BEST travel eSim for 2026 (Everything to know about Sim Local)","uploader":"Jordan and Emily","duration":"374","viewCount":3230,"likeCount":63,"uploadDate":"2025-12-09","url":"https://www.youtube.com/watch?v=ioR2pN6o-_Q","thumbnail":"https://i.ytimg.com/vi/ioR2pN6o-_Q/mqdefault.jpg","sentiment":"positive"},{"id":"aM1832RqkKI","title":"Travel eSIM Review: Which Ones Actually Work Abroad?","uploader":"The Opt Out Project","duration":"471","viewCount":5590,"likeCount":382,"uploadDate":"2026-02-13","url":"https://www.youtube.com/watch?v=aM1832RqkKI","thumbnail":"https://i.ytimg.com/vi/aM1832RqkKI/mqdefault.jpg","sentiment":"neutral"},{"id":"5bz4KluueHU","title":"Chinese SIM Card vs. eSIM: Which is Best for Your Trip to China?","uploader":"China App Mastery","duration":"219","viewCount":30500,"likeCount":454,"uploadDate":"2024-06-24","url":"https://www.youtube.com/watch?v=5bz4KluueHU","thumbnail":"https://i.ytimg.com/vi/5bz4KluueHU/mqdefault.jpg","sentiment":"positive"},{"id":"gpsucHKPLTo","title":"Activate your Smart Prepaid eSIM in 3 easy steps!","uploader":"Smart Communications","duration":"15","viewCount":2831379,"likeCount":457,"uploadDate":"2023-10-11","url":"https://www.youtube.com/watch?v=gpsucHKPLTo","thumbnail":"https://i.ytimg.com/vi/gpsucHKPLTo/mqdefault.jpg","sentiment":"positive"},{"id":"eeNemGEPDjQ","title":"How To Upgrade To An MTN eSIM With Izzi Boye","uploader":"MTN NIGERIA","duration":"86","viewCount":31837,"likeCount":260,"uploadDate":"2023-10-16","url":"https://www.youtube.com/watch?v=eeNemGEPDjQ","thumbnail":"https://i.ytimg.com/vi/eeNemGEPDjQ/mqdefault.jpg","sentiment":"neutral"},{"id":"RVC987y6bNE","title":"How to activate an eSIM on your iPhone using the Sim Local app | Sim Local #esim","uploader":"Sim Local eSIM","duration":"145","viewCount":29968,"likeCount":86,"uploadDate":"2024-11-08","url":"https://www.youtube.com/watch?v=RVC987y6bNE","thumbnail":"https://i.ytimg.com/vi/RVC987y6bNE/mqdefault.jpg","sentiment":"neutral"},{"id":"kU71S0xZPc4","title":"Why Is eSIM The Future? eSIM Vs Physical SIM Card🔥🔥🔥","uploader":"Technical Guruji","duration":"526","viewCount":1327159,"likeCount":25222,"uploadDate":"2024-04-05","url":"https://www.youtube.com/watch?v=kU71S0xZPc4","thumbnail":"https://i.ytimg.com/vi/kU71S0xZPc4/mqdefault.jpg","sentiment":"neutral"},{"id":"ooV0j6tU9GU","title":"Best eSIM 2026: What Actually Matters Before You Buy","uploader":"The Tech Roost","duration":"388","viewCount":6400,"likeCount":525,"uploadDate":"2026-02-11","url":"https://www.youtube.com/watch?v=ooV0j6tU9GU","thumbnail":"https://i.ytimg.com/vi/ooV0j6tU9GU/mqdefault.jpg","sentiment":"positive"},{"id":"S0DyqRa1mK0","title":"Introducing the All-NEW eSIM Quick Transfer For Your Apple Devices","uploader":"Dialog Axiata","duration":"25","viewCount":555225,"likeCount":131,"uploadDate":"2024-12-02","url":"https://www.youtube.com/watch?v=S0DyqRa1mK0","thumbnail":"https://i.ytimg.com/vi/S0DyqRa1mK0/mqdefault.jpg","sentiment":"neutral"},{"id":"bNRF7jTjkh0","title":"Les fausses promesses des eSIM","uploader":"RTBF iXPé","duration":"642","viewCount":61660,"likeCount":3368,"uploadDate":"2025-09-19","url":"https://www.youtube.com/watch?v=bNRF7jTjkh0","thumbnail":"https://i.ytimg.com/vi/bNRF7jTjkh0/mqdefault.jpg","sentiment":"neutral"},{"id":"lENHrksaD_Y","title":"eSIMS 101: How to Set Up an Holafly eSIM on iPhone (Fast!)","uploader":"Away Together w/ Nik and Allie","duration":"429","viewCount":149048,"likeCount":2768,"uploadDate":"2024-05-05","url":"https://www.youtube.com/watch?v=lENHrksaD_Y","thumbnail":"https://i.ytimg.com/vi/lENHrksaD_Y/mqdefault.jpg","sentiment":"neutral"},{"id":"tRk8dIzgAWo","title":"I Solved the BIGGEST Problem With International eSIMs","uploader":"Lloyd & Mandy","duration":"608","viewCount":2622,"likeCount":174,"uploadDate":"2026-02-12","url":"https://www.youtube.com/watch?v=tRk8dIzgAWo","thumbnail":"https://i.ytimg.com/vi/tRk8dIzgAWo/mqdefault.jpg","sentiment":"neutral"},{"id":"NfbZ7Eq76IA","title":"Make Travel Simple Again with Nomad eSIM","uploader":"Digital Trends","duration":"197","viewCount":263119,"likeCount":127,"uploadDate":"2025-12-03","url":"https://www.youtube.com/watch?v=NfbZ7Eq76IA","thumbnail":"https://i.ytimg.com/vi/NfbZ7Eq76IA/mqdefault.jpg","sentiment":"positive"},{"id":"kfXLfrYyRPw","title":"How to Switch from Physical SIM to eSIM in 2 Minutes! Convert Your Physical Sim to an Esim","uploader":"The Simple Dad","duration":"116","viewCount":46120,"likeCount":107,"uploadDate":"2025-03-26","url":"https://www.youtube.com/watch?v=kfXLfrYyRPw","thumbnail":"https://i.ytimg.com/vi/kfXLfrYyRPw/mqdefault.jpg","sentiment":"neutral"},{"id":"FOw2beXKCTg","title":"eSIM vs Physical SIM: Pros and Cons You Need to Know! 📱","uploader":"Brandufo","duration":"195","viewCount":8356,"likeCount":27,"uploadDate":"2024-10-02","url":"https://www.youtube.com/watch?v=FOw2beXKCTg","thumbnail":"https://i.ytimg.com/vi/FOw2beXKCTg/mqdefault.jpg","sentiment":"neutral"},{"id":"cv7gP2WkHuo","title":"How To Activate eSIM on iPhone 15 / 15 Plus / 15 Pro / 15 Pro Max","uploader":"Technomentary","duration":"100","viewCount":32253,"likeCount":74,"uploadDate":"2025-03-05","url":"https://www.youtube.com/watch?v=cv7gP2WkHuo","thumbnail":"https://i.ytimg.com/vi/cv7gP2WkHuo/mqdefault.jpg","sentiment":"neutral"},{"id":"GFC68O6F0vE","title":"eSIM က ရိုးရိုး SIM လောက်ကောင်းလို့လား","uploader":"TBH Labs","duration":"746","viewCount":114697,"likeCount":5349,"uploadDate":"2025-12-23","url":"https://www.youtube.com/watch?v=GFC68O6F0vE","thumbnail":"https://i.ytimg.com/vi/GFC68O6F0vE/mqdefault.jpg","sentiment":"neutral"},{"id":"CujQmwCK3dE","title":"eSIMS 101: How to Set Up an Airalo eSIM on iPhone (Fast!)","uploader":"Happy to Wander (Travel Tips & Inspo)","duration":"788","viewCount":595013,"likeCount":9214,"uploadDate":"2023-12-21","url":"https://www.youtube.com/watch?v=CujQmwCK3dE","thumbnail":"https://i.ytimg.com/vi/CujQmwCK3dE/mqdefault.jpg","sentiment":"neutral"},{"id":"Ri9dGxwbaKY","title":"Best eSIM in Europe - What Most Travelers Get Wrong","uploader":"The Tech Roost","duration":"488","viewCount":2753,"likeCount":255,"uploadDate":"2026-02-24","url":"https://www.youtube.com/watch?v=Ri9dGxwbaKY","thumbnail":"https://i.ytimg.com/vi/Ri9dGxwbaKY/mqdefault.jpg","sentiment":"positive"},{"id":"eh0SK7E04D4","title":"Você DEVERIA trocar para um eSIM? É MAIS SEGURO para o seu celular?","uploader":"Canaltech","duration":"2251","viewCount":497052,"likeCount":26554,"uploadDate":"2022-12-07","url":"https://www.youtube.com/watch?v=eh0SK7E04D4","thumbnail":"https://i.ytimg.com/vi/eh0SK7E04D4/mqdefault.jpg","sentiment":"neutral"},{"id":"Ymr32VMJBTk","title":"Klook eSim Tutorial for Beginners | How to Buy & Activate","uploader":"Rae Julian","duration":"487","viewCount":8122,"likeCount":87,"uploadDate":"2026-01-06","url":"https://www.youtube.com/watch?v=Ymr32VMJBTk","thumbnail":"https://i.ytimg.com/vi/Ymr32VMJBTk/mqdefault.jpg","sentiment":"positive"},{"id":"eCQqBYs4zuc","title":"Best eSIM for Singapore - Stop Paying $12/Day","uploader":"The Opt Out Project","duration":"516","viewCount":2284,"likeCount":237,"uploadDate":"2026-02-20","url":"https://www.youtube.com/watch?v=eCQqBYs4zuc","thumbnail":"https://i.ytimg.com/vi/eCQqBYs4zuc/mqdefault.jpg","sentiment":"positive"},{"id":"e7F5V-R1UF4","title":"How To Add eSIM On iPhone 17","uploader":"Technomentary","duration":"145","viewCount":1404,"likeCount":8,"uploadDate":"2025-12-07","url":"https://www.youtube.com/watch?v=e7F5V-R1UF4","thumbnail":"https://i.ytimg.com/vi/e7F5V-R1UF4/mqdefault.jpg","sentiment":"neutral"},{"id":"FwM_AhvaOp0","title":"Are eSIM Cards Essential Whilst Traveling? let's test out ​⁠@airalocom","uploader":"Paddy Doyle","duration":"842","viewCount":19045,"likeCount":827,"uploadDate":"2023-12-09","url":"https://www.youtube.com/watch?v=FwM_AhvaOp0","thumbnail":"https://i.ytimg.com/vi/FwM_AhvaOp0/mqdefault.jpg","sentiment":"neutral"},{"id":"aQU42wIbDtU","title":"Finally! 🎉 An eSIM with Japanese Phone Number + Data - Mobal eSIMs","uploader":"Kensho Quest","duration":"398","viewCount":49682,"likeCount":882,"uploadDate":"2023-12-31","url":"https://www.youtube.com/watch?v=aQU42wIbDtU","thumbnail":"https://i.ytimg.com/vi/aQU42wIbDtU/mqdefault.jpg","sentiment":"neutral"},{"id":"j_gDZTXU9Kw","title":"Best International eSim: The Ultimate Guide to Reliable Global Data Connectivity Today","uploader":"Think Security","duration":"423","viewCount":1133,"likeCount":463,"uploadDate":"2026-02-02","url":"https://www.youtube.com/watch?v=j_gDZTXU9Kw","thumbnail":"https://i.ytimg.com/vi/j_gDZTXU9Kw/mqdefault.jpg","sentiment":"positive"},{"id":"Mrjq5vrg4-Q","title":"Best eSIM For Asia In 2026","uploader":"SIMPACKERS","duration":"155","viewCount":2627,"likeCount":19,"uploadDate":"2025-01-06","url":"https://www.youtube.com/watch?v=Mrjq5vrg4-Q","thumbnail":"https://i.ytimg.com/vi/Mrjq5vrg4-Q/mqdefault.jpg","sentiment":"positive"},{"id":"rxDvN5gPBWI","title":"MTN eSIM Activation on your iPhone: Too Easy!","uploader":"Nick Wills.","duration":"314","viewCount":49004,"likeCount":1395,"uploadDate":"2025-02-11","url":"https://www.youtube.com/watch?v=rxDvN5gPBWI","thumbnail":"https://i.ytimg.com/vi/rxDvN5gPBWI/mqdefault.jpg","sentiment":"positive"},{"id":"ueOiGwCamKQ","title":"Yesim eSIM Review | How To Get Cheap Global Data In Seconds","uploader":"Consumer Buddy","duration":"722","viewCount":2005,"likeCount":647,"uploadDate":"2026-02-18","url":"https://www.youtube.com/watch?v=ueOiGwCamKQ","thumbnail":"https://i.ytimg.com/vi/ueOiGwCamKQ/mqdefault.jpg","sentiment":"neutral"},{"id":"o2nQS2vhJCA","title":"Best eSIM for Indonesia - Don’t Get Stranded Between Islands!","uploader":"The Opt Out Project","duration":"483","viewCount":1990,"likeCount":227,"uploadDate":"2026-02-18","url":"https://www.youtube.com/watch?v=o2nQS2vhJCA","thumbnail":"https://i.ytimg.com/vi/o2nQS2vhJCA/mqdefault.jpg","sentiment":"positive"},{"id":"97Cb2cw-lPw","title":"eSIM Setup Full Process ⚡ Ab SIM Card Ki Jaroorat Nahi!!","uploader":"Trakin Tech","duration":"301","viewCount":2954893,"likeCount":76097,"uploadDate":"2019-06-14","url":"https://www.youtube.com/watch?v=97Cb2cw-lPw","thumbnail":"https://i.ytimg.com/vi/97Cb2cw-lPw/mqdefault.jpg","sentiment":"neutral"},{"id":"JHSkT74HckM","title":"The #1 BEST eSIM for Europe (Why Nothing Else Compares)","uploader":"The Opt Out Project","duration":"329","viewCount":35813,"likeCount":794,"uploadDate":"2025-03-06","url":"https://www.youtube.com/watch?v=JHSkT74HckM","thumbnail":"https://i.ytimg.com/vi/JHSkT74HckM/mqdefault.jpg","sentiment":"positive"},{"id":"i_niu7tTfrg","title":"SAMSUNG Galaxy A56 5G: How to Set Up eSIM","uploader":"HowToDevices ","duration":"40","viewCount":45977,"likeCount":133,"uploadDate":"2025-03-18","url":"https://www.youtube.com/watch?v=i_niu7tTfrg","thumbnail":"https://i.ytimg.com/vi/i_niu7tTfrg/mqdefault.jpg","sentiment":"neutral"},{"id":"mK83YjNXocI","title":"Switch to eSIM via MyJio App in 3 Steps | JioCare","uploader":"Jio","duration":"325","viewCount":245532,"likeCount":2489,"uploadDate":"2025-10-07","url":"https://www.youtube.com/watch?v=mK83YjNXocI","thumbnail":"https://i.ytimg.com/vi/mK83YjNXocI/mqdefault.jpg","sentiment":"neutral"},{"id":"1YUha_avdDM","title":"eSIM သုံးတာ Physical SIM ထက် ပိုကောင်းလား","uploader":"MyTech Myanmar","duration":"304","viewCount":62707,"likeCount":1694,"uploadDate":"2024-02-11","url":"https://www.youtube.com/watch?v=1YUha_avdDM","thumbnail":"https://i.ytimg.com/vi/1YUha_avdDM/mqdefault.jpg","sentiment":"neutral"},{"id":"Jtwpf6jrMVI","title":"I tested Holafly's eSIM internet connection in Japan – Is It Worth It?","uploader":"Alina","duration":"539","viewCount":1382,"likeCount":47,"uploadDate":"2025-11-09","url":"https://www.youtube.com/watch?v=Jtwpf6jrMVI","thumbnail":"https://i.ytimg.com/vi/Jtwpf6jrMVI/mqdefault.jpg","sentiment":"neutral"},{"id":"dji8-kuDxxU","title":"美国手机卡美国esim手机卡，全网最低保号价格！国内可包天上网！【最新推荐】","uploader":"Aisin","duration":"476","viewCount":680,"likeCount":13,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=dji8-kuDxxU","thumbnail":"https://i.ytimg.com/vi/dji8-kuDxxU/mqdefault.jpg","sentiment":"neutral"},{"id":"4v0TbRN_FxU","title":"iPhone 17: How to Activate eSIM (NO Physical SIM Card Slot)","uploader":"Phone Battles","duration":"65","viewCount":56617,"likeCount":85,"uploadDate":"2025-11-11","url":"https://www.youtube.com/watch?v=4v0TbRN_FxU","thumbnail":"https://i.ytimg.com/vi/4v0TbRN_FxU/mqdefault.jpg","sentiment":"neutral"},{"id":"Iwfn4L1MUdI","title":"E-SIM কি? কোথায় পাবেন? কেন কিনবেন?","uploader":"SamZone","duration":"507","viewCount":547958,"likeCount":17558,"uploadDate":"2022-03-05","url":"https://www.youtube.com/watch?v=Iwfn4L1MUdI","thumbnail":"https://i.ytimg.com/vi/Iwfn4L1MUdI/mqdefault.jpg","sentiment":"neutral"},{"id":"kOW50nHaUiU","title":"【環亞電訊】IPHONE手機(iOS系統)-eSIM設定教學 (2025/8)","uploader":"環亞電訊","duration":"60","viewCount":185903,"likeCount":558,"uploadDate":"2025-08-06","url":"https://www.youtube.com/watch?v=kOW50nHaUiU","thumbnail":"https://i.ytimg.com/vi/kOW50nHaUiU/mqdefault.jpg","sentiment":"neutral"},{"id":"xJJOuCJYVqg","title":"How to Use & Activate an eSIM from Airalo (iPhone + Android) | 2026 Guide","uploader":"Airalo","duration":"358","viewCount":4482,"likeCount":22,"uploadDate":"2026-02-19","url":"https://www.youtube.com/watch?v=xJJOuCJYVqg","thumbnail":"https://i.ytimg.com/vi/xJJOuCJYVqg/mqdefault.jpg","sentiment":"positive"},{"id":"hfQrUvhY5sk","title":"Saily eSIM review & Tutorial: Ultimate Breakdown of Setup and Experience","uploader":"Think Security","duration":"409","viewCount":2220,"likeCount":99,"uploadDate":"2026-01-13","url":"https://www.youtube.com/watch?v=hfQrUvhY5sk","thumbnail":"https://i.ytimg.com/vi/hfQrUvhY5sk/mqdefault.jpg","sentiment":"positive"},{"id":"93Zq7DQvbs0","title":"Which Is the BEST eSIM for Travel in 2026? (Airalo vs Saily vs Sim Local)","uploader":"Raymond La","duration":"500","viewCount":9934,"likeCount":154,"uploadDate":"2025-12-17","url":"https://www.youtube.com/watch?v=93Zq7DQvbs0","thumbnail":"https://i.ytimg.com/vi/93Zq7DQvbs0/mqdefault.jpg","sentiment":"positive"},{"id":"OjdpIrmRin0","title":"How to buy eSIM - MobiMatter","uploader":"MobiMatter","duration":"113","viewCount":31914350,"likeCount":144,"uploadDate":"2024-03-13","url":"https://www.youtube.com/watch?v=OjdpIrmRin0","thumbnail":"https://i.ytimg.com/vi/OjdpIrmRin0/mqdefault.jpg","sentiment":"neutral"},{"id":"2kmB09KzEa4","title":"Unboxing an eSIM - Safaricom Kenya","uploader":"Philips Future","duration":"264","viewCount":38999,"likeCount":640,"uploadDate":"2022-04-09","url":"https://www.youtube.com/watch?v=2kmB09KzEa4","thumbnail":"https://i.ytimg.com/vi/2kmB09KzEa4/mqdefault.jpg","sentiment":"neutral"},{"id":"nHH-IvodEt0","title":"RedteaGO eSIM Tutorial - How can I install an eSIM on iOS device","uploader":"Redtea Mobile","duration":"76","viewCount":2444904,"likeCount":32,"uploadDate":"2024-01-19","url":"https://www.youtube.com/watch?v=nHH-IvodEt0","thumbnail":"https://i.ytimg.com/vi/nHH-IvodEt0/mqdefault.jpg","sentiment":"positive"},{"id":"kVIdFifNSCs","title":"DON’T Buy a Travel eSIM Until You Watch This (10 Costly Mistakes)","uploader":"Project Untethered","duration":"695","viewCount":16040,"likeCount":645,"uploadDate":"2025-12-13","url":"https://www.youtube.com/watch?v=kVIdFifNSCs","thumbnail":"https://i.ytimg.com/vi/kVIdFifNSCs/mqdefault.jpg","sentiment":"neutral"},{"id":"ysq840cMPvY","title":"What is eSIM | How to Get eSim in Pakistan","uploader":"Wasay Tech Tips","duration":"317","viewCount":43621,"likeCount":613,"uploadDate":"2021-07-29","url":"https://www.youtube.com/watch?v=ysq840cMPvY","thumbnail":"https://i.ytimg.com/vi/ysq840cMPvY/mqdefault.jpg","sentiment":"neutral"},{"id":"tlGa_IGcfAU","title":"eSim ni nini ? Inafanyaje kazi ? Je ! Tanzania Tunahitaji ?","uploader":"Snashtz","duration":"503","viewCount":32531,"likeCount":744,"uploadDate":"2023-01-19","url":"https://www.youtube.com/watch?v=tlGa_IGcfAU","thumbnail":"https://i.ytimg.com/vi/tlGa_IGcfAU/mqdefault.jpg","sentiment":"neutral"},{"id":"dLZVuGqE9wc","title":"119 Pesos Mo, Magiging E-SIM Ready na Smartphone Mo!","uploader":"Gadget Sidekick","duration":"392","viewCount":30582,"likeCount":480,"uploadDate":"2025-12-26","url":"https://www.youtube.com/watch?v=dLZVuGqE9wc","thumbnail":"https://i.ytimg.com/vi/dLZVuGqE9wc/mqdefault.jpg","sentiment":"neutral"},{"id":"z-wisquzQes","title":"The Best eSIMs for Visiting Japan","uploader":"Tokyo Cheapo","duration":"228","viewCount":157394,"likeCount":1544,"uploadDate":"2024-03-21","url":"https://www.youtube.com/watch?v=z-wisquzQes","thumbnail":"https://i.ytimg.com/vi/z-wisquzQes/mqdefault.jpg","sentiment":"positive"},{"id":"ZxWOe9jhM90","title":"How to Install an eSIM from Airalo (iPhone + Android) | UPDATED 2026 Guide","uploader":"Airalo","duration":"366","viewCount":3600,"likeCount":28,"uploadDate":"2026-02-28","url":"https://www.youtube.com/watch?v=ZxWOe9jhM90","thumbnail":"https://i.ytimg.com/vi/ZxWOe9jhM90/mqdefault.jpg","sentiment":"positive"},{"id":"RWtSLfWur-Y","title":"WiFi Rental or eSIM? Which is Best for Your Next Trip? Vision's Network Service","uploader":"Unfiltered Japan","duration":"25","viewCount":11298,"likeCount":0,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=RWtSLfWur-Y","thumbnail":"https://i.ytimg.com/vi/RWtSLfWur-Y/mqdefault.jpg","sentiment":"positive"},{"id":"rtLjXH8oPCA","title":"Samsung Galaxy Tab S11 Ultra: How To Set Up eSIM","uploader":"WebPro Education","duration":"138","viewCount":2552,"likeCount":12,"uploadDate":"2025-11-23","url":"https://www.youtube.com/watch?v=rtLjXH8oPCA","thumbnail":"https://i.ytimg.com/vi/rtLjXH8oPCA/mqdefault.jpg","sentiment":"neutral"},{"id":"-BWcUP-D2yw","title":"Best Unlimited eSIM for Japan: 10GB/Day on the Fastest Network!","uploader":"Technically Money","duration":"557","viewCount":72007,"likeCount":52,"uploadDate":"2025-12-08","url":"https://www.youtube.com/watch?v=-BWcUP-D2yw","thumbnail":"https://i.ytimg.com/vi/-BWcUP-D2yw/mqdefault.jpg","sentiment":"positive"},{"id":"9NTgpk7dBYU","title":"Vi eSIM Activate in 5 Minutes Easy Step?, How to activate esim 2025","uploader":"Gadget Fighter","duration":"417","viewCount":593548,"likeCount":5716,"uploadDate":"2024-06-25","url":"https://www.youtube.com/watch?v=9NTgpk7dBYU","thumbnail":"https://i.ytimg.com/vi/9NTgpk7dBYU/mqdefault.jpg","sentiment":"positive"},{"id":"u2IHGoce7vQ","title":"Ano ang eSIM at Bakit Mas Okay Gamitin 'to? #boringtechpodcast","uploader":"Reign Manguerra","duration":"1248","viewCount":388709,"likeCount":4814,"uploadDate":"2023-10-16","url":"https://www.youtube.com/watch?v=u2IHGoce7vQ","thumbnail":"https://i.ytimg.com/vi/u2IHGoce7vQ/mqdefault.jpg","sentiment":"negative"},{"id":"Q4PiSMPpVFo","title":"What is eSIM and How to activate eSIM on iPhone in Telugu | AppleBytes","uploader":"iBytes","duration":"444","viewCount":695743,"likeCount":15839,"uploadDate":"2020-08-03","url":"https://www.youtube.com/watch?v=Q4PiSMPpVFo","thumbnail":"https://i.ytimg.com/vi/Q4PiSMPpVFo/mqdefault.jpg","sentiment":"neutral"},{"id":"Gzwrfvhg1Oc","title":"How to Activate and Transfer eSim on iPhone- in Malayalam","uploader":"Milan Thomas","duration":"930","viewCount":775357,"likeCount":14569,"uploadDate":"2022-08-02","url":"https://www.youtube.com/watch?v=Gzwrfvhg1Oc","thumbnail":"https://i.ytimg.com/vi/Gzwrfvhg1Oc/mqdefault.jpg","sentiment":"neutral"},{"id":"xXdj1Y0ii38","title":"How to Activate eSIM iPhone 17 Pro Max Hindi | How to Activate eSIM on iPhone without physical SIM","uploader":"Azad Mallik","duration":"324","viewCount":93591,"likeCount":680,"uploadDate":"2025-11-27","url":"https://www.youtube.com/watch?v=xXdj1Y0ii38","thumbnail":"https://i.ytimg.com/vi/xXdj1Y0ii38/mqdefault.jpg","sentiment":"neutral"}];
+    
+    const formatNumber = (num) => {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    };
+    
+    const formatDuration = (seconds) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return mins + ':' + secs.toString().padStart(2, '0');
+    };
+    
+    function renderVideos(videos, highlightId = null) {
+      const grid = document.getElementById('videosGrid');
+      grid.innerHTML = videos.map((video) => {
+        const isHighlighted = video.id === highlightId;
+        const highlightClass = isHighlighted ? "highlighted" : "";
+        const cardHTML = '<div class="video-card ' + highlightClass + '" data-video-id="' + video.id + '" id="video-' + video.id + '">' +
+          '<a href="' + video.url + '" target="_blank" class="card-link">' +
+            '<div class="card-thumbnail">' +
+              '<img src="' + video.thumbnail + '" alt="' + video.title + '" loading="lazy">' +
+              '<span class="card-duration">' + formatDuration(video.duration) + '</span>' +
+            '</div>' +
+            '<div class="card-content">' +
+              '<div class="card-title" title="' + video.title + '">' + video.title + '</div>' +
+              '<div class="card-channel">' + video.uploader + '</div>' +
+              '<div class="card-meta">' +
+                '<span>👁 ' + formatNumber(video.viewCount) + '</span>' +
+                '<span>👍 ' + formatNumber(video.likeCount) + '</span>' +
+                '<span class="card-time">' + video.uploadDate.replace(/-/g, '') + '</span>' +
+                '<span class="card-sentiment sentiment-' + video.sentiment + '">' + video.sentiment + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</a>' +
+        '</div>';
+        return cardHTML;
+      }).join('');
+    }
+    
+    // 滚动到指定视频并高亮
+    function scrollToVideo(videoId) {
+      // 找到对应的视频数据
+      const video = videosData.find(v => v.id === videoId);
+      if (!video) return;
+      
+      // 将该视频排到列表最前面，其他保持原顺序
+      const otherVideos = videosData.filter(v => v.id !== videoId);
+      const sortedVideos = [video].concat(otherVideos);
+      
+      // 重新渲染，并高亮
+      renderVideos(sortedVideos, videoId);
+      
+      // 滚动到视频列表区域
+      const videoSection = document.querySelector('.videos-section');
+      const videoElement = document.getElementById('video-' + videoId);
+      
+      if (videoSection && videoElement) {
+        // 先滚动到视频列表区域
+        videoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // 稍微延迟后高亮闪烁
+        setTimeout(function() {
+          videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // 3秒后移除高亮
+          setTimeout(function() {
+            videoElement.classList.remove('highlighted');
+          }, 3000);
+        }, 500);
+      }
+    }
+    
+    function sortVideos(sortType) {
+      let sorted = [...videosData];
+      switch(sortType) {
+        case 'time-desc':
+          sorted.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+          break;
+        case 'time-asc':
+          sorted.sort((a, b) => new Date(a.uploadDate) - new Date(b.uploadDate));
+          break;
+        case 'views-desc':
+          sorted.sort((a, b) => b.viewCount - a.viewCount);
+          break;
+        case 'views-asc':
+          sorted.sort((a, b) => a.viewCount - b.viewCount);
+          break;
+        case 'likes-desc':
+          sorted.sort((a, b) => b.likeCount - a.likeCount);
+          break;
+        case 'likes-asc':
+          sorted.sort((a, b) => a.likeCount - b.likeCount);
+          break;
+      }
+      renderVideos(sorted);
+    }
+    
+    // 排序按钮点击事件
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // 移除所有active状态
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        // 添加当前按钮active状态
+        e.target.classList.add('active');
+        // 执行排序
+        sortVideos(e.target.dataset.sort);
+      });
+    });
+    
+    sortVideos('time-desc');
+
+    // ========== Chart.js 配置 ==========
+    Chart.defaults.font.size = 10;
+    Chart.defaults.plugins.legend.labels.boxWidth = 8;
+    Chart.defaults.plugins.legend.labels.font = { size: 9 };
+    
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { size: 9 } } } }
+    };
+    
+    const barOptions = {
+      ...commonOptions,
+      plugins: { ...commonOptions.plugins, legend: { display: false } },
+      scales: { 
+        y: { beginAtZero: true, ticks: { font: { size: 9 } } }, 
+        x: { ticks: { font: { size: 8 } } } 
+      }
+    };
+
+    // 1. 情绪分布
+    new Chart(document.getElementById('sentimentChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['正面','中性','负面'],
+        datasets: [{
+          data: [38, 61, 1],
+          backgroundColor: ['#27ae60','#f39c12','#e74c3c'],
+          borderWidth: 0
+        }]
+      },
+      options: { ...commonOptions, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } } } }
+    });
+
+    // 2. 观看数区间分布
+    new Chart(document.getElementById('viewRangeChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['0-1K','1K-10K','10K-100K','100K-1M','1M+'],
+        datasets: [{
+          data: [1,21,36,36,6],
+          backgroundColor: ['#ecf0f1','#3498db','#2ecc71','#f39c12','#e74c3c'],
+          borderWidth: 0
+        }]
+      },
+      options: { ...commonOptions, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } } } }
+    });
+
+    // 3. 视频时长分布
+    new Chart(document.getElementById('durationChart'), {
+      type: 'bar',
+      data: {
+        labels: ["< 1分钟","1-5分钟","5-15分钟","15-30分钟","> 30分钟"],
+        datasets: [{
+          label: '视频数',
+          data: [4,29,61,5,1],
+          backgroundColor: 'rgba(155, 89, 182, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: barOptions
+    });
+
+    // 4. 点赞率分布
+    new Chart(document.getElementById('likeRateChart'), {
+      type: 'bar',
+      data: {
+        labels: ["< 1%","1-3%","3-5%","5-10%","> 10%"],
+        datasets: [{
+          label: '视频数',
+          data: [38,38,11,9,4],
+          backgroundColor: 'rgba(231, 76, 60, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: barOptions
+    });
+
+    // 5. 每月视频发布趋势
+    new Chart(document.getElementById('uploadTrendChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-03","2025-04","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03"],
+        datasets: [{
+          label: '视频数',
+          data: [6,3,2,4,2,5,2,4,9,3,13,3],
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#667eea',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { display: false } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 6. 每月观看数量趋势
+    new Chart(document.getElementById('monthlyViewsChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-03","2025-04","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03"],
+        datasets: [{
+          label: '观看数',
+          data: [720606,135666,129574,424653,228710,828753,504819,154142,583578,58449,151651,29189],
+          borderColor: '#3498db',
+          backgroundColor: 'rgba(52, 152, 219, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#3498db',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '观看: ' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 7. 每月点赞数量趋势
+    new Chart(document.getElementById('monthlyLikesChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-03","2025-04","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03"],
+        datasets: [{
+          label: '点赞数',
+          data: [13204,1144,1565,4263,1079,15956,6720,824,9470,3222,5275,675],
+          borderColor: '#e74c3c',
+          backgroundColor: 'rgba(231, 76, 60, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#e74c3c',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '点赞: ' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 8. 年度对比分析
+    new Chart(document.getElementById('yearComparisonChart'), {
+      type: 'bar',
+      data: {
+        labels: ["2019","2020","2021","2022","2023","2024","2025","2026"],
+        datasets: [
+          {
+            label: '视频数',
+            data: [1,2,2,5,13,18,40,19],
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderRadius: 2
+          },
+          {
+            label: '观看数(千)',
+            data: [2955,1006,523,3758,6513,39264,3935,239],
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { labels: { font: { size: 9 }, boxWidth: 8 } } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 9. 观看数Top 10
+    new Chart(document.getElementById('viewsChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '观看数',
+          data: [31914350,2954893,2831379,2444904,1898927,1327159,775357,750190,695743,689068],
+          backgroundColor: 'rgba(102, 126, 234, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const titles = ["How to buy eSIM - MobiMatter","eSIM Setup Full Process ⚡ Ab S","Activate your Smart Prepaid eS","RedteaGO eSIM Tutorial - How c","iPhone 14 eSIM Controversy Exp","Why Is eSIM The Future? eSIM V","How to Activate and Transfer e","BEST International eSIMs Compa","What is eSIM and How to activa","eSIM and iSIM Explained"];
+                return titles[context.dataIndex] + '...';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 10. Top上传者
+    new Chart(document.getElementById('uploaderChart'), {
+      type: 'bar',
+      data: {
+        labels: ["Technica","Kensho Q","The Tech","The Opt ","Cybernew","Project ","UnlockRi","Consumer","Apple Su","Technica"],
+        datasets: [{
+          label: '视频数',
+          data: [4,4,4,4,3,3,2,2,2,2],
+          backgroundColor: 'rgba(118, 75, 162, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 11. 高互动率视频
+    new Chart(document.getElementById('engagementChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '点赞率(%)',
+          data: ["40.86","32.27","11.41","10.38","9.61","9.26","8.70","8.20","6.83","6.64"],
+          backgroundColor: 'rgba(39, 174, 96, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const titles = ["Best International eSim: The U","Yesim eSIM Review | How To Get","Best eSIM for Indonesia - Don’","Best eSIM for Singapore - Stop","How eSIM Works (The Phone Feat","Best eSIM in Europe - What Mos","Best eSIM for USA: Tested on R","Best eSIM 2026: What Actually ","Travel eSIM Review: Which Ones","I Solved the BIGGEST Problem W"];
+                return titles[context.dataIndex] + '...';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 12. 频道平均表现
+    new Chart(document.getElementById('channelAvgChart'), {
+      type: 'bar',
+      data: {
+        labels: ["Technica","Apple Su","Project ","Technica","Cybernew","UnlockRi","Kensho Q","Technome"],
+        datasets: [{
+          label: '平均观看',
+          data: [797304,274810,271446,269846,109665,85931,70267,16829],
+          backgroundColor: 'rgba(52, 152, 219, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const counts = [2,2,3,4,3,2,4,2];
+                return '视频数: ' + counts[context.dataIndex];
+              }
+            }
+          }
+        },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 13. 热门关键词
+    new Chart(document.getElementById('keywordChart'), {
+      type: 'bar',
+      data: {
+        labels: ["esim","iphone","best","sim","activate","2026","travel","physical","airalo","esims","use","guide","review","tutorial","japan"],
+        datasets: [{
+          label: '出现次数',
+          data: [110,27,19,19,16,10,10,10,9,9,9,8,6,6,6],
+          backgroundColor: 'rgba(155, 89, 182, 0.7)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 14. 标题长度分布
+    new Chart(document.getElementById('titleLengthChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["很短(<30)","短(30-50)","中等(50-70)","长(70-100)","很长(>100)"],
+        datasets: [{
+          data: [5,34,47,14,0],
+          backgroundColor: ['#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          legend: { 
+            position: 'right', 
+            labels: { font: { size: 8 }, boxWidth: 8 } 
+          } 
+        } 
+      }
+    });
+
+    // 15. 频道观看占比
+    new Chart(document.getElementById('channelShareChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["MobiMatt","Trakin T","Smart Co","Redtea M","Unbox Th","其他"],
+        datasets: [{
+          data: [31914350,2954893,2831379,2444904,1898927,16148683],
+          backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#95a5a6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          legend: { 
+            position: 'right', 
+            labels: { font: { size: 8 }, boxWidth: 8 } 
+          } 
+        } 
+      }
+    });
+
+    // 16. 时长 vs 观看数 散点图
+    new Chart(document.getElementById('durationViewChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: '视频',
+          data: [{"x":3,"y":78761,"title":"What is eSIM? Quick Guide for "},{"x":19,"y":149088,"title":"Are there eSIM Hidden Dangers?"},{"x":4,"y":689068,"title":"eSIM and iSIM Explained"},{"x":6,"y":20030,"title":"What Is an eSIM: How Does eSIM"},{"x":10,"y":397082,"title":"你需要eSim嗎?｜eSim簡介與經驗分享｜生活科技5分鐘"},{"x":5,"y":231872,"title":"Airalo eSIM review & tutorial "},{"x":11,"y":155765,"title":"【新手教學】eSIM 懶人包！超詳細優缺點分析＋香港本地/旅"},{"x":4,"y":59532,"title":"How To Install & Activate an e"},{"x":10,"y":251350,"title":"一分鐘開通！出國必備 eSIM 網路 重要注意事項⚠️ 詳細"},{"x":11,"y":750190,"title":"BEST International eSIMs Compa"},{"x":25,"y":163361,"title":"Find the Perfect eSIM for Your"},{"x":4,"y":310173,"title":"What Is eSIM? eSIM Pros & Cons"},{"x":4,"y":365780,"title":"eSIM Explained? How does eSIM "},{"x":5,"y":298690,"title":"How To Activate & Use an eSIM "},{"x":5,"y":56999,"title":"Saily eSIM Review & Tutorial |"},{"x":15,"y":172849,"title":"How to Use an eSim for Interna"},{"x":6,"y":73918,"title":"Best eSIM for travel | Get che"},{"x":12,"y":113437,"title":"5款 eSIM 免费送！无需信用卡，注册直接用，最高白拿 2"},{"x":4,"y":290333,"title":"How to set up eSIM on iPhone |"},{"x":16,"y":1898927,"title":"iPhone 14 eSIM Controversy Exp"},{"x":5,"y":23204,"title":"Best eSIM for Europe 2026 | Sa"},{"x":12,"y":48107,"title":"BEST Travel eSIMs Compared 202"},{"x":8,"y":72565,"title":"eSIM vs Physical SIM — Which O"},{"x":6,"y":407048,"title":"How To Transfer eSIM from one "},{"x":11,"y":267449,"title":"What is eSIM? eSIM Security? A"},{"x":3,"y":136865,"title":"eSIM 101: Filipinos Quick Guid"},{"x":11,"y":649155,"title":"How To Use Airalo | Review, eS"},{"x":3,"y":53546,"title":"How to Set Up eSIM on iPhone 1"},{"x":3,"y":56104,"title":"PAANO GAWING ESIM ANG PHYSICAL"},{"x":5,"y":479284,"title":"How to Activate T-Mobile Line "},{"x":7,"y":2540,"title":"How eSIM Works (The Phone Feat"},{"x":8,"y":104540,"title":"How To Use eSIMs When Travelin"},{"x":4,"y":259287,"title":"How to use eSIM while travelin"},{"x":8,"y":50813,"title":"Choosing an eSIM for Japan Tra"},{"x":7,"y":93100,"title":"Airalo eSIM Activation – Prope"},{"x":13,"y":17211,"title":"I Tested Japan's Top eSIMs So "},{"x":3,"y":619748,"title":"How To Activate eSim On Androi"},{"x":10,"y":42807,"title":"How To Use Airalo eSim on iPho"},{"x":9,"y":79542,"title":"How to Convert Physical SIM to"},{"x":7,"y":2815,"title":"Best eSIM for USA: Tested on R"},{"x":6,"y":3230,"title":"The BEST travel eSim for 2026 "},{"x":8,"y":5590,"title":"Travel eSIM Review: Which Ones"},{"x":4,"y":30500,"title":"Chinese SIM Card vs. eSIM: Whi"},{"x":0,"y":2831379,"title":"Activate your Smart Prepaid eS"},{"x":1,"y":31837,"title":"How To Upgrade To An MTN eSIM "},{"x":2,"y":29968,"title":"How to activate an eSIM on you"},{"x":9,"y":1327159,"title":"Why Is eSIM The Future? eSIM V"},{"x":6,"y":6400,"title":"Best eSIM 2026: What Actually "},{"x":0,"y":555225,"title":"Introducing the All-NEW eSIM Q"},{"x":11,"y":61660,"title":"Les fausses promesses des eSIM"},{"x":7,"y":149048,"title":"eSIMS 101: How to Set Up an Ho"},{"x":10,"y":2622,"title":"I Solved the BIGGEST Problem W"},{"x":3,"y":263119,"title":"Make Travel Simple Again with "},{"x":2,"y":46120,"title":"How to Switch from Physical SI"},{"x":3,"y":8356,"title":"eSIM vs Physical SIM: Pros and"},{"x":2,"y":32253,"title":"How To Activate eSIM on iPhone"},{"x":12,"y":114697,"title":"eSIM က ရိုးရိုး SIM လောက်ကောင်"},{"x":13,"y":595013,"title":"eSIMS 101: How to Set Up an Ai"},{"x":8,"y":2753,"title":"Best eSIM in Europe - What Mos"},{"x":38,"y":497052,"title":"Você DEVERIA trocar para um eS"},{"x":8,"y":8122,"title":"Klook eSim Tutorial for Beginn"},{"x":9,"y":2284,"title":"Best eSIM for Singapore - Stop"},{"x":2,"y":1404,"title":"How To Add eSIM On iPhone 17"},{"x":14,"y":19045,"title":"Are eSIM Cards Essential Whils"},{"x":7,"y":49682,"title":"Finally! 🎉 An eSIM with Japan"},{"x":7,"y":1133,"title":"Best International eSim: The U"},{"x":3,"y":2627,"title":"Best eSIM For Asia In 2026"},{"x":5,"y":49004,"title":"MTN eSIM Activation on your iP"},{"x":12,"y":2005,"title":"Yesim eSIM Review | How To Get"},{"x":8,"y":1990,"title":"Best eSIM for Indonesia - Don’"},{"x":5,"y":2954893,"title":"eSIM Setup Full Process ⚡ Ab S"},{"x":5,"y":35813,"title":"The #1 BEST eSIM for Europe (W"},{"x":1,"y":45977,"title":"SAMSUNG Galaxy A56 5G: How to "},{"x":5,"y":245532,"title":"Switch to eSIM via MyJio App i"},{"x":5,"y":62707,"title":"eSIM သုံးတာ Physical SIM ထက် ပ"},{"x":9,"y":1382,"title":"I tested Holafly's eSIM intern"},{"x":8,"y":680,"title":"美国手机卡美国esim手机卡，全网最低保号价格！国内可包天上"},{"x":1,"y":56617,"title":"iPhone 17: How to Activate eSI"},{"x":8,"y":547958,"title":"E-SIM কি? কোথায় পাবেন? কেন কি"},{"x":1,"y":185903,"title":"【環亞電訊】IPHONE手機(iOS系統)-eSIM設定教學"},{"x":6,"y":4482,"title":"How to Use & Activate an eSIM "},{"x":7,"y":2220,"title":"Saily eSIM review & Tutorial: "},{"x":8,"y":9934,"title":"Which Is the BEST eSIM for Tra"},{"x":2,"y":31914350,"title":"How to buy eSIM - MobiMatter"},{"x":4,"y":38999,"title":"Unboxing an eSIM - Safaricom K"},{"x":1,"y":2444904,"title":"RedteaGO eSIM Tutorial - How c"},{"x":12,"y":16040,"title":"DON’T Buy a Travel eSIM Until "},{"x":5,"y":43621,"title":"What is eSIM | How to Get eSim"},{"x":8,"y":32531,"title":"eSim ni nini ? Inafanyaje kazi"},{"x":7,"y":30582,"title":"119 Pesos Mo, Magiging E-SIM R"},{"x":4,"y":157394,"title":"The Best eSIMs for Visiting Ja"},{"x":6,"y":3600,"title":"How to Install an eSIM from Ai"},{"x":0,"y":11298,"title":"WiFi Rental or eSIM? Which is "},{"x":2,"y":2552,"title":"Samsung Galaxy Tab S11 Ultra: "},{"x":9,"y":72007,"title":"Best Unlimited eSIM for Japan:"},{"x":7,"y":593548,"title":"Vi eSIM Activate in 5 Minutes "},{"x":21,"y":388709,"title":"Ano ang eSIM at Bakit Mas Okay"},{"x":7,"y":695743,"title":"What is eSIM and How to activa"},{"x":16,"y":775357,"title":"How to Activate and Transfer e"},{"x":5,"y":93591,"title":"How to Activate eSIM iPhone 17"}],
+          backgroundColor: 'rgba(102, 126, 234, 0.5)',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.raw.title + ': ' + context.raw.y.toLocaleString() + ' 观看';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { 
+            title: { display: true, text: '时长(分钟)', font: { size: 9 } },
+            ticks: { font: { size: 9 } }
+          },
+          y: { 
+            title: { display: true, text: '观看数', font: { size: 9 } },
+            ticks: { font: { size: 9 } },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // 17. 情感 vs 平均表现
+    new Chart(document.getElementById('sentimentPerformanceChart'), {
+      type: 'bar',
+      data: {
+        labels: ['正面', '中性', '负面'],
+        datasets: [
+          {
+            label: '平均观看',
+            data: [247220, 793607, 388709],
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderRadius: 2
+          },
+          {
+            label: '平均点赞',
+            data: [2105, 5478, 4814],
+            backgroundColor: 'rgba(231, 76, 60, 0.6)',
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { labels: { font: { size: 9 }, boxWidth: 8 } } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+
+    // 18. 长尾分析 - 真实数据
+    const paretoTopViews = Math.round((46931125 / 58193136) * 100);
+    const paretoOtherViews = 100 - paretoTopViews;
+    new Chart(document.getElementById('paretoChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Top ' + 11 + ' 视频', '其他 ' + 89 + ' 视频'],
+        datasets: [{
+          data: [paretoTopViews, paretoOtherViews],
+          backgroundColor: ['#e74c3c', '#95a5a6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          title: { display: true, text: '观看量分布 (真实数据)', font: { size: 10 } },
+          legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + '% 观看量';
+              }
+            }
+          }
+        } 
+      }
+    });
+
+    // 19. 发布星期分布
+    const dayOfWeekData = {"周一":13,"周二":20,"周三":21,"周四":11,"周五":16,"周六":10,"周日":9};
+    new Chart(document.getElementById('hourChart'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(dayOfWeekData),
+        datasets: [{
+          label: '视频数',
+          data: Object.values(dayOfWeekData),
+          backgroundColor: [
+            'rgba(231, 76, 60, 0.7)',   // 周日 - 红
+            'rgba(52, 152, 219, 0.7)',  // 周一 - 蓝
+            'rgba(46, 204, 113, 0.7)',  // 周二 - 绿
+            'rgba(243, 156, 18, 0.7)',  // 周三 - 橙
+            'rgba(155, 89, 182, 0.7)',  // 周四 - 紫
+            'rgba(26, 188, 156, 0.7)',  // 周五 - 青
+            'rgba(231, 76, 60, 0.7)'    // 周六 - 红
+          ],
+          borderRadius: 3
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                const day = days[context.dataIndex];
+                const count = context.parsed.y;
+                const percentage = ((count / 100) * 100).toFixed(1);
+                return day + ': ' + count + '个视频 (' + percentage + '%)';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 20. 高观看低互动 - 带点击查看功能
+    const highViewLowEngageData = [{"id":"RWtSLfWur-Y","title":"WiFi Rental or eSIM? Which is Best for Your Next Trip? Vision's Network Service","uploader":"Unfiltered Japan","duration":"25","viewCount":11298,"likeCount":0,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=RWtSLfWur-Y","thumbnail":"https://i.ytimg.com/vi/RWtSLfWur-Y/mqdefault.jpg","sentiment":"positive","rate":0},{"id":"OjdpIrmRin0","title":"How to buy eSIM - MobiMatter","uploader":"MobiMatter","duration":"113","viewCount":31914350,"likeCount":144,"uploadDate":"2024-03-13","url":"https://www.youtube.com/watch?v=OjdpIrmRin0","thumbnail":"https://i.ytimg.com/vi/OjdpIrmRin0/mqdefault.jpg","sentiment":"neutral","rate":0.0004512076855709109},{"id":"nHH-IvodEt0","title":"RedteaGO eSIM Tutorial - How can I install an eSIM on iOS device","uploader":"Redtea Mobile","duration":"76","viewCount":2444904,"likeCount":32,"uploadDate":"2024-01-19","url":"https://www.youtube.com/watch?v=nHH-IvodEt0","thumbnail":"https://i.ytimg.com/vi/nHH-IvodEt0/mqdefault.jpg","sentiment":"positive","rate":0.0013088448462598122},{"id":"gpsucHKPLTo","title":"Activate your Smart Prepaid eSIM in 3 easy steps!","uploader":"Smart Communications","duration":"15","viewCount":2831379,"likeCount":457,"uploadDate":"2023-10-11","url":"https://www.youtube.com/watch?v=gpsucHKPLTo","thumbnail":"https://i.ytimg.com/vi/gpsucHKPLTo/mqdefault.jpg","sentiment":"positive","rate":0.016140544942941232},{"id":"S0DyqRa1mK0","title":"Introducing the All-NEW eSIM Quick Transfer For Your Apple Devices","uploader":"Dialog Axiata","duration":"25","viewCount":555225,"likeCount":131,"uploadDate":"2024-12-02","url":"https://www.youtube.com/watch?v=S0DyqRa1mK0","thumbnail":"https://i.ytimg.com/vi/S0DyqRa1mK0/mqdefault.jpg","sentiment":"neutral","rate":0.02359403845287946}];
+    new Chart(document.getElementById('highViewLowEngageChart'), {
+      type: 'bar',
+      data: {
+        labels: highViewLowEngageData.map((v, i) => '#' + (i + 1)),
+        datasets: [
+          {
+            label: '观看数(点击跳转)',
+            data: highViewLowEngageData.map(v => v.viewCount),
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y',
+            barPercentage: 0.8
+          },
+          {
+            label: '点赞率(%)',
+            data: highViewLowEngageData.map(v => parseFloat(v.rate.toFixed(2))),
+            backgroundColor: 'rgba(231, 76, 60, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y1',
+            barPercentage: 0.8
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const videoId = highViewLowEngageData[index].id;
+            scrollToVideo(videoId);
+          }
+        },
+        onHover: (e, elements) => {
+          e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+        plugins: { 
+          legend: { labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const index = context[0].dataIndex;
+                return highViewLowEngageData[index].title.substring(0, 30) + '...';
+              },
+              afterLabel: function() {
+                return '💡 点击查看视频';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 21. 低观看高互动 - 带点击查看功能
+    const lowViewHighEngageData = [{"id":"j_gDZTXU9Kw","title":"Best International eSim: The Ultimate Guide to Reliable Global Data Connectivity Today","uploader":"Think Security","duration":"423","viewCount":1133,"likeCount":463,"uploadDate":"2026-02-02","url":"https://www.youtube.com/watch?v=j_gDZTXU9Kw","thumbnail":"https://i.ytimg.com/vi/j_gDZTXU9Kw/mqdefault.jpg","sentiment":"positive","rate":40.86496028243601},{"id":"ueOiGwCamKQ","title":"Yesim eSIM Review | How To Get Cheap Global Data In Seconds","uploader":"Consumer Buddy","duration":"722","viewCount":2005,"likeCount":647,"uploadDate":"2026-02-18","url":"https://www.youtube.com/watch?v=ueOiGwCamKQ","thumbnail":"https://i.ytimg.com/vi/ueOiGwCamKQ/mqdefault.jpg","sentiment":"neutral","rate":32.26932668329177},{"id":"o2nQS2vhJCA","title":"Best eSIM for Indonesia - Don’t Get Stranded Between Islands!","uploader":"The Opt Out Project","duration":"483","viewCount":1990,"likeCount":227,"uploadDate":"2026-02-18","url":"https://www.youtube.com/watch?v=o2nQS2vhJCA","thumbnail":"https://i.ytimg.com/vi/o2nQS2vhJCA/mqdefault.jpg","sentiment":"positive","rate":11.407035175879397},{"id":"eCQqBYs4zuc","title":"Best eSIM for Singapore - Stop Paying $12/Day","uploader":"The Opt Out Project","duration":"516","viewCount":2284,"likeCount":237,"uploadDate":"2026-02-20","url":"https://www.youtube.com/watch?v=eCQqBYs4zuc","thumbnail":"https://i.ytimg.com/vi/eCQqBYs4zuc/mqdefault.jpg","sentiment":"positive","rate":10.376532399299474},{"id":"xUEKIQM0VFg","title":"How eSIM Works (The Phone Feature Nobody Explains)","uploader":"The Tech Roost","duration":"414","viewCount":2540,"likeCount":244,"uploadDate":"2026-02-23","url":"https://www.youtube.com/watch?v=xUEKIQM0VFg","thumbnail":"https://i.ytimg.com/vi/xUEKIQM0VFg/mqdefault.jpg","sentiment":"neutral","rate":9.606299212598426}];
+    new Chart(document.getElementById('lowViewHighEngageChart'), {
+      type: 'bar',
+      data: {
+        labels: lowViewHighEngageData.map((v, i) => '#' + (i + 1)),
+        datasets: [
+          {
+            label: '观看数(点击跳转)',
+            data: lowViewHighEngageData.map(v => v.viewCount),
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y',
+            barPercentage: 0.8
+          },
+          {
+            label: '点赞率(%)',
+            data: lowViewHighEngageData.map(v => parseFloat(v.rate.toFixed(2))),
+            backgroundColor: 'rgba(39, 174, 96, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y1',
+            barPercentage: 0.8
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const videoId = lowViewHighEngageData[index].id;
+            scrollToVideo(videoId);
+          }
+        },
+        onHover: (e, elements) => {
+          e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+        plugins: { 
+          legend: { labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const index = context[0].dataIndex;
+                return lowViewHighEngageData[index].title.substring(0, 30) + '...';
+              },
+              afterLabel: function() {
+                return '💡 点击查看视频';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
