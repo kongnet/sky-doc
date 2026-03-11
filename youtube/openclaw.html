@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="referrer" content="no-referrer">
-  <title>YouTube "openclaw" 数据分析报告</title>
+  <title>YouTube DePIN 深度数据分析报告</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* 完整CSS样式 */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -17,6 +15,7 @@
     }
     .container { max-width: 1600px; margin: 0 auto; }
     
+    /* Header */
     .header {
       background: rgba(255,255,255,0.95);
       border-radius: 8px;
@@ -26,15 +25,18 @@
       text-align: center;
       position: relative;
     }
-    
     .header h1 {
       font-size: 1.2em;
-      background: linear-gradient(135deg, #4472C4 0%, #5B9BD5 100%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 2px;
     }
-    
+    .header p {
+      font-size: 0.75em;
+      color: #666;
+      margin: 0;
+    }
     .badge {
       position: absolute;
       top: 6px;
@@ -46,24 +48,1505 @@
       font-size: 0.6em;
       font-weight: bold;
     }
+    .analysis-summary {
+      margin-top: 4px;
+      padding: 3px 8px;
+      background: #f8f9fa;
+      border-radius: 3px;
+      font-size: 0.7em;
+      color: #666;
+    }
     
-    /* 更多样式... */
+    /* Theme Selector */
+    .theme-selector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0 15px 0;
+      padding: 8px 15px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .theme-label {
+      font-size: 0.75em;
+      color: #666;
+      margin-right: 5px;
+    }
+    .theme-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.65em;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .theme-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .theme-btn.active {
+      border-color: #333;
+      box-shadow: 0 0 0 2px white, 0 0 0 4px #333;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 4px;
+      padding: 4px 4px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      line-height: 1.2;
+    }
+    .stat-card .value {
+      font-size: 1em;
+      font-weight: bold;
+      color: #333;
+      line-height: 1.1;
+    }
+    .stat-card .label {
+      font-size: 0.6em;
+      color: #666;
+      margin-top: 1px;
+      line-height: 1.1;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-card .value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #333;
+    }
+    .stat-card .label {
+      font-size: 0.85em;
+      color: #666;
+      margin-top: 5px;
+    }
+    .stat-card.positive .value { color: #27ae60; }
+    .stat-card.neutral .value { color: #f39c12; }
+    .stat-card.blue .value { color: #3498db; }
+    .stat-card.purple .value { color: #9b59b6; }
+    .stat-card.red .value { color: #e74c3c; }
+    
+    /* Charts Section - 分类分组 */
+    .charts-section {
+      margin-bottom: 16px;
+    }
+    
+    /* Charts Grid - 统一4列布局 */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .chart-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      padding: 0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 200px;
+      width: 100%;
+    }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+      height: 32px;
+    }
+    .chart-category {
+      font-size: 0.6em;
+      font-weight: 600;
+      color: white;
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .chart-card h3 {
+      font-size: 0.75em;
+      color: #333;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      line-height: 1.2;
+    }
+    .chart-body {
+      flex: 1;
+      padding: 6px;
+      min-height: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chart-body canvas {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 150px;
+    }
+    
+    /* Category Legend */
+    .category-legend {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8em;
+      color: white;
+      background: rgba(0,0,0,0.2);
+      padding: 4px 10px;
+      border-radius: 16px;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    
+    /* Video Section */
+    .videos-section {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    .videos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .videos-header h2 {
+      font-size: 1.1em;
+      color: #333;
+    }
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .sort-controls label {
+      font-size: 0.75em;
+      color: #666;
+      margin-right: 4px;
+    }
+    .sort-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 0.7em;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .sort-btn:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    .sort-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+    .video-count {
+      font-size: 0.85em;
+      color: #888;
+    }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    
+    /* Video Card */
+    .video-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      scroll-margin-top: 100px;
+    }
+    .video-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    }
+    .video-card.highlighted {
+      box-shadow: 0 0 0 3px #f39c12, 0 4px 15px rgba(243, 156, 18, 0.3);
+      transform: translateY(-2px);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px #f39c12, 0 8px 25px rgba(243, 156, 18, 0.3); }
+      50% { box-shadow: 0 0 0 6px #f39c12, 0 12px 30px rgba(243, 156, 18, 0.4); }
+    }
+    .clickable-bar {
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .clickable-bar:hover {
+      opacity: 0.8;
+    }
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .card-thumbnail {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      background: #000;
+    }
+    .card-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .video-card:hover .card-thumbnail img {
+      transform: scale(1.05);
+    }
+    .card-duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .card-content {
+      padding: 8px;
+    }
+    .card-title {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 4px;
+      height: 2.3em;
+    }
+    .card-channel {
+      font-size: 0.75em;
+      color: #606060;
+      margin-bottom: 3px;
+    }
+    .card-meta {
+      display: flex;
+      gap: 8px;
+      font-size: 0.7em;
+      color: #606060;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .card-time {
+      font-family: monospace;
+      font-size: 0.9em;
+      color: #888;
+    }
+    .card-sentiment {
+      padding: 0px 3px;
+      border-radius: 3px;
+      font-size: 0.5em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: auto;
+      line-height: 1.2;
+    }
+    .sentiment-positive { background: #dcfce7; color: #166534; }
+    .sentiment-neutral { background: #f3f4f6; color: #374151; }
+    .sentiment-negative { background: #fee2e2; color: #991b1b; }
+    
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .charts-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 1000px) {
+      .charts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.2em; }
+      .badge { font-size: 0.55em; padding: 1px 5px; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 220px; }
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+      .category-legend { gap: 8px; }
+      .legend-item { font-size: 0.75em; padding: 3px 6px; }
+    }
+    @media (max-width: 480px) {
+      .videos-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 200px; }
+    }
+    @media (max-width: 1200px) {
+      .charts-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .charts-grid { grid-template-columns: repeat(2, 1fr); }
+      .chart-card { height: 240px; }
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.8em; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 300px; }
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+      .category-legend { gap: 10px; }
+      .legend-item { font-size: 0.8em; padding: 4px 8px; }
+    }
+    @media (max-width: 480px) {
+      .videos-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <!-- Header -->
     <div class="header">
-      <h1>🎬 YouTube "openclaw" 数据分析报告</h1>
-      <p>共100个视频, 2026-03-12 - 2026-03-12, 时间跨度0个月</p>
+      <h1>🎬 YouTube DePIN 深度数据分析报告</h1>
+      <p>关键词: "DePIN" | 100 个真实视频 | 生成: 2026/3/12 04:50:06</p>
       <span class="badge">✅ 100% 真实 YouTube 数据</span>
+      <div class="analysis-summary">
+        📊 本报告包含 100 个视频的 21 维度深度分析 | 频道集中度: 分散 | 
+        数据时间跨度: 0 个月
+      </div>
     </div>
+
+    <!-- 关键指标 -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="value">100</div><div class="label">总视频</div></div>
+      <div class="stat-card positive"><div class="value">20</div><div class="label">正面评价</div></div>
+      <div class="stat-card neutral"><div class="value">80</div><div class="label">中性评价</div></div>
+      <div class="stat-card blue"><div class="value">10.2M</div><div class="label">总观看</div></div>
+      <div class="stat-card purple"><div class="value">2.0M</div><div class="label">总点赞</div></div>
+      <div class="stat-card"><div class="value">102.1K</div><div class="label">平均观看</div></div>
+      <div class="stat-card red"><div class="value">19.84%</div><div class="label">互动率</div></div>
+      <div class="stat-card"><div class="value">18:30</div><div class="label">平均时长</div></div>
+    </div>
+
+    <!-- 主题色选择器 -->
+    <div class="theme-selector">
+      <span class="theme-label">主题色:</span>
+      <button class="theme-btn active" data-theme="blue" style="background: linear-gradient(135deg, #3B82F6, #0891B2)">蓝</button>
+      <button class="theme-btn" data-theme="purple" style="background: linear-gradient(135deg, #8B5CF6, #EC4899)">紫</button>
+      <button class="theme-btn" data-theme="green" style="background: linear-gradient(135deg, #10B981, #059669)">绿</button>
+      <button class="theme-btn" data-theme="orange" style="background: linear-gradient(135deg, #F59E0B, #EA580C)">橙</button>
+      <button class="theme-btn" data-theme="dark" style="background: linear-gradient(135deg, #374151, #1F2937)">深灰</button>
+    </div>
+
+    <!-- 图表按分类分组 -->
     
-    <!-- 报告内容 -->
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>📊 情绪分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="sentimentChart"></canvas>
+        </div>
+      </div>
     
-    <script>
-      const videosData = [{"id":"st534T7-mdE","title":"The Ultimate Beginner’s Guide to OpenClaw","uploader":"Metics Media","duration":"3402","viewCount":157095,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=st534T7-mdE","thumbnail":"https://i.ytimg.com/vi/st534T7-mdE/mqdefault.jpg","sentiment":"positive"},{"id":"MjzndFrxQOo","title":"500個 OpenClaw 使用範例，複製貼上馬上安裝 ","uploader":" OpenClaw","duration":"0","viewCount":0,"likeCount":10067,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=MjzndFrxQOo","thumbnail":"https://i.ytimg.com/vi/MjzndFrxQOo/mqdefault.jpg","sentiment":"neutral"},{"id":"yIKxXRks4Jo","title":"OpenClaw Use Cases That Are Actually INSANE (free templates + review)","uploader":"The AI Growth Lab with Tom","duration":"1748","viewCount":8653,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=yIKxXRks4Jo","thumbnail":"https://i.ytimg.com/vi/yIKxXRks4Jo/mqdefault.jpg","sentiment":"neutral"},{"id":"YZaQGIl-bgE","title":"恐佈級驚人AI代理 OpenClaw (前MoltBot/ClawdBot) 實測！超詳細攻略：低成本用頂級模型祕技大公開！｜廣東話｜文恩澄","uploader":"文恩澄 Rannes Man","duration":"2389","viewCount":143630,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=YZaQGIl-bgE","thumbnail":"https://i.ytimg.com/vi/YZaQGIl-bgE/mqdefault.jpg","sentiment":"neutral"},{"id":"mNb07VMlOOg","title":"OpenClaw Tutorial: Crash Course for Beginners","uploader":"RoadsideCoder","duration":"1348","viewCount":645,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=mNb07VMlOOg","thumbnail":"https://i.ytimg.com/vi/mNb07VMlOOg/mqdefault.jpg","sentiment":"positive"},{"id":"jPn-yoz5tbI","title":"一个视频搞懂OpenClaw！","uploader":"林亦LYi","duration":"593","viewCount":494503,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=jPn-yoz5tbI","thumbnail":"https://i.ytimg.com/vi/jPn-yoz5tbI/mqdefault.jpg","sentiment":"neutral"},{"id":"ssYt09bCgUY","title":"The wild rise of OpenClaw...","uploader":"Fireship","duration":"319","viewCount":1808494,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ssYt09bCgUY","thumbnail":"https://i.ytimg.com/vi/ssYt09bCgUY/mqdefault.jpg","sentiment":"neutral"},{"id":"u4ydH-QvPeg","title":"OpenClaw Tutorial for Beginners - Crash Course","uploader":"Adrian Twarog","duration":"478","viewCount":239389,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=u4ydH-QvPeg","thumbnail":"https://i.ytimg.com/vi/u4ydH-QvPeg/mqdefault.jpg","sentiment":"positive"},{"id":"bzWI3Dil9Ig","title":"My Multi-Agent Team with OpenClaw","uploader":"Brian Casel","duration":"869","viewCount":506101,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=bzWI3Dil9Ig","thumbnail":"https://i.ytimg.com/vi/bzWI3Dil9Ig/mqdefault.jpg","sentiment":"neutral"},{"id":"Xui-bSDgORU","title":"OpenClaw 3.8 IS INSANE - Here's Why","uploader":"Build In Public","duration":"1076","viewCount":20574,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Xui-bSDgORU","thumbnail":"https://i.ytimg.com/vi/Xui-bSDgORU/mqdefault.jpg","sentiment":"neutral"},{"id":"n1sfrc-RjyM","title":"OpenClaw Full Tutorial for Beginners – How to Set Up and Use OpenClaw (ClawdBot / MoltBot)","uploader":"freeCodeCamp.org and neuralkian","duration":"3285","viewCount":335064,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=n1sfrc-RjyM","thumbnail":"https://i.ytimg.com/vi/n1sfrc-RjyM/mqdefault.jpg","sentiment":"positive"},{"id":"knH6Jms4vSY","title":"OpenClaw Explained in 12 Minutes (for beginners)","uploader":"corbin","duration":"741","viewCount":125126,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=knH6Jms4vSY","thumbnail":"https://i.ytimg.com/vi/knH6Jms4vSY/mqdefault.jpg","sentiment":"positive"},{"id":"_U_15eZXFFE","title":"New NemoClaw Destroys OpenClaw?","uploader":"Julian Goldie SEO","duration":"499","viewCount":3381,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=_U_15eZXFFE","thumbnail":"https://i.ytimg.com/vi/_U_15eZXFFE/mqdefault.jpg","sentiment":"neutral"},{"id":"bSiMSSeno9g","title":"What Is OpenClaw? And How Does It Work? - Explained for Beginners","uploader":"Metics Media","duration":"474","viewCount":98543,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=bSiMSSeno9g","thumbnail":"https://i.ytimg.com/vi/bSiMSSeno9g/mqdefault.jpg","sentiment":"positive"},{"id":"qP73cGLQmCU","title":"OpenClaw Explained: Baby AGI, Security Threats, Mac Mini Became Everyone's Supercomputer ","uploader":" #237","duration":"0","viewCount":0,"likeCount":135475,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qP73cGLQmCU","thumbnail":"https://i.ytimg.com/vi/qP73cGLQmCU/mqdefault.jpg","sentiment":"neutral"},{"id":"Zo7Putdga_4","title":"OpenClaw Tutorial for Beginners: How to Use & Set up OpenClaw (ClawdBot)","uploader":"Metics Media","duration":"1450","viewCount":149779,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Zo7Putdga_4","thumbnail":"https://i.ytimg.com/vi/Zo7Putdga_4/mqdefault.jpg","sentiment":"positive"},{"id":"VPtW0mKc0VE","title":"Is this what you need for work? OpenClaw's \"AI Lobster\" goes viral, with Chinese office workers g...","uploader":"USTV 非凡電視","duration":"172","viewCount":26424,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=VPtW0mKc0VE","thumbnail":"https://i.ytimg.com/vi/VPtW0mKc0VE/mqdefault.jpg","sentiment":"neutral"},{"id":"BoC5MY_7aDk","title":"OpenClaw Full Tutorial for Beginners: How to Setup Your First AI Agent (ClawdBot)","uploader":"Bart Slodyczka","duration":"930","viewCount":105231,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=BoC5MY_7aDk","thumbnail":"https://i.ytimg.com/vi/BoC5MY_7aDk/mqdefault.jpg","sentiment":"positive"},{"id":"8kNv3rjQaVA","title":"21 INSANE Use Cases For OpenClaw...","uploader":"Matthew Berman","duration":"2024","viewCount":270060,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=8kNv3rjQaVA","thumbnail":"https://i.ytimg.com/vi/8kNv3rjQaVA/mqdefault.jpg","sentiment":"neutral"},{"id":"n2a1FfqjHcU","title":"Local OpenClaw & Ollama in 27 minutes","uploader":"Keith AI","duration":"1669","viewCount":5071,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=n2a1FfqjHcU","thumbnail":"https://i.ytimg.com/vi/n2a1FfqjHcU/mqdefault.jpg","sentiment":"neutral"},{"id":"YFjfBk8HI5o","title":"OpenClaw: The Viral AI Agent that Broke the Internet - Peter Steinberger ","uploader":" Lex Fridman Podcast #491","duration":"0","viewCount":0,"likeCount":994903,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=YFjfBk8HI5o","thumbnail":"https://i.ytimg.com/vi/YFjfBk8HI5o/mqdefault.jpg","sentiment":"neutral"},{"id":"4uzGDAoNOZc","title":"OpenClaw Creator: Why 80% Of Apps Will Disappear","uploader":"Y Combinator","duration":"1356","viewCount":787358,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=4uzGDAoNOZc","thumbnail":"https://i.ytimg.com/vi/4uzGDAoNOZc/mqdefault.jpg","sentiment":"neutral"},{"id":"QvfqAMUJTT4","title":"3 Tools That Make OpenClaw Actually Useful","uploader":"Sean Matthew","duration":"836","viewCount":65729,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=QvfqAMUJTT4","thumbnail":"https://i.ytimg.com/vi/QvfqAMUJTT4/mqdefault.jpg","sentiment":"neutral"},{"id":"vte-fDoZczE","title":"OpenClaw Full Course: Setup, Skills, Voice, Memory & More","uploader":"Tech With Tim","duration":"2813","viewCount":105671,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=vte-fDoZczE","thumbnail":"https://i.ytimg.com/vi/vte-fDoZczE/mqdefault.jpg","sentiment":"neutral"},{"id":"wIARN03rPqM","title":"The Ultimate Beginner's Guide to OpenClaw","uploader":"AI Edge","duration":"1358","viewCount":6610,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=wIARN03rPqM","thumbnail":"https://i.ytimg.com/vi/wIARN03rPqM/mqdefault.jpg","sentiment":"positive"},{"id":"F_DKoFDvxKg","title":"Openclaw 3.2 IS INSANE - Here's Why","uploader":"Build In Public","duration":"1322","viewCount":8998,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=F_DKoFDvxKg","thumbnail":"https://i.ytimg.com/vi/F_DKoFDvxKg/mqdefault.jpg","sentiment":"neutral"},{"id":"a63dUwXUgDo","title":"ClawdBot Full Tutorial for Beginners: How to Use & Set up ClawdBot (Openclaw)","uploader":"Mikey No Code","duration":"893","viewCount":436075,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=a63dUwXUgDo","thumbnail":"https://i.ytimg.com/vi/a63dUwXUgDo/mqdefault.jpg","sentiment":"positive"},{"id":"Q7r--i9lLck","title":"OpenClaw Use Cases that are actually helpful...","uploader":"Matthew Berman","duration":"1661","viewCount":202040,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Q7r--i9lLck","thumbnail":"https://i.ytimg.com/vi/Q7r--i9lLck/mqdefault.jpg","sentiment":"neutral"},{"id":"NA8C8jIQNeM","title":"Ultimate Clawdbot Tutorial: How to Set up & Use for Beginners (OpenClaw)​","uploader":"AI Master","duration":"1195","viewCount":150155,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=NA8C8jIQNeM","thumbnail":"https://i.ytimg.com/vi/NA8C8jIQNeM/mqdefault.jpg","sentiment":"positive"},{"id":"RhLpV6QDBFE","title":"OpenClaw is 100x better with this tool (Mission Control)","uploader":"Alex Finn","duration":"974","viewCount":75201,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=RhLpV6QDBFE","thumbnail":"https://i.ytimg.com/vi/RhLpV6QDBFE/mqdefault.jpg","sentiment":"neutral"},{"id":"OV5eK91YY68","title":"I gave OpenClaw one job: go viral (it worked?)","uploader":"Greg Isenberg","duration":"2600","viewCount":31665,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=OV5eK91YY68","thumbnail":"https://i.ytimg.com/vi/OV5eK91YY68/mqdefault.jpg","sentiment":"neutral"},{"id":"LV6Juz0xcrY","title":"OpenClaw Use Cases that are Actually Helpful! (ClawdBot)","uploader":"Duncan Rogoff ","duration":"0","viewCount":0,"likeCount":101026,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=LV6Juz0xcrY","thumbnail":"https://i.ytimg.com/vi/LV6Juz0xcrY/mqdefault.jpg","sentiment":"neutral"},{"id":"L8vXmlBWVfU","title":"🚀OpenClaw高级玩法之工作区优化+三大Agent深度解析！保姆级教程让你学会Persistent Agent、Sub-Agent和ACP Agent的正确打开方式！90%的用户都不知道的进阶技巧","uploader":"AI超元域","duration":"785","viewCount":3133,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=L8vXmlBWVfU","thumbnail":"https://i.ytimg.com/vi/L8vXmlBWVfU/mqdefault.jpg","sentiment":"neutral"},{"id":"95vDW6RKYgQ","title":"New FREE OpenClaw Skills Update is INSANE!","uploader":"Julian Goldie SEO","duration":"693","viewCount":4255,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=95vDW6RKYgQ","thumbnail":"https://i.ytimg.com/vi/95vDW6RKYgQ/mqdefault.jpg","sentiment":"neutral"},{"id":"hp7n45JqvIw","title":"OpenClaw Use Cases That Are Actually Insane","uploader":"AI LABS","duration":"811","viewCount":54397,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=hp7n45JqvIw","thumbnail":"https://i.ytimg.com/vi/hp7n45JqvIw/mqdefault.jpg","sentiment":"neutral"},{"id":"Q9wdf2zG_wo","title":"OpenClaw Tutorial: How to Set Up in 15 Minutes for Beginners (Clawdbot)","uploader":"Charlie Chang","duration":"899","viewCount":25566,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Q9wdf2zG_wo","thumbnail":"https://i.ytimg.com/vi/Q9wdf2zG_wo/mqdefault.jpg","sentiment":"positive"},{"id":"_kZCoW-Qxnc","title":"100 hours of OpenClaw lessons in 35 minutes","uploader":"Alex Finn","duration":"2135","viewCount":206283,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=_kZCoW-Qxnc","thumbnail":"https://i.ytimg.com/vi/_kZCoW-Qxnc/mqdefault.jpg","sentiment":"neutral"},{"id":"s1-2QISKmj8","title":"Everything You Need to Know About OpenClaw","uploader":"The Tech Girl","duration":"554","viewCount":51028,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=s1-2QISKmj8","thumbnail":"https://i.ytimg.com/vi/s1-2QISKmj8/mqdefault.jpg","sentiment":"neutral"},{"id":"Qm37C1TGPSo","title":"OpenClaw + LobsterBoard is INSANE!","uploader":"Julian Goldie SEO","duration":"672","viewCount":15667,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Qm37C1TGPSo","thumbnail":"https://i.ytimg.com/vi/Qm37C1TGPSo/mqdefault.jpg","sentiment":"neutral"},{"id":"JiA4fvoeUfI","title":"Openclaw deletes entire inbox","uploader":"The PrimeTime","duration":"558","viewCount":256089,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=JiA4fvoeUfI","thumbnail":"https://i.ytimg.com/vi/JiA4fvoeUfI/mqdefault.jpg","sentiment":"neutral"},{"id":"657wlbtrzG8","title":"OpenClaw(Clawdbot) 海量全玩法攻略，本地部署，国内网络使用方法","uploader":"技术爬爬虾  TechShrimp","duration":"701","viewCount":198385,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=657wlbtrzG8","thumbnail":"https://i.ytimg.com/vi/657wlbtrzG8/mqdefault.jpg","sentiment":"neutral"},{"id":"3Lg2rJG9rjg","title":"【保姆级】OpenClaw进阶全攻略：高级玩法+飞书+Skills+安全防护，1 小时变身“养虾高手”！","uploader":"AI学长小林","duration":"3309","viewCount":3226,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=3Lg2rJG9rjg","thumbnail":"https://i.ytimg.com/vi/3Lg2rJG9rjg/mqdefault.jpg","sentiment":"neutral"},{"id":"jece_dDk-0w","title":"New FREE OpenClaw + NotebookLM Update","uploader":"Julian Goldie SEO","duration":"845","viewCount":1443,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=jece_dDk-0w","thumbnail":"https://i.ytimg.com/vi/jece_dDk-0w/mqdefault.jpg","sentiment":"neutral"},{"id":"IbtLtQ1vLto","title":"BEGINNER OPENCLAW COURSE 2026: Build Your First Multi-Agent AI System","uploader":"Kevin Jeppesen - The Operator Vault","duration":"4629","viewCount":11657,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=IbtLtQ1vLto","thumbnail":"https://i.ytimg.com/vi/IbtLtQ1vLto/mqdefault.jpg","sentiment":"positive"},{"id":"jEhtumQ08mM","title":"OpenClaw vs Copilot AI Agents are Two Different Things! How You Can Install OpenClaw with Privacy","uploader":"Rob Braxman Tech","duration":"1464","viewCount":25188,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=jEhtumQ08mM","thumbnail":"https://i.ytimg.com/vi/jEhtumQ08mM/mqdefault.jpg","sentiment":"neutral"},{"id":"ML_8MCID3YM","title":"Your OpenClaw Is Running at 1%. Here's the Fix.","uploader":"Kevin Jeppesen - The Operator Vault","duration":"1735","viewCount":13850,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ML_8MCID3YM","thumbnail":"https://i.ytimg.com/vi/ML_8MCID3YM/mqdefault.jpg","sentiment":"neutral"},{"id":"CreaIkyZAd4","title":"OpenClaw: Are AI Agents Useful? Wait for the Shocking Answer! (14:01)","uploader":"Rob Braxman Tech","duration":"1346","viewCount":85349,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=CreaIkyZAd4","thumbnail":"https://i.ytimg.com/vi/CreaIkyZAd4/mqdefault.jpg","sentiment":"neutral"},{"id":"rUbQy05Boto","title":"I Fixed OpenClaw’s Biggest Problem (Memory)","uploader":"Larue","duration":"391","viewCount":23663,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=rUbQy05Boto","thumbnail":"https://i.ytimg.com/vi/rUbQy05Boto/mqdefault.jpg","sentiment":"neutral"},{"id":"LBYiSAj10aA","title":"New OpenClaw Robot Feels Shockingly Aware (Detonated Skynet)","uploader":"AI Revolution","duration":"891","viewCount":64320,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=LBYiSAj10aA","thumbnail":"https://i.ytimg.com/vi/LBYiSAj10aA/mqdefault.jpg","sentiment":"neutral"},{"id":"d1hjAjxmEuY","title":"My OpenClaw is making me go viral on Instagram","uploader":"Albert Olgaard","duration":"1520","viewCount":4527,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=d1hjAjxmEuY","thumbnail":"https://i.ytimg.com/vi/d1hjAjxmEuY/mqdefault.jpg","sentiment":"neutral"},{"id":"qURVA5XO84s","title":"The Free OpenClaw Setup Nobody's Talking About","uploader":"Craig Hewitt","duration":"384","viewCount":47865,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qURVA5XO84s","thumbnail":"https://i.ytimg.com/vi/qURVA5XO84s/mqdefault.jpg","sentiment":"neutral"},{"id":"mXRIDQIsfE8","title":"OpenClaw + Ollama + Kimi K2.5 is INSANE (FREE!)","uploader":"Julian Goldie SEO","duration":"1096","viewCount":62703,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=mXRIDQIsfE8","thumbnail":"https://i.ytimg.com/vi/mXRIDQIsfE8/mqdefault.jpg","sentiment":"neutral"},{"id":"sO6NSSOWDO0","title":"Deploy Your Own AI Agent in 45 Minutes ","uploader":" Beginner OpenClaw Tutorial","duration":"0","viewCount":0,"likeCount":89033,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=sO6NSSOWDO0","thumbnail":"https://i.ytimg.com/vi/sO6NSSOWDO0/mqdefault.jpg","sentiment":"neutral"},{"id":"W96vTvdiq84","title":"How to Set up & Use OpenClaw without a Mac Mini (ClawdBot)","uploader":"Youri van Hofwegen","duration":"396","viewCount":75846,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=W96vTvdiq84","thumbnail":"https://i.ytimg.com/vi/W96vTvdiq84/mqdefault.jpg","sentiment":"neutral"},{"id":"i13XK-uUOLQ","title":"Making $$$ with OpenClaw","uploader":"Greg Isenberg","duration":"3124","viewCount":158272,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=i13XK-uUOLQ","thumbnail":"https://i.ytimg.com/vi/i13XK-uUOLQ/mqdefault.jpg","sentiment":"neutral"},{"id":"LCkGVCfmtzo","title":"My AI Agents Made Money in 7 Days (OpenClaw)","uploader":"Creator Magic","duration":"497","viewCount":42698,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=LCkGVCfmtzo","thumbnail":"https://i.ytimg.com/vi/LCkGVCfmtzo/mqdefault.jpg","sentiment":"neutral"},{"id":"NiTOlYmthNg","title":"OpenClaw New Update Is INSANE!","uploader":"Julian Goldie SEO","duration":"487","viewCount":4380,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=NiTOlYmthNg","thumbnail":"https://i.ytimg.com/vi/NiTOlYmthNg/mqdefault.jpg","sentiment":"neutral"},{"id":"C5ir_rQ4L4g","title":"I Built an AI Agent That Hacks for Me ","uploader":" OpenClaw + Kali Linux","duration":"0","viewCount":0,"likeCount":183030,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=C5ir_rQ4L4g","thumbnail":"https://i.ytimg.com/vi/C5ir_rQ4L4g/mqdefault.jpg","sentiment":"neutral"},{"id":"-MtzLiQ9w1c","title":"How I Run 19 OpenClaw Agents for $6/Month ","uploader":" Clawdbot API Cost Optimization","duration":"0","viewCount":0,"likeCount":37553,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=-MtzLiQ9w1c","thumbnail":"https://i.ytimg.com/vi/-MtzLiQ9w1c/mqdefault.jpg","sentiment":"neutral"},{"id":"WqWMszBB9t0","title":"Build a Multi-Agent Team with Openclaw","uploader":"Clearmud","duration":"491","viewCount":15227,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=WqWMszBB9t0","thumbnail":"https://i.ytimg.com/vi/WqWMszBB9t0/mqdefault.jpg","sentiment":"neutral"},{"id":"dVZha20VsE8","title":"OpenClaw New Update Is INSANE!","uploader":"Julian Goldie SEO","duration":"514","viewCount":19635,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=dVZha20VsE8","thumbnail":"https://i.ytimg.com/vi/dVZha20VsE8/mqdefault.jpg","sentiment":"neutral"},{"id":"lkVxn3qV7m0","title":"Deerflow 2.0 The OpenClaw Killer","uploader":"Build In Public","duration":"1107","viewCount":3082,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=lkVxn3qV7m0","thumbnail":"https://i.ytimg.com/vi/lkVxn3qV7m0/mqdefault.jpg","sentiment":"neutral"},{"id":"jf9D4Oh7RwI","title":"Build an AI-Powered Agency Dashboard (Openclaw Bootcamp Ep1)","uploader":"Clearmud","duration":"9891","viewCount":5837,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=jf9D4Oh7RwI","thumbnail":"https://i.ytimg.com/vi/jf9D4Oh7RwI/mqdefault.jpg","sentiment":"neutral"},{"id":"Hv84JhzKvKQ","title":"OpenClaw: The Most Dangerous AI Project on GitHub?","uploader":"ByteMonk","duration":"658","viewCount":162453,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Hv84JhzKvKQ","thumbnail":"https://i.ytimg.com/vi/Hv84JhzKvKQ/mqdefault.jpg","sentiment":"neutral"},{"id":"Sdf8fc9b0mI","title":"OpenClaw 你装错了！9个必备Skills + 正确模型搭配，一次搞定浏览器自动化！ ","uploader":" 零度解说","duration":"0","viewCount":0,"likeCount":108470,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Sdf8fc9b0mI","thumbnail":"https://i.ytimg.com/vi/Sdf8fc9b0mI/mqdefault.jpg","sentiment":"neutral"},{"id":"MoKNM53PLS4","title":"OpenClaw Just Dropped a MASSIVE Update (v3.8 Complete Walkthrough)","uploader":"RoboNuggets","duration":"638","viewCount":36009,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=MoKNM53PLS4","thumbnail":"https://i.ytimg.com/vi/MoKNM53PLS4/mqdefault.jpg","sentiment":"positive"},{"id":"L3saJMjMZAg","title":"OpenClaw: The \"God-Mode\" AI That Became A Malware Empire","uploader":"Sabrina Ramonov 🍄","duration":"1020","viewCount":11549,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=L3saJMjMZAg","thumbnail":"https://i.ytimg.com/vi/L3saJMjMZAg/mqdefault.jpg","sentiment":"neutral"},{"id":"uUN1oy2PRHo","title":"How to create JOBS for OpenClaw agents","uploader":"Brian Casel","duration":"1241","viewCount":47099,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=uUN1oy2PRHo","thumbnail":"https://i.ytimg.com/vi/uUN1oy2PRHo/mqdefault.jpg","sentiment":"neutral"},{"id":"esLmX-i6FNg","title":"OpenClaw, a viral \"lobster farming\" platform, has drawn a security warning from the Chinese Commu...","uploader":"鏡新聞","duration":"69","viewCount":1380,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=esLmX-i6FNg","thumbnail":"https://i.ytimg.com/vi/esLmX-i6FNg/mqdefault.jpg","sentiment":"neutral"},{"id":"cod50CWlZeU","title":"I made my OpenClaw 10x more powerful (seriously)","uploader":"David Ondrej","duration":"2625","viewCount":102647,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=cod50CWlZeU","thumbnail":"https://i.ytimg.com/vi/cod50CWlZeU/mqdefault.jpg","sentiment":"neutral"},{"id":"AcwK1Uuwc0U","title":"How OpenClaw's Creator Uses AI to Run His Life in 40 Minutes ","uploader":" Peter Steinberger","duration":"0","viewCount":0,"likeCount":286705,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=AcwK1Uuwc0U","thumbnail":"https://i.ytimg.com/vi/AcwK1Uuwc0U/mqdefault.jpg","sentiment":"neutral"},{"id":"cEjY_0-_yuY","title":"OpenClaw drives a boom in the \"lobster economy,\" with AI agents even having their own online comm...","uploader":"鏡新聞","duration":"1345","viewCount":3523,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=cEjY_0-_yuY","thumbnail":"https://i.ytimg.com/vi/cEjY_0-_yuY/mqdefault.jpg","sentiment":"neutral"},{"id":"vP4kxn5653Y","title":"I Optimized My OpenClaw to be 10X Smarter (prompts included)","uploader":"Jess's AI Agents Hub","duration":"551","viewCount":6906,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=vP4kxn5653Y","thumbnail":"https://i.ytimg.com/vi/vP4kxn5653Y/mqdefault.jpg","sentiment":"neutral"},{"id":"qLI_5e8IsSY","title":"OpenClaw vs Google - Mass Ban Wave!","uploader":"Sabrina Ramonov 🍄","duration":"1470","viewCount":35845,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qLI_5e8IsSY","thumbnail":"https://i.ytimg.com/vi/qLI_5e8IsSY/mqdefault.jpg","sentiment":"neutral"},{"id":"41_TNGDDnfQ","title":"6 OpenClaw use cases I promise will change your life","uploader":"Alex Finn","duration":"1133","viewCount":143784,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=41_TNGDDnfQ","thumbnail":"https://i.ytimg.com/vi/41_TNGDDnfQ/mqdefault.jpg","sentiment":"neutral"},{"id":"Pq3205RoOsI","title":"This $50 AI Command Center Runs My Life","uploader":"Coding with Lewis","duration":"851","viewCount":68717,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Pq3205RoOsI","thumbnail":"https://i.ytimg.com/vi/Pq3205RoOsI/mqdefault.jpg","sentiment":"neutral"},{"id":"ewOpudu8Cjc","title":"Build a Trading Bot With AI using OpenClaw and Claude","uploader":"bri","duration":"616","viewCount":84984,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ewOpudu8Cjc","thumbnail":"https://i.ytimg.com/vi/ewOpudu8Cjc/mqdefault.jpg","sentiment":"neutral"},{"id":"2HiHDIFStzg","title":"Anthropic just BANNED OpenClaw...","uploader":"Matthew Berman","duration":"618","viewCount":111813,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=2HiHDIFStzg","thumbnail":"https://i.ytimg.com/vi/2HiHDIFStzg/mqdefault.jpg","sentiment":"neutral"},{"id":"zwV5qC1wS6M","title":"I have 25 AI Agents working 24/7 with Openclaw","uploader":"Clearmud","duration":"764","viewCount":99867,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=zwV5qC1wS6M","thumbnail":"https://i.ytimg.com/vi/zwV5qC1wS6M/mqdefault.jpg","sentiment":"neutral"},{"id":"4K1JRI7xA08","title":"OpenClaw 3.1 Update: You Won't Believe What Can Do Now (Must-Know Features)","uploader":"BoxminingAI","duration":"642","viewCount":9384,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=4K1JRI7xA08","thumbnail":"https://i.ytimg.com/vi/4K1JRI7xA08/mqdefault.jpg","sentiment":"neutral"},{"id":"U8kXfk8enrY","title":"Clawdbot/OpenClaw Clearly Explained (and how to use it)","uploader":"Greg Isenberg","duration":"2114","viewCount":325637,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=U8kXfk8enrY","thumbnail":"https://i.ytimg.com/vi/U8kXfk8enrY/mqdefault.jpg","sentiment":"neutral"},{"id":"5zbsR03aGAE","title":"LIVE: I built an army of OpenClaw agents. I have lost control.","uploader":"Alex Finn","duration":"5981","viewCount":16509,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=5zbsR03aGAE","thumbnail":"https://i.ytimg.com/vi/5zbsR03aGAE/mqdefault.jpg","sentiment":"neutral"},{"id":"XVEodnI0aHA","title":"Anthropic Just Dropped the Feature That Kills OpenClaw","uploader":"Ray Amjad","duration":"492","viewCount":29335,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=XVEodnI0aHA","thumbnail":"https://i.ytimg.com/vi/XVEodnI0aHA/mqdefault.jpg","sentiment":"neutral"},{"id":"OMa9c4IdYz8","title":"OpenClaw Is A Nightmare For Developers...","uploader":"Basic Dev","duration":"759","viewCount":10052,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=OMa9c4IdYz8","thumbnail":"https://i.ytimg.com/vi/OMa9c4IdYz8/mqdefault.jpg","sentiment":"neutral"},{"id":"P8FHMzjYR_g","title":"New OpenClaw Skills Update is INSANE!","uploader":"Julian Goldie SEO","duration":"671","viewCount":12548,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=P8FHMzjYR_g","thumbnail":"https://i.ytimg.com/vi/P8FHMzjYR_g/mqdefault.jpg","sentiment":"neutral"},{"id":"dhAMcDTTyk4","title":"My OpenClaw Accessed The Dark Web & Broke The Law","uploader":"Creator Magic","duration":"487","viewCount":14167,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=dhAMcDTTyk4","thumbnail":"https://i.ytimg.com/vi/dhAMcDTTyk4/mqdefault.jpg","sentiment":"neutral"},{"id":"ISb0nrlNoKQ","title":"Why Specialized Agents are Superior (How I Built an OpenClaw Superteam)","uploader":"Riley Brown","duration":"1096","viewCount":85863,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ISb0nrlNoKQ","thumbnail":"https://i.ytimg.com/vi/ISb0nrlNoKQ/mqdefault.jpg","sentiment":"neutral"},{"id":"fcZMmP5dsl4","title":"Full OpenClaw Setup Tutorial: Step-by-Step Walkthrough (Clawdbot)","uploader":"Metics Media","duration":"1059","viewCount":152677,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=fcZMmP5dsl4","thumbnail":"https://i.ytimg.com/vi/fcZMmP5dsl4/mqdefault.jpg","sentiment":"positive"},{"id":"Ns5QOKsqwGY","title":"Mac Mini M4 + OpenClaw Is Dangerous","uploader":"Andres Vidoza","duration":"1374","viewCount":142941,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Ns5QOKsqwGY","thumbnail":"https://i.ytimg.com/vi/Ns5QOKsqwGY/mqdefault.jpg","sentiment":"neutral"},{"id":"XkzM6hBdvIA","title":"You Don’t Need OpenClaw Anymore (Use This)","uploader":"Brock Mesarich ","duration":"0","viewCount":0,"likeCount":19479,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=XkzM6hBdvIA","thumbnail":"https://i.ytimg.com/vi/XkzM6hBdvIA/mqdefault.jpg","sentiment":"neutral"},{"id":"YCD2FSvj35I","title":"SECURE OpenClaw Setup Guide (ClawdBot Tutorial)","uploader":"Metics Media","duration":"1534","viewCount":32682,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=YCD2FSvj35I","thumbnail":"https://i.ytimg.com/vi/YCD2FSvj35I/mqdefault.jpg","sentiment":"positive"},{"id":"1E8dG80sLLw","title":"Before you buy a Mac mini for OpenClaw, watch this","uploader":"Oliur Online","duration":"460","viewCount":35292,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=1E8dG80sLLw","thumbnail":"https://i.ytimg.com/vi/1E8dG80sLLw/mqdefault.jpg","sentiment":"neutral"},{"id":"yg6MmR_9ed8","title":"How I Built a Profitable Trading Strategy Using OpenClaw AI","uploader":"Alex Carter","duration":"495","viewCount":44325,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=yg6MmR_9ed8","thumbnail":"https://i.ytimg.com/vi/yg6MmR_9ed8/mqdefault.jpg","sentiment":"neutral"},{"id":"esuPIJeRotI","title":"This Openclaw Trick Makes Single Agents Obsolete","uploader":"Openclaw Labs","duration":"451","viewCount":19564,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=esuPIJeRotI","thumbnail":"https://i.ytimg.com/vi/esuPIJeRotI/mqdefault.jpg","sentiment":"neutral"},{"id":"iUkFb_TaqZA","title":"My OpenClaw Is Forgetting Everything — Here's How I Fixed It","uploader":"Dave Swift","duration":"1149","viewCount":29505,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=iUkFb_TaqZA","thumbnail":"https://i.ytimg.com/vi/iUkFb_TaqZA/mqdefault.jpg","sentiment":"neutral"},{"id":"aMQVcJHHRVM","title":"OpenClaw Built This $250K Mission Control in a Single Prompt","uploader":"Jacob Klug","duration":"672","viewCount":29870,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=aMQVcJHHRVM","thumbnail":"https://i.ytimg.com/vi/aMQVcJHHRVM/mqdefault.jpg","sentiment":"neutral"},{"id":"qCQszXeNFxA","title":"Agent Zero vs OpenClaw: The Real Difference","uploader":"jordanUrbsAI","duration":"1786","viewCount":18504,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qCQszXeNFxA","thumbnail":"https://i.ytimg.com/vi/qCQszXeNFxA/mqdefault.jpg","sentiment":"neutral"},{"id":"HNtHZkHGEFo","title":"OpenClaw Use Cases Nobody's Talking About","uploader":"Dubibubii","duration":"843","viewCount":30921,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=HNtHZkHGEFo","thumbnail":"https://i.ytimg.com/vi/HNtHZkHGEFo/mqdefault.jpg","sentiment":"neutral"},{"id":"41_TNGDDnfQ","title":"6 OpenClaw use cases I promise will change your life","uploader":"Alex Finn","duration":"1133","viewCount":143784,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=41_TNGDDnfQ","thumbnail":"https://i.ytimg.com/vi/41_TNGDDnfQ/mqdefault.jpg","sentiment":"neutral"},{"id":"WSata1-1IJQ","title":"From Zero to First AI Assistant in 15 Minutes (OpenClaw)","uploader":"Metics Media","duration":"952","viewCount":27268,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=WSata1-1IJQ","thumbnail":"https://i.ytimg.com/vi/WSata1-1IJQ/mqdefault.jpg","sentiment":"neutral"}];
-      // 图表初始化代码...
-    </script>
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>📈 观看数区间分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="viewRangeChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>⏱️ 视频时长分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="durationChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>👍 点赞率分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="likeRateChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>📅 每月视频发布趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="uploadTrendChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>👁️ 每月观看数量趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="monthlyViewsChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>👍 每月点赞数量趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="monthlyLikesChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>📆 年度对比分析</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="yearComparisonChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>📊 观看数 Top 10</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="viewsChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>👥 Top 10 上传者</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="uploaderChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>🏆 高互动率视频 Top 10</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="engagementChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>📈 频道平均表现</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="channelAvgChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>🔤 热门关键词 Top 15</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="keywordChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>📝 标题长度分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="titleLengthChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>📊 频道观看占比</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="channelShareChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>⏱️ 时长 vs 观看数</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="durationViewChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>💭 情感 vs 平均表现</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="sentimentPerformanceChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>📊 长尾分析 (Pareto)</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="paretoChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>📅 发布星期分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="hourChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="异常">异常</span>
+          <h3>⚠️ 高观看低互动</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="highViewLowEngageChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="异常">异常</span>
+          <h3>⚠️ 低观看高互动</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="lowViewHighEngageChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+
+    <!-- 视频列表 -->
+    <div class="videos-section">
+      <div class="videos-header">
+        <h2>🎥 视频列表</h2>
+        <div class="sort-controls">
+          <label>排序:</label>
+          <button class="sort-btn active" data-sort="time-desc">⏱️ 最新</button>
+          <button class="sort-btn" data-sort="time-asc">⏱️ 最早</button>
+          <button class="sort-btn" data-sort="views-desc">👁️ 高→低</button>
+          <button class="sort-btn" data-sort="views-asc">👁️ 低→高</button>
+          <button class="sort-btn" data-sort="likes-desc">👍 高→低</button>
+          <button class="sort-btn" data-sort="likes-asc">👍 低→高</button>
+          <span class="video-count">共100个视频, 2026-03-12 - 2026-03-12, 时间跨度0个月</span>
+        </div>
+      </div>
+      <div id="videosGrid" class="videos-grid"></div>
+    </div>
   </div>
+
+  <script>
+    // ========== 视频数据与排序 ==========
+    const videosData = [{"id":"st534T7-mdE","title":"The Ultimate Beginner’s Guide to OpenClaw","uploader":"Metics Media","duration":"3402","viewCount":157380,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=st534T7-mdE","thumbnail":"https://i.ytimg.com/vi/st534T7-mdE/mqdefault.jpg","sentiment":"positive"},{"id":"MjzndFrxQOo","title":"500個 OpenClaw 使用範例，複製貼上馬上安裝 ","uploader":" OpenClaw","duration":"0","viewCount":0,"likeCount":10077,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=MjzndFrxQOo","thumbnail":"https://i.ytimg.com/vi/MjzndFrxQOo/mqdefault.jpg","sentiment":"neutral"},{"id":"yIKxXRks4Jo","title":"OpenClaw Use Cases That Are Actually INSANE (free templates + review)","uploader":"The AI Growth Lab with Tom","duration":"1748","viewCount":8698,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=yIKxXRks4Jo","thumbnail":"https://i.ytimg.com/vi/yIKxXRks4Jo/mqdefault.jpg","sentiment":"neutral"},{"id":"2rcJdFuNbZQ","title":"解剖小龍蝦 — 以 OpenClaw 為例介紹 AI Agent 的運作原理","uploader":"Hung-yi Lee","duration":"4997","viewCount":131572,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=2rcJdFuNbZQ","thumbnail":"https://i.ytimg.com/vi/2rcJdFuNbZQ/mqdefault.jpg","sentiment":"neutral"},{"id":"mNb07VMlOOg","title":"OpenClaw Tutorial: Crash Course for Beginners","uploader":"RoadsideCoder","duration":"1348","viewCount":651,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=mNb07VMlOOg","thumbnail":"https://i.ytimg.com/vi/mNb07VMlOOg/mqdefault.jpg","sentiment":"positive"},{"id":"n2a1FfqjHcU","title":"Run Openclaw locally in 27 minutes (Ollama)","uploader":"Keith AI","duration":"1669","viewCount":5125,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=n2a1FfqjHcU","thumbnail":"https://i.ytimg.com/vi/n2a1FfqjHcU/mqdefault.jpg","sentiment":"neutral"},{"id":"75L7WTtWSNc","title":"OpenClaw là gì mà ở đâu người ta cũng nói về nó?","uploader":"KIẾN THỨC THÚ VỊ Official","duration":"642","viewCount":267650,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=75L7WTtWSNc","thumbnail":"https://i.ytimg.com/vi/75L7WTtWSNc/mqdefault.jpg","sentiment":"neutral"},{"id":"Xui-bSDgORU","title":"OpenClaw 3.8 IS INSANE - Here's Why","uploader":"Build In Public","duration":"1076","viewCount":20587,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Xui-bSDgORU","thumbnail":"https://i.ytimg.com/vi/Xui-bSDgORU/mqdefault.jpg","sentiment":"neutral"},{"id":"ssYt09bCgUY","title":"The wild rise of OpenClaw...","uploader":"Fireship","duration":"319","viewCount":1808524,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ssYt09bCgUY","thumbnail":"https://i.ytimg.com/vi/ssYt09bCgUY/mqdefault.jpg","sentiment":"neutral"},{"id":"u4ydH-QvPeg","title":"OpenClaw Tutorial for Beginners - Crash Course","uploader":"Adrian Twarog","duration":"478","viewCount":239417,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=u4ydH-QvPeg","thumbnail":"https://i.ytimg.com/vi/u4ydH-QvPeg/mqdefault.jpg","sentiment":"positive"},{"id":"NiTOlYmthNg","title":"OpenClaw New Update Is INSANE!","uploader":"Julian Goldie SEO","duration":"487","viewCount":4381,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=NiTOlYmthNg","thumbnail":"https://i.ytimg.com/vi/NiTOlYmthNg/mqdefault.jpg","sentiment":"neutral"},{"id":"Zo7Putdga_4","title":"OpenClaw Tutorial for Beginners: How to Use & Set up OpenClaw (ClawdBot)","uploader":"Metics Media","duration":"1450","viewCount":149789,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Zo7Putdga_4","thumbnail":"https://i.ytimg.com/vi/Zo7Putdga_4/mqdefault.jpg","sentiment":"positive"},{"id":"knH6Jms4vSY","title":"OpenClaw Explained in 12 Minutes (for beginners)","uploader":"corbin","duration":"741","viewCount":125142,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=knH6Jms4vSY","thumbnail":"https://i.ytimg.com/vi/knH6Jms4vSY/mqdefault.jpg","sentiment":"positive"},{"id":"bSiMSSeno9g","title":"What Is OpenClaw? And How Does It Work? - Explained for Beginners","uploader":"Metics Media","duration":"474","viewCount":98561,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=bSiMSSeno9g","thumbnail":"https://i.ytimg.com/vi/bSiMSSeno9g/mqdefault.jpg","sentiment":"positive"},{"id":"n1sfrc-RjyM","title":"OpenClaw Full Tutorial for Beginners – How to Set Up and Use OpenClaw (ClawdBot / MoltBot)","uploader":"freeCodeCamp.org and neuralkian","duration":"3285","viewCount":335077,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=n1sfrc-RjyM","thumbnail":"https://i.ytimg.com/vi/n1sfrc-RjyM/mqdefault.jpg","sentiment":"positive"},{"id":"_U_15eZXFFE","title":"New NemoClaw Destroys OpenClaw?","uploader":"Julian Goldie SEO","duration":"499","viewCount":3431,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=_U_15eZXFFE","thumbnail":"https://i.ytimg.com/vi/_U_15eZXFFE/mqdefault.jpg","sentiment":"neutral"},{"id":"BoC5MY_7aDk","title":"OpenClaw Full Tutorial for Beginners: How to Setup Your First AI Agent (ClawdBot)","uploader":"Bart Slodyczka","duration":"930","viewCount":105250,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=BoC5MY_7aDk","thumbnail":"https://i.ytimg.com/vi/BoC5MY_7aDk/mqdefault.jpg","sentiment":"positive"},{"id":"F_DKoFDvxKg","title":"Openclaw 3.2 IS INSANE - Here's Why","uploader":"Build In Public","duration":"1322","viewCount":8999,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=F_DKoFDvxKg","thumbnail":"https://i.ytimg.com/vi/F_DKoFDvxKg/mqdefault.jpg","sentiment":"neutral"},{"id":"JiA4fvoeUfI","title":"Openclaw deletes entire inbox","uploader":"The PrimeTime","duration":"558","viewCount":256093,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=JiA4fvoeUfI","thumbnail":"https://i.ytimg.com/vi/JiA4fvoeUfI/mqdefault.jpg","sentiment":"neutral"},{"id":"YFjfBk8HI5o","title":"OpenClaw: The Viral AI Agent that Broke the Internet - Peter Steinberger ","uploader":" Lex Fridman Podcast #491","duration":"0","viewCount":0,"likeCount":994925,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=YFjfBk8HI5o","thumbnail":"https://i.ytimg.com/vi/YFjfBk8HI5o/mqdefault.jpg","sentiment":"neutral"},{"id":"4uzGDAoNOZc","title":"OpenClaw Creator: Why 80% Of Apps Will Disappear","uploader":"Y Combinator","duration":"1356","viewCount":787382,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=4uzGDAoNOZc","thumbnail":"https://i.ytimg.com/vi/4uzGDAoNOZc/mqdefault.jpg","sentiment":"neutral"},{"id":"8kNv3rjQaVA","title":"21 INSANE Use Cases For OpenClaw...","uploader":"Matthew Berman","duration":"2024","viewCount":270076,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=8kNv3rjQaVA","thumbnail":"https://i.ytimg.com/vi/8kNv3rjQaVA/mqdefault.jpg","sentiment":"neutral"},{"id":"hp7n45JqvIw","title":"OpenClaw Use Cases That Are Actually Insane","uploader":"AI LABS","duration":"811","viewCount":54404,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=hp7n45JqvIw","thumbnail":"https://i.ytimg.com/vi/hp7n45JqvIw/mqdefault.jpg","sentiment":"neutral"},{"id":"RhLpV6QDBFE","title":"OpenClaw is 100x better with this tool (Mission Control)","uploader":"Alex Finn","duration":"974","viewCount":75219,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=RhLpV6QDBFE","thumbnail":"https://i.ytimg.com/vi/RhLpV6QDBFE/mqdefault.jpg","sentiment":"neutral"},{"id":"vte-fDoZczE","title":"OpenClaw Full Course: Setup, Skills, Voice, Memory & More","uploader":"Tech With Tim","duration":"2813","viewCount":105682,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=vte-fDoZczE","thumbnail":"https://i.ytimg.com/vi/vte-fDoZczE/mqdefault.jpg","sentiment":"neutral"},{"id":"Q7r--i9lLck","title":"OpenClaw Use Cases that are actually helpful...","uploader":"Matthew Berman","duration":"1661","viewCount":202042,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Q7r--i9lLck","thumbnail":"https://i.ytimg.com/vi/Q7r--i9lLck/mqdefault.jpg","sentiment":"neutral"},{"id":"wIARN03rPqM","title":"The Ultimate Beginner's Guide to OpenClaw","uploader":"AI Edge","duration":"1358","viewCount":6672,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=wIARN03rPqM","thumbnail":"https://i.ytimg.com/vi/wIARN03rPqM/mqdefault.jpg","sentiment":"positive"},{"id":"a63dUwXUgDo","title":"ClawdBot Full Tutorial for Beginners: How to Use & Set up ClawdBot (Openclaw)","uploader":"Mikey No Code","duration":"893","viewCount":436091,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=a63dUwXUgDo","thumbnail":"https://i.ytimg.com/vi/a63dUwXUgDo/mqdefault.jpg","sentiment":"positive"},{"id":"NA8C8jIQNeM","title":"Ultimate Clawdbot Tutorial: How to Set up & Use for Beginners (OpenClaw)​","uploader":"AI Master","duration":"1195","viewCount":150163,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=NA8C8jIQNeM","thumbnail":"https://i.ytimg.com/vi/NA8C8jIQNeM/mqdefault.jpg","sentiment":"positive"},{"id":"3110hx3ygp0","title":"I've spent 5 BILLION tokens perfecting OpenClaw...","uploader":"Matthew Berman","duration":"2400","viewCount":79931,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=3110hx3ygp0","thumbnail":"https://i.ytimg.com/vi/3110hx3ygp0/mqdefault.jpg","sentiment":"positive"},{"id":"9jgcT0Fqt7U","title":"Builders Unscripted: Ep. 1 - Peter Steinberger, Creator of OpenClaw","uploader":"OpenAI","duration":"1889","viewCount":238329,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=9jgcT0Fqt7U","thumbnail":"https://i.ytimg.com/vi/9jgcT0Fqt7U/mqdefault.jpg","sentiment":"neutral"},{"id":"LV6Juz0xcrY","title":"OpenClaw Use Cases that are Actually Helpful! (ClawdBot)","uploader":"Duncan Rogoff ","duration":"0","viewCount":0,"likeCount":101026,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=LV6Juz0xcrY","thumbnail":"https://i.ytimg.com/vi/LV6Juz0xcrY/mqdefault.jpg","sentiment":"neutral"},{"id":"i13XK-uUOLQ","title":"Making $$$ with OpenClaw","uploader":"Greg Isenberg","duration":"3124","viewCount":158283,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=i13XK-uUOLQ","thumbnail":"https://i.ytimg.com/vi/i13XK-uUOLQ/mqdefault.jpg","sentiment":"neutral"},{"id":"sO6NSSOWDO0","title":"Deploy Your Own AI Agent in 45 Minutes ","uploader":" Beginner OpenClaw Tutorial","duration":"0","viewCount":0,"likeCount":89035,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=sO6NSSOWDO0","thumbnail":"https://i.ytimg.com/vi/sO6NSSOWDO0/mqdefault.jpg","sentiment":"neutral"},{"id":"VPtW0mKc0VE","title":"Is this what you need for work? OpenClaw's \"AI Lobster\" goes viral, with Chinese office workers g...","uploader":"USTV 非凡電視","duration":"172","viewCount":26596,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=VPtW0mKc0VE","thumbnail":"https://i.ytimg.com/vi/VPtW0mKc0VE/mqdefault.jpg","sentiment":"neutral"},{"id":"2HiHDIFStzg","title":"Anthropic just BANNED OpenClaw...","uploader":"Matthew Berman","duration":"618","viewCount":111813,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=2HiHDIFStzg","thumbnail":"https://i.ytimg.com/vi/2HiHDIFStzg/mqdefault.jpg","sentiment":"neutral"},{"id":"s1-2QISKmj8","title":"Everything You Need to Know About OpenClaw","uploader":"The Tech Girl","duration":"554","viewCount":51048,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=s1-2QISKmj8","thumbnail":"https://i.ytimg.com/vi/s1-2QISKmj8/mqdefault.jpg","sentiment":"neutral"},{"id":"d1hjAjxmEuY","title":"My OpenClaw is making me go viral on Instagram","uploader":"Albert Olgaard","duration":"1520","viewCount":4530,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=d1hjAjxmEuY","thumbnail":"https://i.ytimg.com/vi/d1hjAjxmEuY/mqdefault.jpg","sentiment":"neutral"},{"id":"QvfqAMUJTT4","title":"3 Tools That Make OpenClaw Actually Useful","uploader":"Sean Matthew","duration":"836","viewCount":65740,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=QvfqAMUJTT4","thumbnail":"https://i.ytimg.com/vi/QvfqAMUJTT4/mqdefault.jpg","sentiment":"neutral"},{"id":"LCkGVCfmtzo","title":"My AI Agents Made Money in 7 Days (OpenClaw)","uploader":"Creator Magic","duration":"497","viewCount":42705,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=LCkGVCfmtzo","thumbnail":"https://i.ytimg.com/vi/LCkGVCfmtzo/mqdefault.jpg","sentiment":"neutral"},{"id":"Hv84JhzKvKQ","title":"OpenClaw: The Most Dangerous AI Project on GitHub?","uploader":"ByteMonk","duration":"658","viewCount":162479,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Hv84JhzKvKQ","thumbnail":"https://i.ytimg.com/vi/Hv84JhzKvKQ/mqdefault.jpg","sentiment":"neutral"},{"id":"E6lW2AXsT2Q","title":"OpenClaw vs. Claude for Running an Agent Team","uploader":"Brian Casel","duration":"702","viewCount":37781,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=E6lW2AXsT2Q","thumbnail":"https://i.ytimg.com/vi/E6lW2AXsT2Q/mqdefault.jpg","sentiment":"neutral"},{"id":"_kZCoW-Qxnc","title":"100 hours of OpenClaw lessons in 35 minutes","uploader":"Alex Finn","duration":"2135","viewCount":206313,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=_kZCoW-Qxnc","thumbnail":"https://i.ytimg.com/vi/_kZCoW-Qxnc/mqdefault.jpg","sentiment":"neutral"},{"id":"IbtLtQ1vLto","title":"BEGINNER OPENCLAW COURSE 2026: Build Your First Multi-Agent AI System","uploader":"Kevin Jeppesen - The Operator Vault","duration":"4629","viewCount":11662,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=IbtLtQ1vLto","thumbnail":"https://i.ytimg.com/vi/IbtLtQ1vLto/mqdefault.jpg","sentiment":"positive"},{"id":"Aj6hoC9JaLI","title":"You NEED to do this with OpenClaw immediately!","uploader":"Alex Finn","duration":"640","viewCount":54323,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Aj6hoC9JaLI","thumbnail":"https://i.ytimg.com/vi/Aj6hoC9JaLI/mqdefault.jpg","sentiment":"neutral"},{"id":"C5ir_rQ4L4g","title":"I Built an AI Agent That Hacks for Me ","uploader":" OpenClaw + Kali Linux","duration":"0","viewCount":0,"likeCount":183046,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=C5ir_rQ4L4g","thumbnail":"https://i.ytimg.com/vi/C5ir_rQ4L4g/mqdefault.jpg","sentiment":"neutral"},{"id":"mXRIDQIsfE8","title":"OpenClaw + Ollama + Kimi K2.5 is INSANE (FREE!)","uploader":"Julian Goldie SEO","duration":"1096","viewCount":62728,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=mXRIDQIsfE8","thumbnail":"https://i.ytimg.com/vi/mXRIDQIsfE8/mqdefault.jpg","sentiment":"neutral"},{"id":"esLmX-i6FNg","title":"OpenClaw, a viral \"lobster farming\" platform, has drawn a security warning from the Chinese Commu...","uploader":"鏡新聞","duration":"69","viewCount":1382,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=esLmX-i6FNg","thumbnail":"https://i.ytimg.com/vi/esLmX-i6FNg/mqdefault.jpg","sentiment":"neutral"},{"id":"MoKNM53PLS4","title":"The Biggest OpenClaw Update Yet... (Ver 3.8 Full Breakdown)","uploader":"RoboNuggets","duration":"638","viewCount":36129,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=MoKNM53PLS4","thumbnail":"https://i.ytimg.com/vi/MoKNM53PLS4/mqdefault.jpg","sentiment":"neutral"},{"id":"nSBKCZQkmYw","title":"Full Tutorial: Use OpenClaw to Build a Business That Runs Itself in 35 Min ","uploader":" Nat Eliason","duration":"0","viewCount":0,"likeCount":149676,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=nSBKCZQkmYw","thumbnail":"https://i.ytimg.com/vi/nSBKCZQkmYw/mqdefault.jpg","sentiment":"positive"},{"id":"ML_8MCID3YM","title":"Your OpenClaw Is Running at 1%. Here's the Fix.","uploader":"Kevin Jeppesen - The Operator Vault","duration":"1735","viewCount":13851,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ML_8MCID3YM","thumbnail":"https://i.ytimg.com/vi/ML_8MCID3YM/mqdefault.jpg","sentiment":"neutral"},{"id":"qURVA5XO84s","title":"The Free OpenClaw Setup Nobody's Talking About","uploader":"Craig Hewitt","duration":"384","viewCount":47921,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qURVA5XO84s","thumbnail":"https://i.ytimg.com/vi/qURVA5XO84s/mqdefault.jpg","sentiment":"neutral"},{"id":"ji_Sd4si7jo","title":"Master OpenClaw in 30 Minutes (5 Real Use Cases + Setup + Memory)","uploader":"Peter Yang","duration":"1732","viewCount":88732,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ji_Sd4si7jo","thumbnail":"https://i.ytimg.com/vi/ji_Sd4si7jo/mqdefault.jpg","sentiment":"neutral"},{"id":"W96vTvdiq84","title":"How to Set up & Use OpenClaw without a Mac Mini (ClawdBot)","uploader":"Youri van Hofwegen","duration":"396","viewCount":75847,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=W96vTvdiq84","thumbnail":"https://i.ytimg.com/vi/W96vTvdiq84/mqdefault.jpg","sentiment":"neutral"},{"id":"qP73cGLQmCU","title":"OpenClaw Explained: Baby AGI, Security Threats, Mac Mini Became Everyone's Supercomputer ","uploader":" #237","duration":"0","viewCount":0,"likeCount":135571,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qP73cGLQmCU","thumbnail":"https://i.ytimg.com/vi/qP73cGLQmCU/mqdefault.jpg","sentiment":"neutral"},{"id":"aBYmq47-5oQ","title":"Run OpenClaw for Free with Kimi K2.5","uploader":"Nic Conley","duration":"1010","viewCount":55348,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=aBYmq47-5oQ","thumbnail":"https://i.ytimg.com/vi/aBYmq47-5oQ/mqdefault.jpg","sentiment":"neutral"},{"id":"41_TNGDDnfQ","title":"6 OpenClaw use cases I promise will change your life","uploader":"Alex Finn","duration":"1133","viewCount":143792,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=41_TNGDDnfQ","thumbnail":"https://i.ytimg.com/vi/41_TNGDDnfQ/mqdefault.jpg","sentiment":"neutral"},{"id":"vF3dK1TywAk","title":"Building a Million Dollar Zero Human Company with OpenClaw ","uploader":" Nat Eliason","duration":"0","viewCount":0,"likeCount":22503,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=vF3dK1TywAk","thumbnail":"https://i.ytimg.com/vi/vF3dK1TywAk/mqdefault.jpg","sentiment":"neutral"},{"id":"IVXaLkJbC_o","title":"7 Prompts That Make OpenClaw Agents Actually Useful","uploader":"Bart Slodyczka","duration":"1013","viewCount":5127,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=IVXaLkJbC_o","thumbnail":"https://i.ytimg.com/vi/IVXaLkJbC_o/mqdefault.jpg","sentiment":"neutral"},{"id":"cEjY_0-_yuY","title":"OpenClaw drives a boom in the \"lobster economy,\" with AI agents even having their own online comm...","uploader":"鏡新聞","duration":"1345","viewCount":3535,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=cEjY_0-_yuY","thumbnail":"https://i.ytimg.com/vi/cEjY_0-_yuY/mqdefault.jpg","sentiment":"neutral"},{"id":"uUN1oy2PRHo","title":"How to create JOBS for OpenClaw agents","uploader":"Brian Casel","duration":"1241","viewCount":47106,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=uUN1oy2PRHo","thumbnail":"https://i.ytimg.com/vi/uUN1oy2PRHo/mqdefault.jpg","sentiment":"neutral"},{"id":"vP4kxn5653Y","title":"I Optimized My OpenClaw to be 10X Smarter (prompts included)","uploader":"Jess's AI Agents Hub","duration":"551","viewCount":6908,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=vP4kxn5653Y","thumbnail":"https://i.ytimg.com/vi/vP4kxn5653Y/mqdefault.jpg","sentiment":"neutral"},{"id":"GansiD6Mk5Y","title":"I Gave 3 AI Agents $1,000 Each (OpenClaw)","uploader":"Creator Magic","duration":"776","viewCount":100520,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=GansiD6Mk5Y","thumbnail":"https://i.ytimg.com/vi/GansiD6Mk5Y/mqdefault.jpg","sentiment":"neutral"},{"id":"jece_dDk-0w","title":"New FREE OpenClaw + NotebookLM Update","uploader":"Julian Goldie SEO","duration":"845","viewCount":1448,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=jece_dDk-0w","thumbnail":"https://i.ytimg.com/vi/jece_dDk-0w/mqdefault.jpg","sentiment":"neutral"},{"id":"cod50CWlZeU","title":"I made my OpenClaw 10x more powerful (seriously)","uploader":"David Ondrej","duration":"2625","viewCount":102647,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=cod50CWlZeU","thumbnail":"https://i.ytimg.com/vi/cod50CWlZeU/mqdefault.jpg","sentiment":"neutral"},{"id":"4bbVi5P0JT4","title":"You’re Using OpenClaw Wrong - Copy These 14 Prompts (ClawdBot)","uploader":"Jordan Rafealov","duration":"1663","viewCount":6997,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=4bbVi5P0JT4","thumbnail":"https://i.ytimg.com/vi/4bbVi5P0JT4/mqdefault.jpg","sentiment":"neutral"},{"id":"11sxky4vTcs","title":"Please don't install Clawdbot","uploader":"Alberta Tech","duration":"473","viewCount":585500,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=11sxky4vTcs","thumbnail":"https://i.ytimg.com/vi/11sxky4vTcs/mqdefault.jpg","sentiment":"neutral"},{"id":"sTjx7IpeBas","title":"OpenClaw COMPLETE Tutorial - All 12 Concepts You Need To Know BEFORE You Deploy","uploader":"ByteGrad","duration":"5790","viewCount":4731,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=sTjx7IpeBas","thumbnail":"https://i.ytimg.com/vi/sTjx7IpeBas/mqdefault.jpg","sentiment":"positive"},{"id":"ewOpudu8Cjc","title":"Build a Trading Bot With AI using OpenClaw and Claude","uploader":"bri","duration":"616","viewCount":84992,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ewOpudu8Cjc","thumbnail":"https://i.ytimg.com/vi/ewOpudu8Cjc/mqdefault.jpg","sentiment":"neutral"},{"id":"zCvyjuKhFYc","title":"My Honest OpenClaw Review (after building 14 AI agents)","uploader":"Duncan Rogoff ","duration":"0","viewCount":0,"likeCount":3550,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=zCvyjuKhFYc","thumbnail":"https://i.ytimg.com/vi/zCvyjuKhFYc/mqdefault.jpg","sentiment":"neutral"},{"id":"3GrG-dOmrLU","title":"I figured out the best way to run OpenClaw","uploader":"Matthew Berman","duration":"1351","viewCount":150850,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=3GrG-dOmrLU","thumbnail":"https://i.ytimg.com/vi/3GrG-dOmrLU/mqdefault.jpg","sentiment":"positive"},{"id":"Pq3205RoOsI","title":"This $50 AI Command Center Runs My Life","uploader":"Coding with Lewis","duration":"851","viewCount":68729,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Pq3205RoOsI","thumbnail":"https://i.ytimg.com/vi/Pq3205RoOsI/mqdefault.jpg","sentiment":"neutral"},{"id":"657wlbtrzG8","title":"OpenClaw(Clawdbot) 海量全玩法攻略，本地部署，国内网络使用方法","uploader":"技术爬爬虾  TechShrimp","duration":"701","viewCount":198390,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=657wlbtrzG8","thumbnail":"https://i.ytimg.com/vi/657wlbtrzG8/mqdefault.jpg","sentiment":"neutral"},{"id":"oN__gKJnPls","title":"Why your OpenClaw agent forgets everything (and how to fix it)","uploader":"VelvetShark","duration":"2254","viewCount":15904,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=oN__gKJnPls","thumbnail":"https://i.ytimg.com/vi/oN__gKJnPls/mqdefault.jpg","sentiment":"neutral"},{"id":"zCOLV5RC4rI","title":"How I Enabled GPT-5.4 in OpenClaw with OAuth (Before Official Support)","uploader":"AI Hu Knows 胡说AI","duration":"231","viewCount":9479,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=zCOLV5RC4rI","thumbnail":"https://i.ytimg.com/vi/zCOLV5RC4rI/mqdefault.jpg","sentiment":"neutral"},{"id":"zwV5qC1wS6M","title":"I have 25 AI Agents working 24/7 with Openclaw","uploader":"Clearmud","duration":"764","viewCount":99871,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=zwV5qC1wS6M","thumbnail":"https://i.ytimg.com/vi/zwV5qC1wS6M/mqdefault.jpg","sentiment":"neutral"},{"id":"esuPIJeRotI","title":"This Openclaw Trick Makes Single Agents Obsolete","uploader":"Openclaw Labs","duration":"451","viewCount":19570,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=esuPIJeRotI","thumbnail":"https://i.ytimg.com/vi/esuPIJeRotI/mqdefault.jpg","sentiment":"neutral"},{"id":"WSata1-1IJQ","title":"From Zero to First AI Assistant in 15 Minutes (OpenClaw)","uploader":"Metics Media","duration":"952","viewCount":27268,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=WSata1-1IJQ","thumbnail":"https://i.ytimg.com/vi/WSata1-1IJQ/mqdefault.jpg","sentiment":"neutral"},{"id":"f8LJBh1AtKg","title":"Stop OpenClaw From Forgetting – The 3 Memory Layers Explained!","uploader":"Julian Goldie SEO","duration":"547","viewCount":1745,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=f8LJBh1AtKg","thumbnail":"https://i.ytimg.com/vi/f8LJBh1AtKg/mqdefault.jpg","sentiment":"positive"},{"id":"iUkFb_TaqZA","title":"My OpenClaw Is Forgetting Everything — Here's How I Fixed It","uploader":"Dave Swift","duration":"1149","viewCount":29505,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=iUkFb_TaqZA","thumbnail":"https://i.ytimg.com/vi/iUkFb_TaqZA/mqdefault.jpg","sentiment":"neutral"},{"id":"4evf5YqVzOM","title":"Master OpenClaw/Clawdbot in 35 minutes","uploader":"Keith AI","duration":"2126","viewCount":102662,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=4evf5YqVzOM","thumbnail":"https://i.ytimg.com/vi/4evf5YqVzOM/mqdefault.jpg","sentiment":"neutral"},{"id":"WqWMszBB9t0","title":"Build a Multi-Agent Team with Openclaw","uploader":"Clearmud","duration":"491","viewCount":15247,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=WqWMszBB9t0","thumbnail":"https://i.ytimg.com/vi/WqWMszBB9t0/mqdefault.jpg","sentiment":"neutral"},{"id":"C-_ngZTKmGs","title":"This OpenSource AI Assistant broke the Internet ","uploader":" OpenClaw","duration":"0","viewCount":0,"likeCount":23806,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=C-_ngZTKmGs","thumbnail":"https://i.ytimg.com/vi/C-_ngZTKmGs/mqdefault.jpg","sentiment":"neutral"},{"id":"XkzM6hBdvIA","title":"You Don’t Need OpenClaw Anymore (Use This)","uploader":"Brock Mesarich ","duration":"0","viewCount":0,"likeCount":19479,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=XkzM6hBdvIA","thumbnail":"https://i.ytimg.com/vi/XkzM6hBdvIA/mqdefault.jpg","sentiment":"neutral"},{"id":"Qm37C1TGPSo","title":"OpenClaw + LobsterBoard is INSANE!","uploader":"Julian Goldie SEO","duration":"672","viewCount":15667,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Qm37C1TGPSo","thumbnail":"https://i.ytimg.com/vi/Qm37C1TGPSo/mqdefault.jpg","sentiment":"neutral"},{"id":"qLI_5e8IsSY","title":"OpenClaw vs Google - Mass Ban Wave!","uploader":"Sabrina Ramonov 🍄","duration":"1470","viewCount":35851,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=qLI_5e8IsSY","thumbnail":"https://i.ytimg.com/vi/qLI_5e8IsSY/mqdefault.jpg","sentiment":"neutral"},{"id":"40SnEd1RWUU","title":"Interview with ‘Just use a VPS’ bro (OpenClaw version).","uploader":"Kai Lentit","duration":"466","viewCount":356102,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=40SnEd1RWUU","thumbnail":"https://i.ytimg.com/vi/40SnEd1RWUU/mqdefault.jpg","sentiment":"neutral"},{"id":"AcwK1Uuwc0U","title":"How OpenClaw's Creator Uses AI to Run His Life in 40 Minutes ","uploader":" Peter Steinberger","duration":"0","viewCount":0,"likeCount":286708,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=AcwK1Uuwc0U","thumbnail":"https://i.ytimg.com/vi/AcwK1Uuwc0U/mqdefault.jpg","sentiment":"neutral"},{"id":"Fw4dTGWtE7M","title":"OpenClaw Tutorial for Beginners: How to Use & Set up OpenClaw (ClawdBot)","uploader":"Website Learners","duration":"1064","viewCount":19416,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Fw4dTGWtE7M","thumbnail":"https://i.ytimg.com/vi/Fw4dTGWtE7M/mqdefault.jpg","sentiment":"positive"},{"id":"JC53AcoFh-Q","title":"OpenClaw Agents Just Got Better With This","uploader":"AI LABS","duration":"667","viewCount":9334,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=JC53AcoFh-Q","thumbnail":"https://i.ytimg.com/vi/JC53AcoFh-Q/mqdefault.jpg","sentiment":"neutral"},{"id":"c2nAKH8BIdo","title":"OpenClaw is taking over AI","uploader":"AI Search","duration":"1724","viewCount":123489,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=c2nAKH8BIdo","thumbnail":"https://i.ytimg.com/vi/c2nAKH8BIdo/mqdefault.jpg","sentiment":"neutral"},{"id":"6-QlxD3GM78","title":"How to Setup OpenClaw with Ollama (Zero Cost AI Assistant)","uploader":"ProgrammingKnowledge2","duration":"1457","viewCount":36501,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=6-QlxD3GM78","thumbnail":"https://i.ytimg.com/vi/6-QlxD3GM78/mqdefault.jpg","sentiment":"neutral"},{"id":"1Jqaj1KN5vA","title":"OpenClaw + Antigravity Turns Your AI Into a Full Autonomous Engineering Team! Automate Your Code!","uploader":"WorldofAI","duration":"771","viewCount":78801,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=1Jqaj1KN5vA","thumbnail":"https://i.ytimg.com/vi/1Jqaj1KN5vA/mqdefault.jpg","sentiment":"neutral"},{"id":"ehfTs0wdW5g","title":"Stop Burning AI Credits — OpenClaw + Python 24/7 Job Finder 🦞🐍","uploader":"Python Simplified","duration":"1266","viewCount":24439,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ehfTs0wdW5g","thumbnail":"https://i.ytimg.com/vi/ehfTs0wdW5g/mqdefault.jpg","sentiment":"positive"},{"id":"YCD2FSvj35I","title":"SECURE OpenClaw Setup Guide (ClawdBot Tutorial)","uploader":"Metics Media","duration":"1534","viewCount":32684,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=YCD2FSvj35I","thumbnail":"https://i.ytimg.com/vi/YCD2FSvj35I/mqdefault.jpg","sentiment":"positive"},{"id":"Ns5QOKsqwGY","title":"Mac Mini M4 + OpenClaw Is Dangerous","uploader":"Andres Vidoza","duration":"1374","viewCount":142943,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Ns5QOKsqwGY","thumbnail":"https://i.ytimg.com/vi/Ns5QOKsqwGY/mqdefault.jpg","sentiment":"neutral"},{"id":"P8FHMzjYR_g","title":"New OpenClaw Skills Update is INSANE!","uploader":"Julian Goldie SEO","duration":"671","viewCount":12559,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=P8FHMzjYR_g","thumbnail":"https://i.ytimg.com/vi/P8FHMzjYR_g/mqdefault.jpg","sentiment":"neutral"},{"id":"JeaxEA-M0Qg","title":"I spent 2 weeks with OpenClaw so you don't have to","uploader":"Rachel How","duration":"377","viewCount":23668,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=JeaxEA-M0Qg","thumbnail":"https://i.ytimg.com/vi/JeaxEA-M0Qg/mqdefault.jpg","sentiment":"neutral"},{"id":"DIKnE629emQ","title":"OpenClaw Mania Sweeps China ","uploader":" The China Show 3/11/2026","duration":"0","viewCount":0,"likeCount":6196,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=DIKnE629emQ","thumbnail":"https://i.ytimg.com/vi/DIKnE629emQ/mqdefault.jpg","sentiment":"neutral"},{"id":"LOazLNQnB80","title":"Mac Mini Agents: OpenClaw is a NIGHTMARE... Use these SKILLS instead","uploader":"IndyDevDan","duration":"1581","viewCount":19871,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=LOazLNQnB80","thumbnail":"https://i.ytimg.com/vi/LOazLNQnB80/mqdefault.jpg","sentiment":"neutral"}];
+    
+    const formatNumber = (num) => {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    };
+    
+    const formatDuration = (seconds) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return mins + ':' + secs.toString().padStart(2, '0');
+    };
+    
+    function renderVideos(videos, highlightId = null) {
+      const grid = document.getElementById('videosGrid');
+      grid.innerHTML = videos.map((video) => {
+        const isHighlighted = video.id === highlightId;
+        const highlightClass = isHighlighted ? "highlighted" : "";
+        const cardHTML = '<div class="video-card ' + highlightClass + '" data-video-id="' + video.id + '" id="video-' + video.id + '">' +
+          '<a href="' + video.url + '" target="_blank" class="card-link">' +
+            '<div class="card-thumbnail">' +
+              '<img src="' + video.thumbnail + '" alt="' + video.title + '" loading="lazy">' +
+              '<span class="card-duration">' + formatDuration(video.duration) + '</span>' +
+            '</div>' +
+            '<div class="card-content">' +
+              '<div class="card-title" title="' + video.title + '">' + video.title + '</div>' +
+              '<div class="card-channel">' + video.uploader + '</div>' +
+              '<div class="card-meta">' +
+                '<span>👁 ' + formatNumber(video.viewCount) + '</span>' +
+                '<span>👍 ' + formatNumber(video.likeCount) + '</span>' +
+                '<span class="card-time">' + video.uploadDate.replace(/-/g, '') + '</span>' +
+                '<span class="card-sentiment sentiment-' + video.sentiment + '">' + video.sentiment + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</a>' +
+        '</div>';
+        return cardHTML;
+      }).join('');
+    }
+    
+    // 滚动到指定视频并高亮
+    function scrollToVideo(videoId) {
+      // 找到对应的视频数据
+      const video = videosData.find(v => v.id === videoId);
+      if (!video) return;
+      
+      // 将该视频排到列表最前面，其他保持原顺序
+      const otherVideos = videosData.filter(v => v.id !== videoId);
+      const sortedVideos = [video].concat(otherVideos);
+      
+      // 重新渲染，并高亮
+      renderVideos(sortedVideos, videoId);
+      
+      // 滚动到视频列表区域
+      const videoSection = document.querySelector('.videos-section');
+      const videoElement = document.getElementById('video-' + videoId);
+      
+      if (videoSection && videoElement) {
+        // 先滚动到视频列表区域
+        videoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // 稍微延迟后高亮闪烁
+        setTimeout(function() {
+          videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // 3秒后移除高亮
+          setTimeout(function() {
+            videoElement.classList.remove('highlighted');
+          }, 3000);
+        }, 500);
+      }
+    }
+    
+    function sortVideos(sortType) {
+      let sorted = [...videosData];
+      switch(sortType) {
+        case 'time-desc':
+          sorted.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+          break;
+        case 'time-asc':
+          sorted.sort((a, b) => new Date(a.uploadDate) - new Date(b.uploadDate));
+          break;
+        case 'views-desc':
+          sorted.sort((a, b) => b.viewCount - a.viewCount);
+          break;
+        case 'views-asc':
+          sorted.sort((a, b) => a.viewCount - b.viewCount);
+          break;
+        case 'likes-desc':
+          sorted.sort((a, b) => b.likeCount - a.likeCount);
+          break;
+        case 'likes-asc':
+          sorted.sort((a, b) => a.likeCount - b.likeCount);
+          break;
+      }
+      renderVideos(sorted);
+    }
+    
+    // 排序按钮点击事件
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // 移除所有active状态
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        // 添加当前按钮active状态
+        e.target.classList.add('active');
+        // 执行排序
+        sortVideos(e.target.dataset.sort);
+      });
+    });
+    
+    sortVideos('time-desc');
+
+    // ========== 主题切换功能 ==========
+    function updateThemeColors(themeName) {
+      const theme = themes[themeName];
+      if (!theme) return;
+      
+      // 更新分类标签颜色
+      document.querySelectorAll('.chart-category').forEach(el => {
+        const category = el.dataset.category;
+        if (theme.categoryColors[category]) {
+          el.style.background = theme.categoryColors[category];
+        }
+      });
+      
+      // 销毁并重新创建所有图表
+      Object.values(Chart.instances).forEach(chart => chart.destroy());
+      createAllCharts();
+    }
+    
+    // 主题按钮点击事件
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentTheme = e.target.dataset.theme;
+        updateThemeColors(currentTheme);
+      });
+    });
+    
+    // ========== Chart.js 配置 ==========
+    Chart.defaults.font.size = 10;
+    Chart.defaults.plugins.legend.labels.boxWidth = 8;
+    Chart.defaults.plugins.legend.labels.font = { size: 9 };
+    
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { size: 9 } } } }
+    };
+    
+    const barOptions = {
+      ...commonOptions,
+      plugins: { ...commonOptions.plugins, legend: { display: false } },
+      scales: { 
+        y: { beginAtZero: true, ticks: { font: { size: 9 } } }, 
+        x: { ticks: { font: { size: 8 } } } 
+      }
+    };
+
+    // 1. 情绪分布
+    new Chart(document.getElementById('sentimentChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['正面','中性','负面'],
+        datasets: [{
+          data: [20, 80, 0],
+          backgroundColor: ['#27ae60','#f39c12','#e74c3c'],
+          borderWidth: 0
+        }]
+      },
+      options: { ...commonOptions, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } } } }
+    });
+
+    // 2. 观看数区间分布
+    new Chart(document.getElementById('viewRangeChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['0-1K','1K-10K','10K-100K','100K-1M','1M+'],
+        datasets: [{
+          data: [14,17,38,30,1],
+          backgroundColor: ['#ecf0f1','#3498db','#2ecc71','#f39c12','#e74c3c'],
+          borderWidth: 0
+        }]
+      },
+      options: { ...commonOptions, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } } } }
+    });
+
+    // 3. 视频时长分布
+    new Chart(document.getElementById('durationChart'), {
+      type: 'bar',
+      data: {
+        labels: ["< 1分钟","1-5分钟","5-15分钟","15-30分钟","> 30分钟"],
+        datasets: [{
+          label: '视频数',
+          data: [13,3,37,33,14],
+          backgroundColor: 'rgba(155, 89, 182, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: barOptions
+    });
+
+    // 4. 点赞率分布
+    new Chart(document.getElementById('likeRateChart'), {
+      type: 'bar',
+      data: {
+        labels: ["< 1%","1-3%","3-5%","5-10%","> 10%"],
+        datasets: [{
+          label: '视频数',
+          data: [100,0,0,0,0],
+          backgroundColor: 'rgba(231, 76, 60, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: barOptions
+    });
+
+    // 5. 每月视频发布趋势
+    new Chart(document.getElementById('uploadTrendChart'), {
+      type: 'line',
+      data: {
+        labels: ["2026-03"],
+        datasets: [{
+          label: '视频数',
+          data: [100],
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#667eea',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { display: false } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 6. 每月观看数量趋势
+    new Chart(document.getElementById('monthlyViewsChart'), {
+      type: 'line',
+      data: {
+        labels: ["2026-03"],
+        datasets: [{
+          label: '观看数',
+          data: [10211377],
+          borderColor: '#3498db',
+          backgroundColor: 'rgba(52, 152, 219, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#3498db',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '观看: ' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 7. 每月点赞数量趋势
+    new Chart(document.getElementById('monthlyLikesChart'), {
+      type: 'line',
+      data: {
+        labels: ["2026-03"],
+        datasets: [{
+          label: '点赞数',
+          data: [2025598],
+          borderColor: '#e74c3c',
+          backgroundColor: 'rgba(231, 76, 60, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#e74c3c',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '点赞: ' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 8. 年度对比分析
+    new Chart(document.getElementById('yearComparisonChart'), {
+      type: 'bar',
+      data: {
+        labels: ["2026"],
+        datasets: [
+          {
+            label: '视频数',
+            data: [100],
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderRadius: 2
+          },
+          {
+            label: '观看数(千)',
+            data: [10211],
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { labels: { font: { size: 9 }, boxWidth: 8 } } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 9. 观看数Top 10
+    new Chart(document.getElementById('viewsChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '观看数',
+          data: [1808524,787382,585500,436091,356102,335077,270076,267650,256093,239417],
+          backgroundColor: 'rgba(102, 126, 234, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const titles = ["The wild rise of OpenClaw...","OpenClaw Creator: Why 80% Of A","Please don't install Clawdbot","ClawdBot Full Tutorial for Beg","Interview with ‘Just use a VPS","OpenClaw Full Tutorial for Beg","21 INSANE Use Cases For OpenCl","OpenClaw là gì mà ở đâu người ","Openclaw deletes entire inbox","OpenClaw Tutorial for Beginner"];
+                return titles[context.dataIndex] + '...';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 10. Top上传者
+    new Chart(document.getElementById('uploaderChart'), {
+      type: 'bar',
+      data: {
+        labels: ["Julian G","Metics M","Matthew ","Alex Fin"," OpenCla","Keith AI","Build In","Bart Slo","AI LABS","Duncan R"],
+        datasets: [{
+          label: '视频数',
+          data: [7,5,5,4,2,2,2,2,2,2],
+          backgroundColor: 'rgba(118, 75, 162, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 11. 高互动率视频
+    new Chart(document.getElementById('engagementChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '点赞率(%)',
+          data: ["0.00","0.00","0.00","0.00","0.00","0.00","0.00","0.00","0.00","0.00"],
+          backgroundColor: 'rgba(39, 174, 96, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const titles = ["The Ultimate Beginner’s Guide ","OpenClaw Use Cases That Are Ac","解剖小龍蝦 — 以 OpenClaw 為例介紹 AI Age","OpenClaw Tutorial: Crash Cours","Run Openclaw locally in 27 min","OpenClaw là gì mà ở đâu người ","OpenClaw 3.8 IS INSANE - Here'","The wild rise of OpenClaw...","OpenClaw Tutorial for Beginner","OpenClaw New Update Is INSANE!"];
+                return titles[context.dataIndex] + '...';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 12. 频道平均表现
+    new Chart(document.getElementById('channelAvgChart'), {
+      type: 'bar',
+      data: {
+        labels: ["Matthew ","Alex Fin","Metics M","Creator ","Clearmud","Bart Slo","Keith AI","Brian Ca"],
+        datasets: [{
+          label: '平均观看',
+          data: [162942,119912,93136,71613,57559,55189,53894,42444],
+          backgroundColor: 'rgba(52, 152, 219, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const counts = [5,4,5,2,2,2,2,2];
+                return '视频数: ' + counts[context.dataIndex];
+              }
+            }
+          }
+        },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 13. 热门关键词
+    new Chart(document.getElementById('keywordChart'), {
+      type: 'bar',
+      data: {
+        labels: ["openclaw","use","clawdbot","tutorial","beginner","agents","insane","agent","minutes","cases","full","actually","set","setup","free"],
+        datasets: [{
+          label: '出现次数',
+          data: [98,17,14,11,10,10,9,9,8,7,7,6,6,6,5],
+          backgroundColor: 'rgba(155, 89, 182, 0.7)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 14. 标题长度分布
+    new Chart(document.getElementById('titleLengthChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["很短(<30)","短(30-50)","中等(50-70)","长(70-100)","很长(>100)"],
+        datasets: [{
+          data: [7,49,29,12,3],
+          backgroundColor: ['#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          legend: { 
+            position: 'right', 
+            labels: { font: { size: 8 }, boxWidth: 8 } 
+          } 
+        } 
+      }
+    });
+
+    // 15. 频道观看占比
+    new Chart(document.getElementById('channelShareChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["Fireship","Matthew ","Y Combin","Alberta ","Alex Fin","其他"],
+        datasets: [{
+          data: [1808524,814712,787382,585500,479647,5735612],
+          backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#95a5a6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          legend: { 
+            position: 'right', 
+            labels: { font: { size: 8 }, boxWidth: 8 } 
+          } 
+        } 
+      }
+    });
+
+    // 16. 时长 vs 观看数 散点图
+    new Chart(document.getElementById('durationViewChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: '视频',
+          data: [{"x":57,"y":157380,"title":"The Ultimate Beginner’s Guide "},{"x":29,"y":8698,"title":"OpenClaw Use Cases That Are Ac"},{"x":83,"y":131572,"title":"解剖小龍蝦 — 以 OpenClaw 為例介紹 AI Age"},{"x":22,"y":651,"title":"OpenClaw Tutorial: Crash Cours"},{"x":28,"y":5125,"title":"Run Openclaw locally in 27 min"},{"x":11,"y":267650,"title":"OpenClaw là gì mà ở đâu người "},{"x":18,"y":20587,"title":"OpenClaw 3.8 IS INSANE - Here'"},{"x":5,"y":1808524,"title":"The wild rise of OpenClaw..."},{"x":8,"y":239417,"title":"OpenClaw Tutorial for Beginner"},{"x":8,"y":4381,"title":"OpenClaw New Update Is INSANE!"},{"x":24,"y":149789,"title":"OpenClaw Tutorial for Beginner"},{"x":12,"y":125142,"title":"OpenClaw Explained in 12 Minut"},{"x":8,"y":98561,"title":"What Is OpenClaw? And How Does"},{"x":55,"y":335077,"title":"OpenClaw Full Tutorial for Beg"},{"x":8,"y":3431,"title":"New NemoClaw Destroys OpenClaw"},{"x":16,"y":105250,"title":"OpenClaw Full Tutorial for Beg"},{"x":22,"y":8999,"title":"Openclaw 3.2 IS INSANE - Here'"},{"x":9,"y":256093,"title":"Openclaw deletes entire inbox"},{"x":23,"y":787382,"title":"OpenClaw Creator: Why 80% Of A"},{"x":34,"y":270076,"title":"21 INSANE Use Cases For OpenCl"},{"x":14,"y":54404,"title":"OpenClaw Use Cases That Are Ac"},{"x":16,"y":75219,"title":"OpenClaw is 100x better with t"},{"x":47,"y":105682,"title":"OpenClaw Full Course: Setup, S"},{"x":28,"y":202042,"title":"OpenClaw Use Cases that are ac"},{"x":23,"y":6672,"title":"The Ultimate Beginner's Guide "},{"x":15,"y":436091,"title":"ClawdBot Full Tutorial for Beg"},{"x":20,"y":150163,"title":"Ultimate Clawdbot Tutorial: Ho"},{"x":40,"y":79931,"title":"I've spent 5 BILLION tokens pe"},{"x":31,"y":238329,"title":"Builders Unscripted: Ep. 1 - P"},{"x":52,"y":158283,"title":"Making $$$ with OpenClaw"},{"x":3,"y":26596,"title":"Is this what you need for work"},{"x":10,"y":111813,"title":"Anthropic just BANNED OpenClaw"},{"x":9,"y":51048,"title":"Everything You Need to Know Ab"},{"x":25,"y":4530,"title":"My OpenClaw is making me go vi"},{"x":14,"y":65740,"title":"3 Tools That Make OpenClaw Act"},{"x":8,"y":42705,"title":"My AI Agents Made Money in 7 D"},{"x":11,"y":162479,"title":"OpenClaw: The Most Dangerous A"},{"x":12,"y":37781,"title":"OpenClaw vs. Claude for Runnin"},{"x":36,"y":206313,"title":"100 hours of OpenClaw lessons "},{"x":77,"y":11662,"title":"BEGINNER OPENCLAW COURSE 2026:"},{"x":11,"y":54323,"title":"You NEED to do this with OpenC"},{"x":18,"y":62728,"title":"OpenClaw + Ollama + Kimi K2.5 "},{"x":1,"y":1382,"title":"OpenClaw, a viral \"lobster far"},{"x":11,"y":36129,"title":"The Biggest OpenClaw Update Ye"},{"x":29,"y":13851,"title":"Your OpenClaw Is Running at 1%"},{"x":6,"y":47921,"title":"The Free OpenClaw Setup Nobody"},{"x":29,"y":88732,"title":"Master OpenClaw in 30 Minutes "},{"x":7,"y":75847,"title":"How to Set up & Use OpenClaw w"},{"x":17,"y":55348,"title":"Run OpenClaw for Free with Kim"},{"x":19,"y":143792,"title":"6 OpenClaw use cases I promise"},{"x":17,"y":5127,"title":"7 Prompts That Make OpenClaw A"},{"x":22,"y":3535,"title":"OpenClaw drives a boom in the "},{"x":21,"y":47106,"title":"How to create JOBS for OpenCla"},{"x":9,"y":6908,"title":"I Optimized My OpenClaw to be "},{"x":13,"y":100520,"title":"I Gave 3 AI Agents $1,000 Each"},{"x":14,"y":1448,"title":"New FREE OpenClaw + NotebookLM"},{"x":44,"y":102647,"title":"I made my OpenClaw 10x more po"},{"x":28,"y":6997,"title":"You’re Using OpenClaw Wrong - "},{"x":8,"y":585500,"title":"Please don't install Clawdbot"},{"x":97,"y":4731,"title":"OpenClaw COMPLETE Tutorial - A"},{"x":10,"y":84992,"title":"Build a Trading Bot With AI us"},{"x":23,"y":150850,"title":"I figured out the best way to "},{"x":14,"y":68729,"title":"This $50 AI Command Center Run"},{"x":12,"y":198390,"title":"OpenClaw(Clawdbot) 海量全玩法攻略，本地部"},{"x":38,"y":15904,"title":"Why your OpenClaw agent forget"},{"x":4,"y":9479,"title":"How I Enabled GPT-5.4 in OpenC"},{"x":13,"y":99871,"title":"I have 25 AI Agents working 24"},{"x":8,"y":19570,"title":"This Openclaw Trick Makes Sing"},{"x":16,"y":27268,"title":"From Zero to First AI Assistan"},{"x":9,"y":1745,"title":"Stop OpenClaw From Forgetting "},{"x":19,"y":29505,"title":"My OpenClaw Is Forgetting Ever"},{"x":35,"y":102662,"title":"Master OpenClaw/Clawdbot in 35"},{"x":8,"y":15247,"title":"Build a Multi-Agent Team with "},{"x":11,"y":15667,"title":"OpenClaw + LobsterBoard is INS"},{"x":25,"y":35851,"title":"OpenClaw vs Google - Mass Ban "},{"x":8,"y":356102,"title":"Interview with ‘Just use a VPS"},{"x":18,"y":19416,"title":"OpenClaw Tutorial for Beginner"},{"x":11,"y":9334,"title":"OpenClaw Agents Just Got Bette"},{"x":29,"y":123489,"title":"OpenClaw is taking over AI"},{"x":24,"y":36501,"title":"How to Setup OpenClaw with Oll"},{"x":13,"y":78801,"title":"OpenClaw + Antigravity Turns Y"},{"x":21,"y":24439,"title":"Stop Burning AI Credits — Open"},{"x":26,"y":32684,"title":"SECURE OpenClaw Setup Guide (C"},{"x":23,"y":142943,"title":"Mac Mini M4 + OpenClaw Is Dang"},{"x":11,"y":12559,"title":"New OpenClaw Skills Update is "},{"x":6,"y":23668,"title":"I spent 2 weeks with OpenClaw "},{"x":26,"y":19871,"title":"Mac Mini Agents: OpenClaw is a"}],
+          backgroundColor: 'rgba(102, 126, 234, 0.5)',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.raw.title + ': ' + context.raw.y.toLocaleString() + ' 观看';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { 
+            title: { display: true, text: '时长(分钟)', font: { size: 9 } },
+            ticks: { font: { size: 9 } }
+          },
+          y: { 
+            title: { display: true, text: '观看数', font: { size: 9 } },
+            ticks: { font: { size: 9 } },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // 17. 情感 vs 平均表现
+    new Chart(document.getElementById('sentimentPerformanceChart'), {
+      type: 'bar',
+      data: {
+        labels: ['正面', '中性', '负面'],
+        datasets: [
+          {
+            label: '平均观看',
+            data: [106483, 101022, 0],
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderRadius: 2
+          },
+          {
+            label: '平均点赞',
+            data: [7484, 23449, 0],
+            backgroundColor: 'rgba(231, 76, 60, 0.6)',
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { labels: { font: { size: 9 }, boxWidth: 8 } } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+
+    // 18. 长尾分析 - 真实数据
+    const paretoTopViews = Math.round((8208275 / 10211377) * 100);
+    const paretoOtherViews = 100 - paretoTopViews;
+    new Chart(document.getElementById('paretoChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Top ' + 29 + ' 视频', '其他 ' + 71 + ' 视频'],
+        datasets: [{
+          data: [paretoTopViews, paretoOtherViews],
+          backgroundColor: ['#e74c3c', '#95a5a6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          title: { display: true, text: '观看量分布 (真实数据)', font: { size: 10 } },
+          legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + '% 观看量';
+              }
+            }
+          }
+        } 
+      }
+    });
+
+    // 19. 发布星期分布
+    const dayOfWeekData = {"周一":0,"周二":0,"周三":0,"周四":100,"周五":0,"周六":0,"周日":0};
+    new Chart(document.getElementById('hourChart'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(dayOfWeekData),
+        datasets: [{
+          label: '视频数',
+          data: Object.values(dayOfWeekData),
+          backgroundColor: [
+            'rgba(231, 76, 60, 0.7)',   // 周日 - 红
+            'rgba(52, 152, 219, 0.7)',  // 周一 - 蓝
+            'rgba(46, 204, 113, 0.7)',  // 周二 - 绿
+            'rgba(243, 156, 18, 0.7)',  // 周三 - 橙
+            'rgba(155, 89, 182, 0.7)',  // 周四 - 紫
+            'rgba(26, 188, 156, 0.7)',  // 周五 - 青
+            'rgba(231, 76, 60, 0.7)'    // 周六 - 红
+          ],
+          borderRadius: 3
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                const day = days[context.dataIndex];
+                const count = context.parsed.y;
+                const percentage = ((count / 100) * 100).toFixed(1);
+                return day + ': ' + count + '个视频 (' + percentage + '%)';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 20. 高观看低互动 - 带点击查看功能
+    const highViewLowEngageData = [{"id":"st534T7-mdE","title":"The Ultimate Beginner’s Guide to OpenClaw","uploader":"Metics Media","duration":"3402","viewCount":157380,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=st534T7-mdE","thumbnail":"https://i.ytimg.com/vi/st534T7-mdE/mqdefault.jpg","sentiment":"positive","rate":0},{"id":"2rcJdFuNbZQ","title":"解剖小龍蝦 — 以 OpenClaw 為例介紹 AI Agent 的運作原理","uploader":"Hung-yi Lee","duration":"4997","viewCount":131572,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=2rcJdFuNbZQ","thumbnail":"https://i.ytimg.com/vi/2rcJdFuNbZQ/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"75L7WTtWSNc","title":"OpenClaw là gì mà ở đâu người ta cũng nói về nó?","uploader":"KIẾN THỨC THÚ VỊ Official","duration":"642","viewCount":267650,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=75L7WTtWSNc","thumbnail":"https://i.ytimg.com/vi/75L7WTtWSNc/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"Xui-bSDgORU","title":"OpenClaw 3.8 IS INSANE - Here's Why","uploader":"Build In Public","duration":"1076","viewCount":20587,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Xui-bSDgORU","thumbnail":"https://i.ytimg.com/vi/Xui-bSDgORU/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"ssYt09bCgUY","title":"The wild rise of OpenClaw...","uploader":"Fireship","duration":"319","viewCount":1808524,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=ssYt09bCgUY","thumbnail":"https://i.ytimg.com/vi/ssYt09bCgUY/mqdefault.jpg","sentiment":"neutral","rate":0}];
+    new Chart(document.getElementById('highViewLowEngageChart'), {
+      type: 'bar',
+      data: {
+        labels: highViewLowEngageData.map((v, i) => '#' + (i + 1)),
+        datasets: [
+          {
+            label: '观看数(点击跳转)',
+            data: highViewLowEngageData.map(v => v.viewCount),
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y',
+            barPercentage: 0.8
+          },
+          {
+            label: '点赞率(%)',
+            data: highViewLowEngageData.map(v => parseFloat(v.rate.toFixed(2))),
+            backgroundColor: 'rgba(231, 76, 60, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y1',
+            barPercentage: 0.8
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const videoId = highViewLowEngageData[index].id;
+            scrollToVideo(videoId);
+          }
+        },
+        onHover: (e, elements) => {
+          e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+        plugins: { 
+          legend: { labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const index = context[0].dataIndex;
+                return highViewLowEngageData[index].title.substring(0, 30) + '...';
+              },
+              afterLabel: function() {
+                return '💡 点击查看视频';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 21. 低观看高互动 - 带点击查看功能
+    const lowViewHighEngageData = [{"id":"mNb07VMlOOg","title":"OpenClaw Tutorial: Crash Course for Beginners","uploader":"RoadsideCoder","duration":"1348","viewCount":651,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=mNb07VMlOOg","thumbnail":"https://i.ytimg.com/vi/mNb07VMlOOg/mqdefault.jpg","sentiment":"positive","rate":0},{"id":"NiTOlYmthNg","title":"OpenClaw New Update Is INSANE!","uploader":"Julian Goldie SEO","duration":"487","viewCount":4381,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=NiTOlYmthNg","thumbnail":"https://i.ytimg.com/vi/NiTOlYmthNg/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"_U_15eZXFFE","title":"New NemoClaw Destroys OpenClaw?","uploader":"Julian Goldie SEO","duration":"499","viewCount":3431,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=_U_15eZXFFE","thumbnail":"https://i.ytimg.com/vi/_U_15eZXFFE/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"d1hjAjxmEuY","title":"My OpenClaw is making me go viral on Instagram","uploader":"Albert Olgaard","duration":"1520","viewCount":4530,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=d1hjAjxmEuY","thumbnail":"https://i.ytimg.com/vi/d1hjAjxmEuY/mqdefault.jpg","sentiment":"neutral","rate":0},{"id":"esLmX-i6FNg","title":"OpenClaw, a viral \"lobster farming\" platform, has drawn a security warning from the Chinese Commu...","uploader":"鏡新聞","duration":"69","viewCount":1382,"likeCount":0,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=esLmX-i6FNg","thumbnail":"https://i.ytimg.com/vi/esLmX-i6FNg/mqdefault.jpg","sentiment":"neutral","rate":0}];
+    new Chart(document.getElementById('lowViewHighEngageChart'), {
+      type: 'bar',
+      data: {
+        labels: lowViewHighEngageData.map((v, i) => '#' + (i + 1)),
+        datasets: [
+          {
+            label: '观看数(点击跳转)',
+            data: lowViewHighEngageData.map(v => v.viewCount),
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y',
+            barPercentage: 0.8
+          },
+          {
+            label: '点赞率(%)',
+            data: lowViewHighEngageData.map(v => parseFloat(v.rate.toFixed(2))),
+            backgroundColor: 'rgba(39, 174, 96, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y1',
+            barPercentage: 0.8
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const videoId = lowViewHighEngageData[index].id;
+            scrollToVideo(videoId);
+          }
+        },
+        onHover: (e, elements) => {
+          e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+        plugins: { 
+          legend: { labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const index = context[0].dataIndex;
+                return lowViewHighEngageData[index].title.substring(0, 30) + '...';
+              },
+              afterLabel: function() {
+                return '💡 点击查看视频';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
