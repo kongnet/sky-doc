@@ -122,35 +122,39 @@
     }
     .chart-card {
       background: rgba(255,255,255,0.95);
-      border-radius: 10px;
-      padding: 0;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      height: 200px;
-      width: 100%;
+      height: 100%;
+      min-height: 200px;
     }
     .chart-header {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
+      gap: 8px;
+      padding: 8px 12px;
       border-bottom: 1px solid #eee;
       flex-shrink: 0;
-      height: 32px;
     }
     .chart-category {
       font-size: 0.6em;
       font-weight: 600;
       color: white;
-      padding: 1px 4px;
-      border-radius: 3px;
+      padding: 2px 8px;
+      border-radius: 4px;
       text-transform: uppercase;
       letter-spacing: 0.3px;
       white-space: nowrap;
       flex-shrink: 0;
     }
+    .chart-category[data-category="基础"] { background: #3B82F6; }
+    .chart-category[data-category="趋势"] { background: #0891B2; }
+    .chart-category[data-category="排名"] { background: #4F46E5; }
+    .chart-category[data-category="内容"] { background: #7C3AED; }
+    .chart-category[data-category="洞察"] { background: #475569; }
+    .chart-category[data-category="异常"] { background: #DC2626; }
     .chart-card h3 {
       font-size: 0.75em;
       color: #333;
@@ -416,7 +420,7 @@
     <!-- Header -->
     <div class="header">
       <h1>🎬 YouTube XPIN 深度数据分析报告</h1>
-      <p>关键词: "XPIN" | 100 个真实视频 | 生成: 2026/3/12 05:59:18</p>
+      <p>关键词: "XPIN" | 100 个真实视频 | 生成: 2026/3/12 12:46:33</p>
       <span class="badge">✅ 100% 真实 YouTube 数据</span>
       <div class="analysis-summary">
         📊 本报告包含 100 个视频的 21 维度深度分析 | 频道集中度: 中度集中 | 
@@ -1088,7 +1092,7 @@
         labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
         datasets: [{
           label: '点赞率(%)',
-          data: ["14.67","10.19","8.85","8.82","8.57","7.95","7.94","7.85","7.76","7.76"],
+          data: [14.67,10.19,8.85,8.82,8.57,7.95,7.94,7.85,7.76,7.76],
           backgroundColor: 'rgba(39, 174, 96, 0.6)',
           borderRadius: 2
         }]
@@ -1354,7 +1358,7 @@
       }
     });
 
-    // 20. 高观看低互动 - 带点击查看功能
+    // 20. 高观看低互动 - 带点击查看功能 (混合图表: 柱状图+折线图)
     const highViewLowEngageData = [];
     new Chart(document.getElementById('highViewLowEngageChart'), {
       type: 'bar',
@@ -1362,20 +1366,25 @@
         labels: highViewLowEngageData.map((v, i) => '#' + (i + 1)),
         datasets: [
           {
-            label: '观看数(点击跳转)',
+            label: '观看数',
             data: highViewLowEngageData.map(v => v.viewCount),
             backgroundColor: 'rgba(52, 152, 219, 0.6)',
             borderRadius: 2,
             yAxisID: 'y',
-            barPercentage: 0.8
+            order: 2
           },
           {
+            type: 'line',
             label: '点赞率(%)',
             data: highViewLowEngageData.map(v => parseFloat(v.rate.toFixed(2))),
-            backgroundColor: 'rgba(231, 76, 60, 0.6)',
-            borderRadius: 2,
+            borderColor: 'rgba(231, 76, 60, 0.8)',
+            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(231, 76, 60, 1)',
             yAxisID: 'y1',
-            barPercentage: 0.8
+            tension: 0.3,
+            order: 1
           }
         ]
       },
@@ -1406,14 +1415,14 @@
           }
         },
         scales: {
-          y: { type: 'linear', display: true, position: 'left', ticks: { font: { size: 9 } } },
-          y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          y: { type: 'linear', display: true, position: 'left', title: { display: true, text: '观看数', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '点赞率%', font: { size: 9 } }, grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
           x: { ticks: { font: { size: 9 } } }
         }
       }
     });
 
-    // 21. 低观看高互动 - 带点击查看功能
+    // 21. 低观看高互动 - 带点击查看功能 (混合图表: 柱状图+折线图)
     const lowViewHighEngageData = [{"id":"TraNaqsC6tY","title":"XPIN, CREPE, SHIBA INU DECEMBER PROPHECY CONFIRMATIONS","uploader":"CryptoGrace","duration":"292","viewCount":225,"likeCount":33,"uploadDate":"2025-12-04","url":"https://www.youtube.com/watch?v=TraNaqsC6tY","thumbnail":"https://i.ytimg.com/vi/TraNaqsC6tY/mqdefault.jpg","sentiment":"neutral","rate":14.666666666666666},{"id":"Lb55kAU3ZdE","title":"XPIN Surprises Market – Huge Upside Unfolding!","uploader":"Shah Faisal Shah","duration":"239","viewCount":108,"likeCount":11,"uploadDate":"2026-02-10","url":"https://www.youtube.com/watch?v=Lb55kAU3ZdE","thumbnail":"https://i.ytimg.com/vi/Lb55kAU3ZdE/mqdefault.jpg","sentiment":"neutral","rate":10.185185185185185},{"id":"kkk-RiAd9Fw","title":"XPIN Breakdown or Fakeout? Key Levels Explained","uploader":"Shah Faisal Shah","duration":"202","viewCount":113,"likeCount":10,"uploadDate":"2026-01-10","url":"https://www.youtube.com/watch?v=kkk-RiAd9Fw","thumbnail":"https://i.ytimg.com/vi/kkk-RiAd9Fw/mqdefault.jpg","sentiment":"negative","rate":8.849557522123893},{"id":"jRafdgeO6hE","title":"XPIN Holds Trendline – Next Leg Building Up","uploader":"Shah Faisal Shah","duration":"195","viewCount":136,"likeCount":12,"uploadDate":"2026-01-06","url":"https://www.youtube.com/watch?v=jRafdgeO6hE","thumbnail":"https://i.ytimg.com/vi/jRafdgeO6hE/mqdefault.jpg","sentiment":"neutral","rate":8.823529411764707},{"id":"I9XA4aXDDpY","title":"XPIN...GET ON BOARD","uploader":"WatchPastorDavidojua","duration":"292","viewCount":4747,"likeCount":407,"uploadDate":"2025-10-08","url":"https://www.youtube.com/watch?v=I9XA4aXDDpY","thumbnail":"https://i.ytimg.com/vi/I9XA4aXDDpY/mqdefault.jpg","sentiment":"neutral","rate":8.573836107014957}];
     new Chart(document.getElementById('lowViewHighEngageChart'), {
       type: 'bar',
@@ -1421,20 +1430,25 @@
         labels: lowViewHighEngageData.map((v, i) => '#' + (i + 1)),
         datasets: [
           {
-            label: '观看数(点击跳转)',
+            label: '观看数',
             data: lowViewHighEngageData.map(v => v.viewCount),
             backgroundColor: 'rgba(52, 152, 219, 0.6)',
             borderRadius: 2,
             yAxisID: 'y',
-            barPercentage: 0.8
+            order: 2
           },
           {
+            type: 'line',
             label: '点赞率(%)',
             data: lowViewHighEngageData.map(v => parseFloat(v.rate.toFixed(2))),
-            backgroundColor: 'rgba(39, 174, 96, 0.6)',
-            borderRadius: 2,
+            borderColor: 'rgba(39, 174, 96, 0.8)',
+            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(39, 174, 96, 1)',
             yAxisID: 'y1',
-            barPercentage: 0.8
+            tension: 0.3,
+            order: 1
           }
         ]
       },
@@ -1465,8 +1479,8 @@
           }
         },
         scales: {
-          y: { type: 'linear', display: true, position: 'left', ticks: { font: { size: 9 } } },
-          y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          y: { type: 'linear', display: true, position: 'left', title: { display: true, text: '观看数', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '点赞率%', font: { size: 9 } }, grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
           x: { ticks: { font: { size: 9 } } }
         }
       }
