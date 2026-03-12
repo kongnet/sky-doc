@@ -108,6 +108,9 @@
     .stat-card.blue .value { color: #3498db; }
     .stat-card.purple .value { color: #9b59b6; }
     .stat-card.red .value { color: #e74c3c; }
+    .stat-card.orange { background: linear-gradient(135deg, #fff8f0 0%, #fff 100%); }
+    .stat-card.orange .value { color: #e67e22; }
+    .stat-card.info { background: linear-gradient(135deg, #f0f8ff 0%, #fff 100%); }
     
     /* Charts Section - 分类分组 */
     .charts-section {
@@ -420,7 +423,7 @@
     <!-- Header -->
     <div class="header">
       <h1>🎬 YouTube DePIN 深度数据分析报告</h1>
-      <p>关键词: "DePIN" | 100 个真实视频 | 生成: 2026/3/12 12:40:33</p>
+      <p>关键词: "DePIN" | 100 个真实视频 | 生成: 2026/3/12 13:04:06</p>
       <span class="badge">✅ 100% 真实 YouTube 数据</span>
       <div class="analysis-summary">
         📊 本报告包含 100 个视频的 21 维度深度分析 | 频道集中度: 分散 | 
@@ -438,6 +441,19 @@
       <div class="stat-card"><div class="value">21.1K</div><div class="label">平均观看</div></div>
       <div class="stat-card red"><div class="value">2.57%</div><div class="label">互动率</div></div>
       <div class="stat-card"><div class="value">15:01</div><div class="label">平均时长</div></div>
+      <div class="stat-card orange" style="grid-column: span 2;"
+           title="HHI指数: 194 - 竞争型市场 (标准值: 0.019)">
+        <div class="value">194 <small style="font-size:0.5em;opacity:0.8">(竞争型)</small></div>
+        <div class="label">频道集中度 (HHI)</div>
+      </div>
+      <div class="stat-card info" style="grid-column: span 2; font-size: 0.75em; text-align: left; padding: 8px 12px;">
+        <div style="font-size: 0.85em; margin-bottom: 4px;">📊 HHI 市场集中度标准:</div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <span style="color: #27ae60;">● &lt;1500: 竞争型</span>
+          <span style="color: #f39c12;">● 1500-2500: 中度</span>
+          <span style="color: #e74c3c;">● ≥2500: 高度</span>
+        </div>
+      </div>
     </div>
 
     <!-- 图表按分类分组 -->
