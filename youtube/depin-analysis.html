@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DePIN YouTube深度分析报告 (60+维度)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.95);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .header .subtitle {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+    .meta-info {
+      background: rgba(255,255,255,0.1);
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+    .content {
+      padding: 30px;
+    }
+    .section {
+      margin-bottom: 40px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      border-left: 4px solid #667eea;
+    }
+    .section-title {
+      font-size: 1.4em;
+      color: #667eea;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    .dimension {
+      margin-bottom: 25px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .dimension-title {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 10px;
+      font-size: 1.05em;
+    }
+    .dimension-content {
+      color: #6c757d;
+      line-height: 1.6;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+    .stat-value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+    .stat-label {
+      color: #6c757d;
+      font-size: 0.9em;
+    }
+    .highlight {
+      background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .comparison-table th {
+      background: #667eea;
+      color: white;
+    }
+    .comparison-table tr:hover {
+      background: #f8f9fa;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      margin: 2px;
+    }
+    .tag-blue { background: #e3f2fd; color: #1976d2; }
+    .tag-green { background: #e8f5e9; color: #388e3c; }
+    .tag-orange { background: #fff3e0; color: #f57c00; }
+    .tag-red { background: #ffebee; color: #d32f2f; }
+    .footer {
+      background: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #6c757d;
+      font-size: 0.9em;
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.5em; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎬 DePIN YouTube深度分析报告</h1>
+      <div class="subtitle">基于100个视频的60+维度综合分析</div>
+      <div class="meta-info">
+        生成时间: 2026/3/12 15:08:31 | 
+        数据来源: 2026/3/12 12:40:21 | 
+        分析样本: 100个视频
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Executive Summary -->
+      <div class="section">
+        <div class="section-title">📊 执行摘要</div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">2.1M</div>
+            <div class="stat-label">总观看量</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">54.1K</div>
+            <div class="stat-label">总点赞数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">3.56%</div>
+            <div class="stat-label">平均互动率</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">76</div>
+            <div class="stat-label">独立创作者</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">194</div>
+            <div class="stat-label">HHI指数 (竞争型)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">3.9年</div>
+            <div class="stat-label">数据跨度</div>
+          </div>
+        </div>
+
+        <div class="highlight">
+          <strong>核心洞察:</strong> DePIN话题在YouTube上共有100个视频，覆盖76个创作者。
+          总观看量达2.1M次，平均互动率3.56%。
+          市场HHI指数为194，属于<strong>竞争型市场</strong>。
+        </div>
+      </div>
+
+      <!-- Part 1: Basic Statistics -->
+      <div class="section">
+        <div class="section-title">【第一部分】基础统计维度 (1-10)</div>
+        
+        <div class="dimension">
+          <div class="dimension-title">【维度1】样本总量分析</div>
+          <div class="dimension-content">
+            本次分析共收集到100个DePIN相关YouTube视频。
+            这是目前关于DePIN生态最全面的视频样本集之一。
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度2】观看数分布统计</div>
+          <div class="dimension-content">
+            平均观看数: 21.1K次 | 
+            中位数: 1.5K次 | 
+            最高: 833.2K次 | 
+            标准差: 91.4K次
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度3】点赞数分布统计</div>
+          <div class="dimension-content">
+            平均点赞数: 541次 | 
+            中位数: 43次 | 
+            有点赞视频: 87个 (87.0%)
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度4】互动率（点赞率）分析</div>
+          <div class="dimension-content">
+            平均互动率: 3.56% | 
+            中位数: 3.06% | 
+            最高: 16.67% | 
+            高于YouTube平均水平
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度5】视频时长分布</div>
+          <div class="dimension-content">
+            平均时长: 15.0分钟 | 
+            中位数: 8.8分钟 | 
+            最长: 100.0分钟 | 
+            最短: 0.8分钟 | 
+            以中等深度内容为主
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度6】内容情感倾向分析</div>
+          <div class="dimension-content">
+            <span class="tag tag-blue">neutral: 86个 (86.0%)</span><span class="tag tag-green">positive: 13个 (13.0%)</span><span class="tag tag-red">negative: 1个 (1.0%)</span>
+            <br>主导情绪: <strong>neutral</strong>，整体氛围积极
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度7-10】集中度与长尾分析</div>
+          <div class="dimension-content">
+            <strong>基尼系数:</strong> 0.896 (高度集中)<br>
+            <strong>头部效应:</strong> 前7个视频贡献80%观看量<br>
+            <strong>长尾比例:</strong> 93.0%的视频属于长尾<br>
+            <strong>零赞视频:</strong> 13个 (13.0%)
+          </div>
+        </div>
+      </div>
+
+      <!-- Part 2: Time Analysis -->
+      <div class="section">
+        <div class="section-title">【第二部分】时间序列分析 (11-20)</div>
+        
+        <div class="dimension">
+          <div class="dimension-title">【维度11-12】时间跨度与年度趋势</div>
+          <div class="dimension-content">
+            <strong>数据跨度:</strong> 2022-04-17 至 2026-02-28 (1413天，约3.9年)<br>
+            <strong>年度发布:</strong> 2022年: 1个 | 2023年: 9个 | 2024年: 21个 | 2025年: 56个 | 2026年: 13个
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度13-15】发布规律</div>
+          <div class="dimension-content">
+            <strong>最活跃月份:</strong> 2025-12 (13个视频)<br>
+            <strong>最佳发布日:</strong> 周五<br>
+            <strong>内容新鲜度:</strong> 最近30天7个视频 | 90天26个视频
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度16-20】趋势与活跃度</div>
+          <div class="dimension-content">
+            <strong>日均新增:</strong> 0.07个视频 | 
+            <strong>饱和度:</strong> 蓝海市场<br>
+            <strong>话题持续性:</strong> 长期话题，非短期热点
+          </div>
+        </div>
+      </div>
+
+      <!-- Part 3: Channel Analysis -->
+      <div class="section">
+        <div class="section-title">【第三部分】频道集中度分析 (21-28)</div>
+        
+        <div class="dimension">
+          <div class="dimension-title">【维度21】HHI市场集中度指数</div>
+          <div class="dimension-content">
+            <strong>HHI指数:</strong> 194 | 
+            <strong>市场类型:</strong> <span class="tag tag-green">竞争型市场</span><br>
+            <strong>解读:</strong> 内容创作者众多，市场竞争充分，没有垄断者
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度22-24】头部频道与集中度</div>
+          <div class="dimension-content">
+            <strong>Top 5频道:</strong><br>
+            1. Solana: 7个视频, 76.1K次观看<br>2. Your Friend Andy: 4个视频, 28.1K次观看<br>3. HeliumDeploy ASIC Miners & Tools: 4个视频, 7.0K次观看<br>4. DePIN Connection: 3个视频, 1.0K次观看<br>5. Nordic Crypto: 3个视频, 126.1K次观看<br>
+            <strong>CR4:</strong> 18.0% | <strong>CR8:</strong> 27.0% | 
+            <strong>最大单一频道份额:</strong> 7.0%
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度25-28】创作者生态</div>
+          <div class="dimension-content">
+            <strong>创作者分层:</strong> 
+            <span class="tag tag-blue">单视频: 63个</span>
+            <span class="tag tag-green">中小(2-5): 12个</span>
+            <span class="tag tag-orange">大创作者(>5): 1个</span><br>
+            <strong>生态健康度:</strong> 98.7%为中小创作者，生态健康
+          </div>
+        </div>
+      </div>
+
+      <!-- Part 4: Content Analysis -->
+      <div class="section">
+        <div class="section-title">【第四部分】内容深度分析 (29-38)</div>
+        
+        <div class="dimension">
+          <div class="dimension-title">【维度29-31】标题与关键词</div>
+          <div class="dimension-content">
+            <strong>平均标题长度:</strong> 60个字符 (符合SEO最佳实践)<br>
+            <strong>热门关键词Top 5:</strong> 1.crypto(20) 2.network(13) 3.decentralized(12) 4.projects(11) 5.infrastructure(10)<br>
+            <strong>内容类型:</strong> 
+            <span class="tag tag-blue">教程: 19</span>
+            <span class="tag tag-green">评测: 8</span>
+            <span class="tag tag-orange">新闻: 8</span>
+            <span class="tag tag-red">项目: 17</span>
+          </div>
+        </div>
+
+        <div class="dimension">
+          <div class="dimension-title">【维度32-38】内容质量与深度</div>
+          <div class="dimension-content">
+            <strong>质量分层:</strong> 
+            <span class="tag tag-green">高质量(>5%): 23个</span>
+            <span class="tag tag-blue">中等(2-5%): 50个</span>
+            <span class="tag tag-orange">低质量(<2%): 27个</span><br>
+            <strong>内容深度:</strong> 
+            短(<5min): 30 | 
+            中(5-15min): 39 | 
+            长(15-30min): 15 | 
+            深(>30min): 16<br>
+            <strong>病毒潜力:</strong> 7个病毒级(>50K)，病毒率7.0%
+          </div>
+        </div>
+      </div>
+
+      <!-- Part 5: Engagement -->
+      <div class="section">
+        <div class="section-title">【第五部分】互动与传播分析 (39-45)</div>
+        
+        <div class="dimension">
+          <div class="dimension-title">【维度39-45】互动深度与传播效率</div>
+          <div class="dimension-content">
+            <strong>点赞转化率:</strong> 54121.00%<br>
+            <strong>高观看低互动异常:</strong> 4个视频<br>
+            <strong>低观看高互动优质内容:</strong> 15个视频（有增长潜力）<br>
+            <strong>传播效率:</strong> 中等传播力
+          </div>
+        </div>
+      </div>
+
+      <!-- Part 6: Anomalies -->
+      <div class="section">
+        <div class="section-title">【第六部分】异常与特征分析 (46-55)</div>
+        
+        <div class="dimension">
+          <div class="dimension-title">【维度46-55】异常检测与特征</div>
+          <div class="dimension-content">
+            <strong>内容原创度:</strong> 100.0%<br>
+            <strong>高活跃异常频道:</strong> Solana, Your Friend Andy, HeliumDeploy ASIC Miners & Tools<br>
+            <strong>通用型内容(适合多平台):</strong> 27个 (27.0%)
+          </div>
+        </div>
+      </div>
+
+      <!-- Part 7: Market -->
+      <div class="section">
+        <div class="section-title">【第七部分】市场与竞争分析 (56-60)</div>
+        
+        <div class="dimension">
+          <div class="dimension-title">【维度56-60】市场评估</div>
+          <div class="dimension-content">
+            <strong>市场饱和度:</strong> 蓝海市场，供给不足<br>
+            <strong>进入壁垒:</strong> 质量门槛3.06%，较高<br>
+            <strong>增长态势:</strong> 近90天26个新视频，高速增长期<br>
+            <strong>生命周期:</strong> 长生命周期，内容价值持久
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div class="section-title" style="color: white; border-bottom-color: rgba(255,255,255,0.3);">📋 综合分析总结</div>
+        
+        <div style="line-height: 1.8;">
+          <h3 style="margin-bottom: 15px;">一、市场概况</h3>
+          <p>DePIN话题在YouTube上共有100个视频，覆盖76个创作者。
+          总观看量达2.1M次，总点赞54.1K次。
+          平均互动率3.56%，高于YouTube平均水平。</p>
+
+          <h3 style="margin: 20px 0 15px;">二、内容特征</h3>
+          <p>平均视频时长15.0分钟，以中等深度内容为主。
+          内容情感以neutral为主，整体氛围积极。
+          头部7个视频贡献80%观看量，呈现明显的幂律分布。</p>
+
+          <h3 style="margin: 20px 0 15px;">三、竞争格局</h3>
+          <p>HHI指数为194，属于竞争型市场。
+          Top 4频道市场份额18.0%，市场分散。
+          中小创作者占比98.7%，生态健康。</p>
+
+          <h3 style="margin: 20px 0 15px;">四、发展趋势</h3>
+          <p>时间跨度3.9年，话题具有持续性。
+          内容创作活跃。
+          垂直细分领域，适合精准运营。</p>
+
+          <h3 style="margin: 20px 0 15px;">五、机会与建议</h3>
+          <p>
+            1. <strong>内容机会:</strong> 提升内容质量，增加高互动内容<br>
+            2. <strong>创作者策略:</strong> 竞争型市场，新创作者有机会通过差异化切入<br>
+            3. <strong>发布时间:</strong> 选择周五等高峰时段发布<br>
+            4. <strong>内容形式:</strong> 深度长内容更有价值
+          </p>
+
+          <h3 style="margin: 20px 0 15px;">六、风险提示</h3>
+          <p>
+            - 头部效应极明显，新内容获取流量难度大<br>
+            - 市场类型: 竞争型市场，竞争激烈但机会多<br>
+            - 长青话题，可长期布局
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>本报告由YouTube Keyword Analyzer自动生成 | 共60+维度分析</p>
+      <p>数据仅供参考，商业决策请结合实际情况</p>
+    </div>
+  </div>
+</body>
+</html>
