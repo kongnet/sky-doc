@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DePIN YouTube 视频数据深度分析报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2em; margin-bottom: 10px; }
+        .header p { opacity: 0.9; }
+        .content { padding: 30px; }
+        .section {
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label { color: #666; font-size: 0.9em; }
+        ul { list-style: none; padding-left: 0; }
+        li { padding: 8px 0; border-bottom: 1px solid #eee; }
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DePIN YouTube 视频数据深度分析报告</h1>
+            <p>基于100个视频的60+维度分析</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>📊 基础概况</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">100</div>
+                        <div class="stat-label">分析样本</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">210万</div>
+                        <div class="stat-label">总观看量</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">5.4万</div>
+                        <div class="stat-label">总点赞数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">3.56%</div>
+                        <div class="stat-label">平均互动率</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🏢 频道集中度分析</h2>
+                <ul>
+                    <li><strong>独立频道数:</strong> 76 个</li>
+                    <li><strong>Top 5 频道:</strong>
+                        <ol>
+                            <li>Solana: 7个视频, 76,105次观看</li>
+                            <li>Your Friend Andy: 4个视频, 28,050次观看</li>
+                            <li>HeliumDeploy ASIC Miners & Tools: 4个视频, 7,037次观看</li>
+                            <li>DePIN Connection: 3个视频, 1,037次观看</li>
+                            <li>Nordic Crypto: 3个视频, 126,110次观看</li>
+                        </ol>
+                    </li>
+                    <li><strong>HHI指数:</strong> 194 (竞争型市场)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>📈 时间趋势分析</h2>
+                <ul>
+                    <li><strong>时间跨度:</strong> 2022-04-17 至 2026-02-28 (约 3.9 年)</li>
+                    <li><strong>年度分布:</strong>
+                        <ul>
+                            <li>2022年: 1 个视频</li>
+                            <li>2023年: 9 个视频</li>
+                            <li>2024年: 21 个视频</li>
+                            <li>2025年: 56 个视频 (爆发期)</li>
+                            <li>2026年: 13 个视频</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>⭐ 内容质量分析</h2>
+                <ul>
+                    <li><strong>平均互动率:</strong> 3.56%</li>
+                    <li><strong>高质量内容(&gt;5%):</strong> 23 个 (23.0%)</li>
+                    <li><strong>中等质量(2-5%):</strong> 50 个 (50.0%)</li>
+                    <li><strong>低质量内容(&lt;2%):</strong> 27 个 (27.0%)</li>
+                </ul>
+                <div class="highlight">
+                    <strong>高互动视频Top 3:</strong><br>
+                    1. The Great Merge — When AI, RWA, and DePIN Unite (16.67%)<br>
+                    2. The State of Crypto 2026: DePIN, RWA & Web3 Jobs (15.11%)<br>
+                    3. $50,000 in Free DePIN Devices – 150+ Miners (12.40%)
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎯 头部效应分析</h2>
+                <ul>
+                    <li><strong>Top 10%视频</strong> (10个) 贡献 86.1% 观看量</li>
+                    <li><strong>最高观看:</strong> 833,201 次</li>
+                    <li><strong>中位数观看:</strong> 1,439 次</li>
+                    <li><strong>Top 7 个视频</strong> (占7.0%) 贡献 80% 观看量</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>⏱️ 内容时长分析</h2>
+                <ul>
+                    <li><strong>平均时长:</strong> 15.0 分钟</li>
+                    <li><strong>短视频(&lt;5min):</strong> 30 个 (30.0%)</li>
+                    <li><strong>中等视频(5-15min):</strong> 39 个 (39.0%)</li>
+                    <li><strong>长视频(&gt;15min):</strong> 31 个 (31.0%)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>😊 内容情感分析</h2>
+                <ul>
+                    <li><strong>中性 (neutral):</strong> 86 个 (86.0%)</li>
+                    <li><strong>正面 (positive):</strong> 13 个 (13.0%)</li>
+                    <li><strong>负面 (negative):</strong> 1 个 (1.0%)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>🔑 高频关键词</h2>
+                <ol>
+                    <li>crypto: 20 次</li>
+                    <li>projects: 11 次</li>
+                    <li>decentralized: 10 次</li>
+                    <li>infrastructure: 9 次</li>
+                    <li>network: 9 次</li>
+                </ol>
+            </div>
+
+            <div class="section">
+                <h2>📊 市场评估</h2>
+                <div class="highlight">
+                    <strong>市场类型:</strong> 竞争型市场 (HHI=194 &lt; 1500)<br>
+                    <strong>内容新鲜度:</strong> 最近90天有 26 个视频<br>
+                    <strong>病毒潜力:</strong> 7 个视频 &gt;50K 观看<br>
+                    <strong>日均发布:</strong> 0.07 个视频/天 (蓝海市场)
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>💡 核心洞察</h2>
+                <ul>
+                    <li><strong>增长趋势:</strong> 2025年是DePIN内容的爆发期，占总数56%</li>
+                    <li><strong>市场格局:</strong> 竞争型市场，76个创作者，无垄断者</li>
+                    <li><strong>内容特征:</strong> 以中等深度内容为主(15分钟)，专业性强</li>
+                    <li><strong>用户参与:</strong> 平均互动率3.56%，高于YouTube平均水平</li>
+                    <li><strong>头部效应:</strong> 极其明显，Top 7视频贡献80%流量</li>
+                    <li><strong>市场机会:</strong> 蓝海市场，日均仅0.07个新视频，新创作者有机会</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>报告生成时间: 2026-03-14 | 数据来源: YouTube DePIN 视频数据</p>
+        </div>
+    </div>
+</body>
+</html>
