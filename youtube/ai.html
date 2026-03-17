@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube AI 深度数据分析报告</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #e2e4e7;
+      min-height: 100vh;
+      padding: 15px;
+    }
+    .container { max-width: 1600px; margin: 0 auto; }
+    
+    /* Header */
+    .header {
+      background: rgba(255,255,255,0.95);
+      border-radius: 8px;
+      padding: 8px 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+    }
+    .header h1 {
+      font-size: 1.2em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 2px;
+    }
+    .header p {
+      font-size: 0.75em;
+      color: #666;
+      margin: 0;
+    }
+    .badge {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      background: #27ae60;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 0.6em;
+      font-weight: bold;
+    }
+    .analysis-summary {
+      margin-top: 4px;
+      padding: 3px 8px;
+      background: #f8f9fa;
+      border-radius: 3px;
+      font-size: 0.7em;
+      color: #666;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 4px;
+      padding: 4px 4px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      line-height: 1.2;
+    }
+    .stat-card .value {
+      font-size: 1em;
+      font-weight: bold;
+      color: #333;
+      line-height: 1.1;
+    }
+    .stat-card .label {
+      font-size: 0.6em;
+      color: #666;
+      margin-top: 1px;
+      line-height: 1.1;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-card .value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #333;
+    }
+    .stat-card .label {
+      font-size: 0.85em;
+      color: #666;
+      margin-top: 5px;
+    }
+    .stat-card.positive .value { color: #27ae60; }
+    .stat-card.neutral .value { color: #f39c12; }
+    .stat-card.blue .value { color: #3498db; }
+    .stat-card.purple .value { color: #9b59b6; }
+    .stat-card.red .value { color: #e74c3c; }
+    .stat-card.orange { background: linear-gradient(135deg, #fff8f0 0%, #fff 100%); }
+    .stat-card.orange .value { color: #e67e22; }
+    .stat-card.info { background: linear-gradient(135deg, #f0f8ff 0%, #fff 100%); }
+    
+    /* Charts Section - 分类分组 */
+    .charts-section {
+      margin-bottom: 16px;
+    }
+    
+    /* Charts Grid - 统一4列布局 */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .chart-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 200px;
+    }
+    .chart-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+    }
+    .chart-category {
+      font-size: 0.6em;
+      font-weight: 600;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .chart-category[data-category="基础"] { background: #3B82F6; }
+    .chart-category[data-category="趋势"] { background: #0891B2; }
+    .chart-category[data-category="排名"] { background: #4F46E5; }
+    .chart-category[data-category="内容"] { background: #7C3AED; }
+    .chart-category[data-category="洞察"] { background: #475569; }
+    .chart-category[data-category="异常"] { background: #DC2626; }
+    .chart-card h3 {
+      font-size: 0.75em;
+      color: #333;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      line-height: 1.2;
+    }
+    .chart-body {
+      flex: 1;
+      padding: 6px;
+      min-height: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chart-body canvas {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 150px;
+    }
+    
+    /* Category Legend */
+    .category-legend {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8em;
+      color: white;
+      background: rgba(0,0,0,0.2);
+      padding: 4px 10px;
+      border-radius: 16px;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    
+    /* Video Section */
+    .videos-section {
+      background: rgba(255,255,255,0.95);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    .videos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .videos-header h2 {
+      font-size: 1.1em;
+      color: #333;
+    }
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .sort-controls label {
+      font-size: 0.75em;
+      color: #666;
+      margin-right: 4px;
+    }
+    .sort-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 0.7em;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .sort-btn:hover {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+    .sort-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+    .video-count {
+      font-size: 0.85em;
+      color: #888;
+    }
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+    }
+    
+    /* Video Card */
+    .video-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      scroll-margin-top: 100px;
+    }
+    .video-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    }
+    .video-card.highlighted {
+      box-shadow: 0 0 0 3px #f39c12, 0 4px 15px rgba(243, 156, 18, 0.3);
+      transform: translateY(-2px);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px #f39c12, 0 8px 25px rgba(243, 156, 18, 0.3); }
+      50% { box-shadow: 0 0 0 6px #f39c12, 0 12px 30px rgba(243, 156, 18, 0.4); }
+    }
+    .clickable-bar {
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .clickable-bar:hover {
+      opacity: 0.8;
+    }
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .card-thumbnail {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+      background: #000;
+    }
+    .card-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .video-card:hover .card-thumbnail img {
+      transform: scale(1.05);
+    }
+    .card-duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .card-content {
+      padding: 8px;
+    }
+    .card-title {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 4px;
+      height: 2.3em;
+    }
+    .card-channel {
+      font-size: 0.75em;
+      color: #606060;
+      margin-bottom: 3px;
+    }
+    .card-meta {
+      display: flex;
+      gap: 8px;
+      font-size: 0.7em;
+      color: #606060;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .card-time {
+      font-family: monospace;
+      font-size: 0.9em;
+      color: #888;
+    }
+    .card-sentiment {
+      padding: 0px 3px;
+      border-radius: 3px;
+      font-size: 0.5em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: auto;
+      line-height: 1.2;
+    }
+    .sentiment-positive { background: #dcfce7; color: #166534; }
+    .sentiment-neutral { background: #f3f4f6; color: #374151; }
+    .sentiment-negative { background: #fee2e2; color: #991b1b; }
+    
+    /* Responsive */
+    @media (max-width: 1400px) {
+      .charts-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 1000px) {
+      .charts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.2em; }
+      .badge { font-size: 0.55em; padding: 1px 5px; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 220px; }
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+      .category-legend { gap: 8px; }
+      .legend-item { font-size: 0.75em; padding: 3px 6px; }
+    }
+    @media (max-width: 480px) {
+      .videos-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 200px; }
+    }
+    @media (max-width: 1200px) {
+      .charts-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .charts-grid { grid-template-columns: repeat(2, 1fr); }
+      .chart-card { height: 240px; }
+    }
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.8em; }
+      .charts-grid { grid-template-columns: 1fr; }
+      .chart-card { height: 300px; }
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+      .videos-header { flex-direction: column; align-items: flex-start; }
+      .category-legend { gap: 10px; }
+      .legend-item { font-size: 0.8em; padding: 4px 8px; }
+    }
+    @media (max-width: 480px) {
+      .videos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🎬 YouTube AI 深度数据分析报告</h1>
+      <p>关键词: "AI" | 100 个真实视频 | 生成: 2026/3/17 22:53:47</p>
+      <span class="badge">✅ 100% 真实 YouTube 数据</span>
+      <div class="analysis-summary">
+        📊 本报告包含 100 个视频的 21 维度深度分析 | 频道集中度: 分散 | 
+        数据时间跨度: 12 个月
+      </div>
+    </div>
+
+    <!-- 关键指标 -->
+    <div class="stats-grid">
+      <div class="stat-card"><div class="value">100</div><div class="label">总视频</div></div>
+      <div class="stat-card positive"><div class="value">15</div><div class="label">正面评价</div></div>
+      <div class="stat-card neutral"><div class="value">82</div><div class="label">中性评价</div></div>
+      <div class="stat-card blue"><div class="value">80.0M</div><div class="label">总观看</div></div>
+      <div class="stat-card purple"><div class="value">2.4M</div><div class="label">总点赞</div></div>
+      <div class="stat-card"><div class="value">800.3K</div><div class="label">平均观看</div></div>
+      <div class="stat-card red"><div class="value">2.94%</div><div class="label">互动率</div></div>
+      <div class="stat-card"><div class="value">37:40</div><div class="label">平均时长</div></div>
+      <div class="stat-card orange" style="grid-column: span 2;"
+           title="HHI指数: 140 - 竞争型市场 (标准值: 0.014)">
+        <div class="value">140 <small style="font-size:0.5em;opacity:0.8">(竞争型)</small></div>
+        <div class="label">频道集中度 (HHI)</div>
+      </div>
+      <div class="stat-card info" style="grid-column: span 2; font-size: 0.75em; text-align: left; padding: 8px 12px;">
+        <div style="font-size: 0.85em; margin-bottom: 4px;">📊 HHI 市场集中度标准:</div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <span style="color: #27ae60;">● &lt;1500: 竞争型</span>
+          <span style="color: #f39c12;">● 1500-2500: 中度</span>
+          <span style="color: #e74c3c;">● ≥2500: 高度</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 图表按分类分组 -->
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>📊 情绪分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="sentimentChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>📈 观看数区间分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="viewRangeChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>⏱️ 视频时长分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="durationChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="基础">基础</span>
+          <h3>👍 点赞率分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="likeRateChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>📅 每月视频发布趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="uploadTrendChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>👁️ 每月观看数量趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="monthlyViewsChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>👍 每月点赞数量趋势</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="monthlyLikesChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="趋势">趋势</span>
+          <h3>📆 年度对比分析</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="yearComparisonChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>📊 观看数 Top 10</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="viewsChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>👥 Top 10 上传者</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="uploaderChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>🏆 高互动率视频 Top 10</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="engagementChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="排名">排名</span>
+          <h3>📈 频道平均表现</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="channelAvgChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>🔤 热门关键词 Top 15</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="keywordChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>📝 标题长度分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="titleLengthChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>📊 频道观看占比</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="channelShareChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="内容">内容</span>
+          <h3>⏱️ 时长 vs 观看数</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="durationViewChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>💭 情感 vs 平均表现</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="sentimentPerformanceChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>📊 长尾分析 (Pareto)</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="paretoChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="洞察">洞察</span>
+          <h3>📅 发布星期分布</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="hourChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+      <div class="charts-section">
+        <div class="charts-grid">
+          
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="异常">异常</span>
+          <h3>⚠️ 高观看低互动</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="highViewLowEngageChart"></canvas>
+        </div>
+      </div>
+    
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-category" data-category="异常">异常</span>
+          <h3>⚠️ 低观看高互动</h3>
+        </div>
+        <div class="chart-body">
+          <canvas id="lowViewHighEngageChart"></canvas>
+        </div>
+      </div>
+    
+        </div>
+      </div>
+    
+
+    <!-- 视频列表 -->
+    <div class="videos-section">
+      <div class="videos-header">
+        <h2>🎥 视频列表</h2>
+        <div class="sort-controls">
+          <label>排序:</label>
+          <button class="sort-btn active" data-sort="time-desc">⏱️ 最新</button>
+          <button class="sort-btn" data-sort="time-asc">⏱️ 最早</button>
+          <button class="sort-btn" data-sort="views-desc">👁️ 高→低</button>
+          <button class="sort-btn" data-sort="views-asc">👁️ 低→高</button>
+          <button class="sort-btn" data-sort="likes-desc">👍 高→低</button>
+          <button class="sort-btn" data-sort="likes-asc">👍 低→高</button>
+          <span class="video-count">共100个视频, 2025-04-12 - 2026-03-17, 时间跨度12个月</span>
+        </div>
+      </div>
+      <div id="videosGrid" class="videos-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 视频数据与排序 ==========
+    const videosData = [{"id":"DrRRvM4oc4w","title":"How to Use Suno AI Better than 99% of People","uploader":"Isa does AI","duration":"923","viewCount":3541,"likeCount":0,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=DrRRvM4oc4w","thumbnail":"https://i.ytimg.com/vi/DrRRvM4oc4w/mqdefault.jpg","sentiment":"neutral"},{"id":"rtT87iAm_SM","title":"Why AI Researchers Are Quitting and Panicking on the Way Out","uploader":"The Infographics Show","duration":"888","viewCount":202170,"likeCount":5782,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=rtT87iAm_SM","thumbnail":"https://i.ytimg.com/vi/rtT87iAm_SM/mqdefault.jpg","sentiment":"neutral"},{"id":"fpETS6q1Hww","title":"Daniel Priestley: AI Will Make Plumbers Earn More Than Lawyers! (2029 PREDICTION)","uploader":"The Diary Of A CEO","duration":"7356","viewCount":698523,"likeCount":17193,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=fpETS6q1Hww","thumbnail":"https://i.ytimg.com/vi/fpETS6q1Hww/mqdefault.jpg","sentiment":"neutral"},{"id":"W31ro8YT7jc","title":"Google’s New AI Just Broke Math… (Invented Its Own Algorithms)","uploader":"AI Revolution","duration":"641","viewCount":23674,"likeCount":779,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=W31ro8YT7jc","thumbnail":"https://i.ytimg.com/vi/W31ro8YT7jc/mqdefault.jpg","sentiment":"neutral"},{"id":"5MWT_doo68k","title":"OpenAI’s Sam Altman Talks ChatGPT, AI Agents and Superintelligence — Live at TED2025","uploader":"TED","duration":"2850","viewCount":2232017,"likeCount":34297,"uploadDate":"2025-04-12","url":"https://www.youtube.com/watch?v=5MWT_doo68k","thumbnail":"https://i.ytimg.com/vi/5MWT_doo68k/mqdefault.jpg","sentiment":"neutral"},{"id":"tuE_WGSQGLU","title":"The First Crack in the AI Bubble Just Appeared","uploader":"Eurodollar University","duration":"1151","viewCount":73331,"likeCount":2406,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=tuE_WGSQGLU","thumbnail":"https://i.ytimg.com/vi/tuE_WGSQGLU/mqdefault.jpg","sentiment":"neutral"},{"id":"FGDM92QYa60","title":"It Begins: An AI Tried to Escape The Lab","uploader":"Species | Documenting AGI","duration":"1602","viewCount":587614,"likeCount":28598,"uploadDate":"2026-03-06","url":"https://www.youtube.com/watch?v=FGDM92QYa60","thumbnail":"https://i.ytimg.com/vi/FGDM92QYa60/mqdefault.jpg","sentiment":"neutral"},{"id":"yRylp5iL6Xc","title":"Your smile is being tracked, scored, and ranked by AI at work","uploader":"Louis Rossmann","duration":"318","viewCount":59208,"likeCount":5896,"uploadDate":"2026-03-15","url":"https://www.youtube.com/watch?v=yRylp5iL6Xc","thumbnail":"https://i.ytimg.com/vi/yRylp5iL6Xc/mqdefault.jpg","sentiment":"neutral"},{"id":"HsMnDwBsRxI","title":"Is the Netanyahu café video an AI deepfake after claims he died?","uploader":"The Independent","duration":"124","viewCount":172054,"likeCount":1072,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=HsMnDwBsRxI","thumbnail":"https://i.ytimg.com/vi/HsMnDwBsRxI/mqdefault.jpg","sentiment":"negative"},{"id":"f9HwA5IR-sg","title":"It Begins: An AI Literally Attempted Murder To Avoid Shutdown","uploader":"Species | Documenting AGI","duration":"834","viewCount":9888424,"likeCount":406528,"uploadDate":"2025-10-01","url":"https://www.youtube.com/watch?v=f9HwA5IR-sg","thumbnail":"https://i.ytimg.com/vi/f9HwA5IR-sg/mqdefault.jpg","sentiment":"negative"},{"id":"0Tch0N5nsRU","title":"You’re not behind (yet): How to learn AI in 18 minutes","uploader":"Dan Martell","duration":"1068","viewCount":547925,"likeCount":19221,"uploadDate":"2026-03-05","url":"https://www.youtube.com/watch?v=0Tch0N5nsRU","thumbnail":"https://i.ytimg.com/vi/0Tch0N5nsRU/mqdefault.jpg","sentiment":"positive"},{"id":"tYasEbsZfug","title":"Sam Altman Just Triggered A Massive AI Backlash — Was He Wrong?","uploader":"TheAIGRID","duration":"840","viewCount":9413,"likeCount":269,"uploadDate":"2026-03-15","url":"https://www.youtube.com/watch?v=tYasEbsZfug","thumbnail":"https://i.ytimg.com/vi/tYasEbsZfug/mqdefault.jpg","sentiment":"neutral"},{"id":"ADByNXt2ouY","title":"10 Claude AI Skills That Will Save You 20+ Hours a Week (Full Power User Guide)","uploader":"Julia McCoy","duration":"981","viewCount":16587,"likeCount":798,"uploadDate":"2026-03-15","url":"https://www.youtube.com/watch?v=ADByNXt2ouY","thumbnail":"https://i.ytimg.com/vi/ADByNXt2ouY/mqdefault.jpg","sentiment":"positive"},{"id":"9c7zh2MkslY","title":"You’re Not Behind (Yet): How to Learn AI in 29 Minutes","uploader":"Futurepedia","duration":"1739","viewCount":882392,"likeCount":23641,"uploadDate":"2025-07-31","url":"https://www.youtube.com/watch?v=9c7zh2MkslY","thumbnail":"https://i.ytimg.com/vi/9c7zh2MkslY/mqdefault.jpg","sentiment":"positive"},{"id":"Vr7VRHgnCiI","title":"Hannah Fry: The Science Behind AI, Grief Tech & Life","uploader":"The Romesh Ranganathan Show","duration":"3810","viewCount":93657,"likeCount":3085,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=Vr7VRHgnCiI","thumbnail":"https://i.ytimg.com/vi/Vr7VRHgnCiI/mqdefault.jpg","sentiment":"neutral"},{"id":"UclrVWafRAI","title":"The AI Safety Expert: These Are The Only 5 Jobs That Will Remain In 2030! - Dr. Roman Yampolskiy","uploader":"The Diary Of A CEO","duration":"5258","viewCount":15665664,"likeCount":328824,"uploadDate":"2025-09-04","url":"https://www.youtube.com/watch?v=UclrVWafRAI","thumbnail":"https://i.ytimg.com/vi/UclrVWafRAI/mqdefault.jpg","sentiment":"neutral"},{"id":"l6ZcFa8pybE","title":"Is AI Hiding Its Full Power? With Geoffrey Hinton","uploader":"StarTalk","duration":"5613","viewCount":1641990,"likeCount":39590,"uploadDate":"2026-02-28","url":"https://www.youtube.com/watch?v=l6ZcFa8pybE","thumbnail":"https://i.ytimg.com/vi/l6ZcFa8pybE/mqdefault.jpg","sentiment":"neutral"},{"id":"2qjpBuPonmI","title":"Justice League VS. AI","uploader":"Solid jj","duration":"207","viewCount":344029,"likeCount":42001,"uploadDate":"2026-03-14","url":"https://www.youtube.com/watch?v=2qjpBuPonmI","thumbnail":"https://i.ytimg.com/vi/2qjpBuPonmI/mqdefault.jpg","sentiment":"neutral"},{"id":"jm2jBW462bU","title":"Essential AI Skills For 2026","uploader":"Tina Huang","duration":"1123","viewCount":208223,"likeCount":8930,"uploadDate":"2025-12-28","url":"https://www.youtube.com/watch?v=jm2jBW462bU","thumbnail":"https://i.ytimg.com/vi/jm2jBW462bU/mqdefault.jpg","sentiment":"neutral"},{"id":"5KmopXwjXik","title":"Godfather of AI WARNS: \"You Have No Idea What's Coming\"","uploader":"The Diary Of A CEO Clips","duration":"1257","viewCount":5842753,"likeCount":85227,"uploadDate":"2025-09-27","url":"https://www.youtube.com/watch?v=5KmopXwjXik","thumbnail":"https://i.ytimg.com/vi/5KmopXwjXik/mqdefault.jpg","sentiment":"neutral"},{"id":"ZaPbP9DwBOE","title":"Don't learn AI Agents without Learning these Fundamentals","uploader":"KodeKloud","duration":"3399","viewCount":557754,"likeCount":12886,"uploadDate":"2025-10-21","url":"https://www.youtube.com/watch?v=ZaPbP9DwBOE","thumbnail":"https://i.ytimg.com/vi/ZaPbP9DwBOE/mqdefault.jpg","sentiment":"positive"},{"id":"EWFFaKxsz_s","title":"You’re Not Behind (Yet): How to Learn AI in 17 Minutes","uploader":"theMITmonk","duration":"1041","viewCount":3160887,"likeCount":117942,"uploadDate":"2025-11-10","url":"https://www.youtube.com/watch?v=EWFFaKxsz_s","thumbnail":"https://i.ytimg.com/vi/EWFFaKxsz_s/mqdefault.jpg","sentiment":"positive"},{"id":"TtX3jDaZG8Y","title":"What's really going on with AI, Expert weighs in | TheStandup","uploader":"The PrimeTime","duration":"2541","viewCount":140591,"likeCount":3454,"uploadDate":"2026-03-14","url":"https://www.youtube.com/watch?v=TtX3jDaZG8Y","thumbnail":"https://i.ytimg.com/vi/TtX3jDaZG8Y/mqdefault.jpg","sentiment":"neutral"},{"id":"KpOcUrPdx-4","title":"Artificial Intelligence in 2025 | 60 Minutes Full Episodes","uploader":"60 Minutes","duration":"4867","viewCount":1518012,"likeCount":17304,"uploadDate":"2025-12-13","url":"https://www.youtube.com/watch?v=KpOcUrPdx-4","thumbnail":"https://i.ytimg.com/vi/KpOcUrPdx-4/mqdefault.jpg","sentiment":"neutral"},{"id":"65CASowfnKs","title":"AI Tutorial for Beginners 2026: How To Use AI & Build ANYTHING","uploader":"Mikey No Code","duration":"2211","viewCount":18694,"likeCount":0,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=65CASowfnKs","thumbnail":"https://i.ytimg.com/vi/65CASowfnKs/mqdefault.jpg","sentiment":"positive"},{"id":"8MLbOulrLA0","title":"This is Going to be Very Messy","uploader":"Hank Green","duration":"5565","viewCount":1366871,"likeCount":45164,"uploadDate":"2026-02-28","url":"https://www.youtube.com/watch?v=8MLbOulrLA0","thumbnail":"https://i.ytimg.com/vi/8MLbOulrLA0/mqdefault.jpg","sentiment":"neutral"},{"id":"OzXqJh6yOj4","title":"Digital Optimus: Elon Musk Reveals the First True AI Worker","uploader":"The AI Nexus","duration":"1104","viewCount":13268,"likeCount":445,"uploadDate":"2026-03-13","url":"https://www.youtube.com/watch?v=OzXqJh6yOj4","thumbnail":"https://i.ytimg.com/vi/OzXqJh6yOj4/mqdefault.jpg","sentiment":"neutral"},{"id":"Q6nem-F8AG8","title":"AI is making CEOs delusional","uploader":"Mo Bitar","duration":"449","viewCount":123915,"likeCount":8601,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=Q6nem-F8AG8","thumbnail":"https://i.ytimg.com/vi/Q6nem-F8AG8/mqdefault.jpg","sentiment":"neutral"},{"id":"B23W1gRT9eY","title":"Top 6 AI Trends That Will Define 2026 (backed by data)","uploader":"Jeff Su","duration":"793","viewCount":377828,"likeCount":8368,"uploadDate":"2026-01-06","url":"https://www.youtube.com/watch?v=B23W1gRT9eY","thumbnail":"https://i.ytimg.com/vi/B23W1gRT9eY/mqdefault.jpg","sentiment":"positive"},{"id":"jZjayi4clfY","title":"BREAKING: Netanyahu Really DEAD? Disappearing Ring in Viral Video Fuels Wild AI Claims","uploader":"midday india","duration":"211","viewCount":6676,"likeCount":46,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=jZjayi4clfY","thumbnail":"https://i.ytimg.com/vi/jZjayi4clfY/mqdefault.jpg","sentiment":"neutral"},{"id":"SbEqMkxEzvA","title":"Unrestricted AI in a robot does exactly what experts warned","uploader":"InsideAI","duration":"1013","viewCount":1612637,"likeCount":63718,"uploadDate":"2026-03-03","url":"https://www.youtube.com/watch?v=SbEqMkxEzvA","thumbnail":"https://i.ytimg.com/vi/SbEqMkxEzvA/mqdefault.jpg","sentiment":"neutral"},{"id":"zQ1POHiR8m8","title":"Godfather of AI: We Have 2 Years Before Everything Changes!","uploader":"The Diary Of A CEO","duration":"5987","viewCount":1838674,"likeCount":37676,"uploadDate":"2025-12-18","url":"https://www.youtube.com/watch?v=zQ1POHiR8m8","thumbnail":"https://i.ytimg.com/vi/zQ1POHiR8m8/mqdefault.jpg","sentiment":"neutral"},{"id":"rf2KFVcKQdQ","title":"AI is MUTATING: And We Don't Know What It is Doing","uploader":"Peter McCormack","duration":"5635","viewCount":367535,"likeCount":7503,"uploadDate":"2026-03-10","url":"https://www.youtube.com/watch?v=rf2KFVcKQdQ","thumbnail":"https://i.ytimg.com/vi/rf2KFVcKQdQ/mqdefault.jpg","sentiment":"neutral"},{"id":"Nl7-bRFSZBs","title":"The AI book that's freaking out national security advisors","uploader":"AI In Context","duration":"2617","viewCount":492626,"likeCount":24297,"uploadDate":"2026-03-10","url":"https://www.youtube.com/watch?v=Nl7-bRFSZBs","thumbnail":"https://i.ytimg.com/vi/Nl7-bRFSZBs/mqdefault.jpg","sentiment":"neutral"},{"id":"z3kaLM8Oj4o","title":"AI Fails at 96% of Jobs (New Study)","uploader":"ColdFusion","duration":"769","viewCount":918662,"likeCount":42051,"uploadDate":"2026-02-13","url":"https://www.youtube.com/watch?v=z3kaLM8Oj4o","thumbnail":"https://i.ytimg.com/vi/z3kaLM8Oj4o/mqdefault.jpg","sentiment":"neutral"},{"id":"2hMXEyplSlQ","title":"Zendaya on Tom Holland A.I. Wedding Pics, Robert Pattinson Lying & Seeing the New Spider-Man","uploader":"Jimmy Kimmel Live","duration":"792","viewCount":381192,"likeCount":16657,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=2hMXEyplSlQ","thumbnail":"https://i.ytimg.com/vi/2hMXEyplSlQ/mqdefault.jpg","sentiment":"neutral"},{"id":"0e1yoqF-fSo","title":"The fall of ChatGPT? Why the public is turning on AI | Christ Stokel-Walker","uploader":"The Tech Report","duration":"1265","viewCount":14073,"likeCount":496,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=0e1yoqF-fSo","thumbnail":"https://i.ytimg.com/vi/0e1yoqF-fSo/mqdefault.jpg","sentiment":"neutral"},{"id":"uSUxDtp-U0Q","title":"Epic Conquest of Mecca in AI - Bilal’s Adhan That Brought Tears! - O Messenger | Ep. 10","uploader":"Towards Eternity","duration":"2542","viewCount":22594,"likeCount":1989,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=uSUxDtp-U0Q","thumbnail":"https://i.ytimg.com/vi/uSUxDtp-U0Q/mqdefault.jpg","sentiment":"neutral"},{"id":"3xZSU7hVHUY","title":"HOW TO LEARN & Master AI in 2026 ? (Complete Powerful 7-step ROADMAP)","uploader":"Tejas AI","duration":"1639","viewCount":153779,"likeCount":7105,"uploadDate":"2026-01-25","url":"https://www.youtube.com/watch?v=3xZSU7hVHUY","thumbnail":"https://i.ytimg.com/vi/3xZSU7hVHUY/mqdefault.jpg","sentiment":"positive"},{"id":"EsTrWCV0Ph4","title":"AI Agents Full Course 2026: Master Agentic AI (2 Hours)","uploader":"Nick Saraev","duration":"7994","viewCount":87170,"likeCount":3598,"uploadDate":"2026-03-08","url":"https://www.youtube.com/watch?v=EsTrWCV0Ph4","thumbnail":"https://i.ytimg.com/vi/EsTrWCV0Ph4/mqdefault.jpg","sentiment":"neutral"},{"id":"QLPHcQdZTFI","title":"AI firms, AIPAC invest millions in Illinois primaries","uploader":"CBS News","duration":"328","viewCount":1600,"likeCount":48,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=QLPHcQdZTFI","thumbnail":"https://i.ytimg.com/vi/QLPHcQdZTFI/mqdefault.jpg","sentiment":"neutral"},{"id":"8WzSEikpHk8","title":"How to start AI/ML in 2026 ?","uploader":"Apna College","duration":"846","viewCount":113363,"likeCount":5903,"uploadDate":"2026-03-14","url":"https://www.youtube.com/watch?v=8WzSEikpHk8","thumbnail":"https://i.ytimg.com/vi/8WzSEikpHk8/mqdefault.jpg","sentiment":"neutral"},{"id":"EV7WhVT270Q","title":"State of AI in 2026: LLMs, Coding, Scaling Laws, China, Agents, GPUs, AGI | Lex Fridman Podcast #490","uploader":"Lex Fridman","duration":"15913","viewCount":768385,"likeCount":12652,"uploadDate":"2026-01-31","url":"https://www.youtube.com/watch?v=EV7WhVT270Q","thumbnail":"https://i.ytimg.com/vi/EV7WhVT270Q/mqdefault.jpg","sentiment":"neutral"},{"id":"f_gcmtfLBIk","title":"Cute or Creepy? AI Fruit Babies 🍓👶 | The Strangely Satisfying AI ASMR","uploader":"AI DREAM ASMR","duration":"153","viewCount":80863,"likeCount":6434,"uploadDate":"2026-03-14","url":"https://www.youtube.com/watch?v=f_gcmtfLBIk","thumbnail":"https://i.ytimg.com/vi/f_gcmtfLBIk/mqdefault.jpg","sentiment":"neutral"},{"id":"kMivoKHHkxQ","title":"5 AI CEOs Just Said The Same Thing","uploader":"Farzad","duration":"1424","viewCount":793544,"likeCount":24649,"uploadDate":"2026-02-02","url":"https://www.youtube.com/watch?v=kMivoKHHkxQ","thumbnail":"https://i.ytimg.com/vi/kMivoKHHkxQ/mqdefault.jpg","sentiment":"neutral"},{"id":"dDd9vJwz2-I","title":"A.I Is The Biggest Lie Ever Told. Here's Why.","uploader":"Moon","duration":"2169","viewCount":581432,"likeCount":19480,"uploadDate":"2025-11-15","url":"https://www.youtube.com/watch?v=dDd9vJwz2-I","thumbnail":"https://i.ytimg.com/vi/dDd9vJwz2-I/mqdefault.jpg","sentiment":"neutral"},{"id":"omgvH6VVC3g","title":"ai se video kaise banaye | ai video kaise banaye | ai se cartoon video kaise banaye | ai video","uploader":"Yt Ritik","duration":"793","viewCount":7277,"likeCount":625,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=omgvH6VVC3g","thumbnail":"https://i.ytimg.com/vi/omgvH6VVC3g/mqdefault.jpg","sentiment":"neutral"},{"id":"5vRiVlEgoyU","title":"'Is It AI?': Netanyahu's 'Disappearing' Ring In Latest Video Again Fuels Death Rumours | News18","uploader":"CNN-News18","duration":"497","viewCount":956,"likeCount":8,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=5vRiVlEgoyU","thumbnail":"https://i.ytimg.com/vi/5vRiVlEgoyU/mqdefault.jpg","sentiment":"neutral"},{"id":"D1eL1EnxXXQ","title":"AI Complete OneShot Course for Beginners | Learn AI & ML Fundamentals from Scratch","uploader":"Apna College","duration":"3985","viewCount":1926486,"likeCount":54585,"uploadDate":"2025-10-13","url":"https://www.youtube.com/watch?v=D1eL1EnxXXQ","thumbnail":"https://i.ytimg.com/vi/D1eL1EnxXXQ/mqdefault.jpg","sentiment":"positive"},{"id":"xXxrvra9DQg","title":"I Ranked the Best AI Tools to Make Money in 2026","uploader":"Dan Martell","duration":"1154","viewCount":352152,"likeCount":12032,"uploadDate":"2026-01-09","url":"https://www.youtube.com/watch?v=xXxrvra9DQg","thumbnail":"https://i.ytimg.com/vi/xXxrvra9DQg/mqdefault.jpg","sentiment":"positive"},{"id":"yfIJDmjh0uA","title":"Free AI COURSE for Beginners – Class 1 - What is AI? How AI Works? #course #ai","uploader":"Raj Photo Editing and Much More","duration":"399","viewCount":810408,"likeCount":36957,"uploadDate":"2025-12-28","url":"https://www.youtube.com/watch?v=yfIJDmjh0uA","thumbnail":"https://i.ytimg.com/vi/yfIJDmjh0uA/mqdefault.jpg","sentiment":"positive"},{"id":"lIJelwO8yHQ","title":"How Fast Will A.I. Agents Rip Through the Economy? | The Ezra Klein Show","uploader":"The Ezra Klein Show","duration":"5880","viewCount":317368,"likeCount":5085,"uploadDate":"2026-02-24","url":"https://www.youtube.com/watch?v=lIJelwO8yHQ","thumbnail":"https://i.ytimg.com/vi/lIJelwO8yHQ/mqdefault.jpg","sentiment":"neutral"},{"id":"T9dfP6bC2RY","title":"How to Make Full Cartoon Animation Stories With FREE AI (Step-by-Step)","uploader":"Africa Amaze","duration":"2202","viewCount":311841,"likeCount":12316,"uploadDate":"2026-02-01","url":"https://www.youtube.com/watch?v=T9dfP6bC2RY","thumbnail":"https://i.ytimg.com/vi/T9dfP6bC2RY/mqdefault.jpg","sentiment":"neutral"},{"id":"zoY_-aRmPoM","title":"The AI Banned at 3pm Was Selecting Targets by Midnight","uploader":"Vanessa Wingårdh","duration":"533","viewCount":133511,"likeCount":8426,"uploadDate":"2026-03-10","url":"https://www.youtube.com/watch?v=zoY_-aRmPoM","thumbnail":"https://i.ytimg.com/vi/zoY_-aRmPoM/mqdefault.jpg","sentiment":"neutral"},{"id":"jhDfq9sj-u8","title":"The AI Collapse Is MUCH Worse Than You Think","uploader":"Graham Stephan","duration":"925","viewCount":328187,"likeCount":12263,"uploadDate":"2026-02-27","url":"https://www.youtube.com/watch?v=jhDfq9sj-u8","thumbnail":"https://i.ytimg.com/vi/jhDfq9sj-u8/mqdefault.jpg","sentiment":"neutral"},{"id":"UrKY3rps_Q4","title":"Man Keeps Reliving the Same Day to Stop a God-Level AI From Wiping Out Humanity","uploader":"Movie Recaps","duration":"1346","viewCount":65007,"likeCount":1531,"uploadDate":"2026-03-15","url":"https://www.youtube.com/watch?v=UrKY3rps_Q4","thumbnail":"https://i.ytimg.com/vi/UrKY3rps_Q4/mqdefault.jpg","sentiment":"positive"},{"id":"GnUeIX9Ay04","title":"NVIDIA GTC Keynote 2026 – Jensen Huang Announces Next-Gen AI & GPU Technology | 🔴WATCH LIVE","uploader":"Benzinga","duration":"9938","viewCount":14945,"likeCount":134,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=GnUeIX9Ay04","thumbnail":"https://i.ytimg.com/vi/GnUeIX9Ay04/mqdefault.jpg","sentiment":"neutral"},{"id":"j0YENi6U0tE","title":"You’re Not Behind (Yet): How to Learn AI in 19 Minutes","uploader":"Ali Abdaal","duration":"1196","viewCount":195532,"likeCount":5842,"uploadDate":"2026-02-12","url":"https://www.youtube.com/watch?v=j0YENi6U0tE","thumbnail":"https://i.ytimg.com/vi/j0YENi6U0tE/mqdefault.jpg","sentiment":"positive"},{"id":"gNA2fQ2KAIs","title":"The Man Behind Every Google AI Tool Showed Me What's Coming Next","uploader":"Vaibhav Sisinty","duration":"1894","viewCount":160829,"likeCount":5125,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=gNA2fQ2KAIs","thumbnail":"https://i.ytimg.com/vi/gNA2fQ2KAIs/mqdefault.jpg","sentiment":"neutral"},{"id":"D8RtMHuFsUw","title":"POV: What You Would See During an AI Takeover","uploader":"Species | Documenting AGI","duration":"1782","viewCount":3276500,"likeCount":93417,"uploadDate":"2025-10-19","url":"https://www.youtube.com/watch?v=D8RtMHuFsUw","thumbnail":"https://i.ytimg.com/vi/D8RtMHuFsUw/mqdefault.jpg","sentiment":"neutral"},{"id":"iAsFZvbhgag","title":"Google’s New Gemini Update Shocks Microsoft With Powerful New AI","uploader":"AI Revolution","duration":"845","viewCount":104375,"likeCount":2451,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=iAsFZvbhgag","thumbnail":"https://i.ytimg.com/vi/iAsFZvbhgag/mqdefault.jpg","sentiment":"neutral"},{"id":"2hMXEyplSlQ","title":"Zendaya on Tom Holland A.I. Wedding Pics, Robert Pattinson Lying & Seeing the New Spider-Man","uploader":"Jimmy Kimmel Live","duration":"792","viewCount":381192,"likeCount":16744,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=2hMXEyplSlQ","thumbnail":"https://i.ytimg.com/vi/2hMXEyplSlQ/mqdefault.jpg","sentiment":"neutral"},{"id":"UjCxLv8XWLo","title":"Zendaya Reacts to Tom Holland AI Wedding Photos | E! News","uploader":"E! News","duration":"95","viewCount":1236,"likeCount":37,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=UjCxLv8XWLo","thumbnail":"https://i.ytimg.com/vi/UjCxLv8XWLo/mqdefault.jpg","sentiment":"neutral"},{"id":"dbMXi9q78Tk","title":"I almost quit YouTube....","uploader":"NetworkChuck","duration":"1388","viewCount":646664,"likeCount":44844,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=dbMXi9q78Tk","thumbnail":"https://i.ytimg.com/vi/dbMXi9q78Tk/mqdefault.jpg","sentiment":"neutral"},{"id":"J_RNzdX1yiQ","title":"NEW OpenClaw AI Browser Agent: Automate ANYTHING?","uploader":"Julian Goldie SEO","duration":"683","viewCount":18493,"likeCount":339,"uploadDate":"2026-03-15","url":"https://www.youtube.com/watch?v=J_RNzdX1yiQ","thumbnail":"https://i.ytimg.com/vi/J_RNzdX1yiQ/mqdefault.jpg","sentiment":"neutral"},{"id":"4HlSNmpt-Qg","title":"Recursive Self-Improving AI: The Beginning of Intelligence Explosion w/ Dr. Alexander Wissner-Gross","uploader":"Milk Road AI","duration":"1007","viewCount":18951,"likeCount":625,"uploadDate":"2026-03-08","url":"https://www.youtube.com/watch?v=4HlSNmpt-Qg","thumbnail":"https://i.ytimg.com/vi/4HlSNmpt-Qg/mqdefault.jpg","sentiment":"neutral"},{"id":"S0h5oUVv0BY","title":"LinkedIn Founder: Double Your Income With AI Before It's Too Late | Reid Hoffman","uploader":"Silicon Valley Girl","duration":"1663","viewCount":150377,"likeCount":3064,"uploadDate":"2026-02-24","url":"https://www.youtube.com/watch?v=S0h5oUVv0BY","thumbnail":"https://i.ytimg.com/vi/S0h5oUVv0BY/mqdefault.jpg","sentiment":"neutral"},{"id":"LrVw2LtJsYw","title":"Artificial Intelligence Full Course (Free) | Master AI Tools & Core Concepts","uploader":"The iScale","duration":"10330","viewCount":1072820,"likeCount":40237,"uploadDate":"2025-10-05","url":"https://www.youtube.com/watch?v=LrVw2LtJsYw","thumbnail":"https://i.ytimg.com/vi/LrVw2LtJsYw/mqdefault.jpg","sentiment":"neutral"},{"id":"1lO3pC9xtoE","title":"Grok’s New Update Might Be the Least Censored AI Video Yet (Try For Free)","uploader":"AI Samson","duration":"1097","viewCount":80516,"likeCount":2538,"uploadDate":"2026-02-04","url":"https://www.youtube.com/watch?v=1lO3pC9xtoE","thumbnail":"https://i.ytimg.com/vi/1lO3pC9xtoE/mqdefault.jpg","sentiment":"neutral"},{"id":"B-DyyVNYtCk","title":"Anthropic names jobs vulnerable to AI","uploader":"CBS News","duration":"166","viewCount":91102,"likeCount":1050,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=B-DyyVNYtCk","thumbnail":"https://i.ytimg.com/vi/B-DyyVNYtCk/mqdefault.jpg","sentiment":"neutral"},{"id":"Xn-gtHDsaPY","title":"7 new open source AI tools you need right now…","uploader":"Fireship","duration":"374","viewCount":616389,"likeCount":29985,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=Xn-gtHDsaPY","thumbnail":"https://i.ytimg.com/vi/Xn-gtHDsaPY/mqdefault.jpg","sentiment":"neutral"},{"id":"s52O1JH2tnU","title":"Uber CEO: I Have To Be Honest, AI Will Replace 9.4 Million Jobs At Uber!","uploader":"The Diary Of A CEO","duration":"6196","viewCount":703388,"likeCount":12694,"uploadDate":"2026-02-23","url":"https://www.youtube.com/watch?v=s52O1JH2tnU","thumbnail":"https://i.ytimg.com/vi/s52O1JH2tnU/mqdefault.jpg","sentiment":"neutral"},{"id":"syx_8UlEWlA","title":"AI News: They All Launched the Same Thing!","uploader":"Matt Wolfe","duration":"2012","viewCount":91013,"likeCount":3271,"uploadDate":"2026-03-13","url":"https://www.youtube.com/watch?v=syx_8UlEWlA","thumbnail":"https://i.ytimg.com/vi/syx_8UlEWlA/mqdefault.jpg","sentiment":"neutral"},{"id":"T8X6kp-pcKs","title":"Amazon's $35B AGI Ultimatum to OpenAI & Anthropic Drops AI Safety | EP #235","uploader":"Peter H. Diamandis","duration":"8186","viewCount":163517,"likeCount":3428,"uploadDate":"2026-03-05","url":"https://www.youtube.com/watch?v=T8X6kp-pcKs","thumbnail":"https://i.ytimg.com/vi/T8X6kp-pcKs/mqdefault.jpg","sentiment":"neutral"},{"id":"vF3RVZsfQhg","title":"Google Just Dropped Bayesian: AI That Evolves In Real Time","uploader":"AI Revolution","duration":"876","viewCount":86584,"likeCount":2287,"uploadDate":"2026-03-10","url":"https://www.youtube.com/watch?v=vF3RVZsfQhg","thumbnail":"https://i.ytimg.com/vi/vF3RVZsfQhg/mqdefault.jpg","sentiment":"neutral"},{"id":"9_3u5CBH6Ao","title":"The AI Data Center Crisis is Worse Than You Think","uploader":"MonkeyExplains","duration":"881","viewCount":368696,"likeCount":19318,"uploadDate":"2026-02-28","url":"https://www.youtube.com/watch?v=9_3u5CBH6Ao","thumbnail":"https://i.ytimg.com/vi/9_3u5CBH6Ao/mqdefault.jpg","sentiment":"neutral"},{"id":"hnwM01CpzmA","title":"45 People, $200M Revenue. The Question Nobody's Asking About AI and Your Team Size.","uploader":"AI News & Strategy Daily | Nate B Jones","duration":"1545","viewCount":57059,"likeCount":1919,"uploadDate":"2026-03-08","url":"https://www.youtube.com/watch?v=hnwM01CpzmA","thumbnail":"https://i.ytimg.com/vi/hnwM01CpzmA/mqdefault.jpg","sentiment":"neutral"},{"id":"68ylaeBbdsg","title":"The AI Tsunami is Here & Society Isn't Ready | Dario Amodei x Nikhil Kamath | People by WTF","uploader":"Nikhil Kamath","duration":"4115","viewCount":868271,"likeCount":14673,"uploadDate":"2026-02-24","url":"https://www.youtube.com/watch?v=68ylaeBbdsg","thumbnail":"https://i.ytimg.com/vi/68ylaeBbdsg/mqdefault.jpg","sentiment":"neutral"},{"id":"guXUCAACKF0","title":"AI hype is ‘grifting’ the SaaS industry | Ed Zitron","uploader":"The Tech Report","duration":"2057","viewCount":92035,"likeCount":3912,"uploadDate":"2026-03-13","url":"https://www.youtube.com/watch?v=guXUCAACKF0","thumbnail":"https://i.ytimg.com/vi/guXUCAACKF0/mqdefault.jpg","sentiment":"neutral"},{"id":"LYgLTraIe2I","title":"The REAL Reason No One Knows What’s Coming With AI","uploader":"The Diary Of A CEO Clips","duration":"1303","viewCount":954562,"likeCount":18827,"uploadDate":"2025-12-30","url":"https://www.youtube.com/watch?v=LYgLTraIe2I","thumbnail":"https://i.ytimg.com/vi/LYgLTraIe2I/mqdefault.jpg","sentiment":"neutral"},{"id":"FKyzEFE50S0","title":"AI Is Ruining Christmas...","uploader":"Steve Terreberry","duration":"1005","viewCount":928217,"likeCount":24651,"uploadDate":"2025-12-13","url":"https://www.youtube.com/watch?v=FKyzEFE50S0","thumbnail":"https://i.ytimg.com/vi/FKyzEFE50S0/mqdefault.jpg","sentiment":"neutral"},{"id":"_QLmBeJOhDY","title":"A Peaceful Life in the Countryside 🌿 | Ghibli-Inspired AI Animation","uploader":"Zippy Relax Music","duration":"1909","viewCount":148355,"likeCount":3098,"uploadDate":"2026-02-21","url":"https://www.youtube.com/watch?v=_QLmBeJOhDY","thumbnail":"https://i.ytimg.com/vi/_QLmBeJOhDY/mqdefault.jpg","sentiment":"neutral"},{"id":"tVh9aMXW7-o","title":"AI has gone too far... and its hilarious  😭 (Compilation)","uploader":"the.rizzler.67","duration":"595","viewCount":527229,"likeCount":9606,"uploadDate":"2025-10-09","url":"https://www.youtube.com/watch?v=tVh9aMXW7-o","thumbnail":"https://i.ytimg.com/vi/tVh9aMXW7-o/mqdefault.jpg","sentiment":"neutral"},{"id":"RJyPVLMyyuA","title":"Should You Be A Carpenter? [Wading Through AI - Episode 1]","uploader":"Molly Rocket","duration":"6492","viewCount":119022,"likeCount":6850,"uploadDate":"2026-03-05","url":"https://www.youtube.com/watch?v=RJyPVLMyyuA","thumbnail":"https://i.ytimg.com/vi/RJyPVLMyyuA/mqdefault.jpg","sentiment":"neutral"},{"id":"TtwWbQku8sk","title":"ABUSING Sora 2.0 Video AI (again)","uploader":"Dan Dingle","duration":"926","viewCount":646438,"likeCount":21299,"uploadDate":"2025-10-18","url":"https://www.youtube.com/watch?v=TtwWbQku8sk","thumbnail":"https://i.ytimg.com/vi/TtwWbQku8sk/mqdefault.jpg","sentiment":"neutral"},{"id":"yfIJDmjh0uA","title":"Free AI COURSE for Beginners – Class 1 - What is AI? How AI Works? #course #ai","uploader":"Raj Photo Editing and Much More","duration":"399","viewCount":810408,"likeCount":36959,"uploadDate":"2025-12-28","url":"https://www.youtube.com/watch?v=yfIJDmjh0uA","thumbnail":"https://i.ytimg.com/vi/yfIJDmjh0uA/mqdefault.jpg","sentiment":"positive"},{"id":"1r0eyM7suUg","title":"I BLEW UP a YouTube Channel in 7 Days with AI","uploader":"Jack Craig","duration":"1866","viewCount":1459681,"likeCount":55774,"uploadDate":"2025-11-21","url":"https://www.youtube.com/watch?v=1r0eyM7suUg","thumbnail":"https://i.ytimg.com/vi/1r0eyM7suUg/mqdefault.jpg","sentiment":"neutral"},{"id":"AfIGoai7lzg","title":"Netflix to Pay Up to $600 Million for Ben Affleck’s AI Firm","uploader":"Bloomberg Technology","duration":"186","viewCount":82098,"likeCount":606,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=AfIGoai7lzg","thumbnail":"https://i.ytimg.com/vi/AfIGoai7lzg/mqdefault.jpg","sentiment":"neutral"},{"id":"APvLb-pIPwI","title":"The AI Super-Cycle Has Begun — You Have 1 Year To Get UNFATHOMABLY RICH! | Chris Camillo","uploader":"The Iced Coffee Hour","duration":"7659","viewCount":292174,"likeCount":7158,"uploadDate":"2026-02-22","url":"https://www.youtube.com/watch?v=APvLb-pIPwI","thumbnail":"https://i.ytimg.com/vi/APvLb-pIPwI/mqdefault.jpg","sentiment":"neutral"},{"id":"SVXTV69c2wQ","title":"GPT-5.4 DESTROYED Anthropic's Claude + 8 AI Updates You Missed","uploader":"Vaibhav Sisinty","duration":"1006","viewCount":83415,"likeCount":2055,"uploadDate":"2026-03-09","url":"https://www.youtube.com/watch?v=SVXTV69c2wQ","thumbnail":"https://i.ytimg.com/vi/SVXTV69c2wQ/mqdefault.jpg","sentiment":"neutral"},{"id":"NU0tZ2xYAHU","title":"AI Killing Fiat 💥 Rotate to HARD ASSETS Now? | DCA Before the Next Shock 🚀","uploader":"InvestAnswers","duration":"3933","viewCount":40067,"likeCount":2876,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=NU0tZ2xYAHU","thumbnail":"https://i.ytimg.com/vi/NU0tZ2xYAHU/mqdefault.jpg","sentiment":"neutral"},{"id":"wjnWnuIp32Q","title":"Wilika Mada – Ovulavula ni Delaidulevi (AI Cover) | diuz2beri@25 | Tribute to the ClassicAlbum vol1","uploader":"Diuz2beri","duration":"304","viewCount":985724,"likeCount":4566,"uploadDate":"2026-01-12","url":"https://www.youtube.com/watch?v=wjnWnuIp32Q","thumbnail":"https://i.ytimg.com/vi/wjnWnuIp32Q/mqdefault.jpg","sentiment":"neutral"},{"id":"srr0rRgF2Fw","title":"Investigating AI Deepfakes","uploader":"Coffeezilla","duration":"2061","viewCount":2069896,"likeCount":96643,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=srr0rRgF2Fw","thumbnail":"https://i.ytimg.com/vi/srr0rRgF2Fw/mqdefault.jpg","sentiment":"negative"},{"id":"A3HjNYDIhGU","title":"AI Is A Massive Problem. Here's Why.","uploader":"Palisade Research","duration":"2523","viewCount":508695,"likeCount":22432,"uploadDate":"2026-02-19","url":"https://www.youtube.com/watch?v=A3HjNYDIhGU","thumbnail":"https://i.ytimg.com/vi/A3HjNYDIhGU/mqdefault.jpg","sentiment":"neutral"},{"id":"2rldvywEU8o","title":"We're Not Ready for What AI Is About to Do to the Economy","uploader":"Sam Harris","duration":"552","viewCount":347121,"likeCount":5955,"uploadDate":"2026-02-13","url":"https://www.youtube.com/watch?v=2rldvywEU8o","thumbnail":"https://i.ytimg.com/vi/2rldvywEU8o/mqdefault.jpg","sentiment":"neutral"},{"id":"XJHcA3zOup8","title":"Reacting to Satisfying AI Animations","uploader":"EYreacts","duration":"668","viewCount":1166046,"likeCount":17796,"uploadDate":"2026-01-29","url":"https://www.youtube.com/watch?v=XJHcA3zOup8","thumbnail":"https://i.ytimg.com/vi/XJHcA3zOup8/mqdefault.jpg","sentiment":"neutral"},{"id":"PEFso88LkC4","title":"My Honest Thoughts on AI and the Job Market in 2026 (No Hype)","uploader":"Tech With Tim","duration":"901","viewCount":112881,"likeCount":3760,"uploadDate":"2026-03-05","url":"https://www.youtube.com/watch?v=PEFso88LkC4","thumbnail":"https://i.ytimg.com/vi/PEFso88LkC4/mqdefault.jpg","sentiment":"neutral"},{"id":"UabBYexBD4k","title":"Is RAG Still Needed? Choosing the Best Approach for LLMs","uploader":"IBM Technology","duration":"669","viewCount":371781,"likeCount":11825,"uploadDate":"2026-03-09","url":"https://www.youtube.com/watch?v=UabBYexBD4k","thumbnail":"https://i.ytimg.com/vi/UabBYexBD4k/mqdefault.jpg","sentiment":"positive"},{"id":"FS1fU5bwVt0","title":"“Flood The World With Intelligence” – Sam Altman On AI | DRM News | AI1F","uploader":"DRM News","duration":"1291","viewCount":52551,"likeCount":841,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=FS1fU5bwVt0","thumbnail":"https://i.ytimg.com/vi/FS1fU5bwVt0/mqdefault.jpg","sentiment":"neutral"},{"id":"rv1szY9rBro","title":"Dario Amodei WARNS: \"You Have No Idea What's Coming in 6 Months\"","uploader":"AI Upload","duration":"1089","viewCount":108617,"likeCount":2147,"uploadDate":"2026-02-24","url":"https://www.youtube.com/watch?v=rv1szY9rBro","thumbnail":"https://i.ytimg.com/vi/rv1szY9rBro/mqdefault.jpg","sentiment":"neutral"}];
+    
+    const formatNumber = (num) => {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    };
+    
+    const formatDuration = (seconds) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return mins + ':' + secs.toString().padStart(2, '0');
+    };
+    
+    function renderVideos(videos, highlightId = null) {
+      const grid = document.getElementById('videosGrid');
+      grid.innerHTML = videos.map((video) => {
+        const isHighlighted = video.id === highlightId;
+        const highlightClass = isHighlighted ? "highlighted" : "";
+        const cardHTML = '<div class="video-card ' + highlightClass + '" data-video-id="' + video.id + '" id="video-' + video.id + '">' +
+          '<a href="' + video.url + '" target="_blank" class="card-link">' +
+            '<div class="card-thumbnail">' +
+              '<img src="' + video.thumbnail + '" alt="' + video.title + '" loading="lazy">' +
+              '<span class="card-duration">' + formatDuration(video.duration) + '</span>' +
+            '</div>' +
+            '<div class="card-content">' +
+              '<div class="card-title" title="' + video.title + '">' + video.title + '</div>' +
+              '<div class="card-channel">' + video.uploader + '</div>' +
+              '<div class="card-meta">' +
+                '<span>👁 ' + formatNumber(video.viewCount) + '</span>' +
+                '<span>👍 ' + formatNumber(video.likeCount) + '</span>' +
+                '<span class="card-time">' + video.uploadDate.replace(/-/g, '') + '</span>' +
+                '<span class="card-sentiment sentiment-' + video.sentiment + '">' + video.sentiment + '</span>' +
+              '</div>' +
+            '</div>' +
+          '</a>' +
+        '</div>';
+        return cardHTML;
+      }).join('');
+    }
+    
+    // 滚动到指定视频并高亮
+    function scrollToVideo(videoId) {
+      // 找到对应的视频数据
+      const video = videosData.find(v => v.id === videoId);
+      if (!video) return;
+      
+      // 将该视频排到列表最前面，其他保持原顺序
+      const otherVideos = videosData.filter(v => v.id !== videoId);
+      const sortedVideos = [video].concat(otherVideos);
+      
+      // 重新渲染，并高亮
+      renderVideos(sortedVideos, videoId);
+      
+      // 滚动到视频列表区域
+      const videoSection = document.querySelector('.videos-section');
+      const videoElement = document.getElementById('video-' + videoId);
+      
+      if (videoSection && videoElement) {
+        // 先滚动到视频列表区域
+        videoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // 稍微延迟后高亮闪烁
+        setTimeout(function() {
+          videoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // 3秒后移除高亮
+          setTimeout(function() {
+            videoElement.classList.remove('highlighted');
+          }, 3000);
+        }, 500);
+      }
+    }
+    
+    function sortVideos(sortType) {
+      let sorted = [...videosData];
+      switch(sortType) {
+        case 'time-desc':
+          sorted.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
+          break;
+        case 'time-asc':
+          sorted.sort((a, b) => new Date(a.uploadDate) - new Date(b.uploadDate));
+          break;
+        case 'views-desc':
+          sorted.sort((a, b) => b.viewCount - a.viewCount);
+          break;
+        case 'views-asc':
+          sorted.sort((a, b) => a.viewCount - b.viewCount);
+          break;
+        case 'likes-desc':
+          sorted.sort((a, b) => b.likeCount - a.likeCount);
+          break;
+        case 'likes-asc':
+          sorted.sort((a, b) => a.likeCount - b.likeCount);
+          break;
+      }
+      renderVideos(sorted);
+    }
+    
+    // 排序按钮点击事件
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // 移除所有active状态
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        // 添加当前按钮active状态
+        e.target.classList.add('active');
+        // 执行排序
+        sortVideos(e.target.dataset.sort);
+      });
+    });
+    
+    sortVideos('time-desc');
+
+    // ========== Chart.js 配置 ==========
+    Chart.defaults.font.size = 10;
+    Chart.defaults.plugins.legend.labels.boxWidth = 8;
+    Chart.defaults.plugins.legend.labels.font = { size: 9 };
+    
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { size: 9 } } } }
+    };
+    
+    const barOptions = {
+      ...commonOptions,
+      plugins: { ...commonOptions.plugins, legend: { display: false } },
+      scales: { 
+        y: { beginAtZero: true, ticks: { font: { size: 9 } } }, 
+        x: { ticks: { font: { size: 8 } } } 
+      }
+    };
+
+    // 1. 情绪分布
+    new Chart(document.getElementById('sentimentChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['正面','中性','负面'],
+        datasets: [{
+          data: [15, 82, 3],
+          backgroundColor: ['#27ae60','#f39c12','#e74c3c'],
+          borderWidth: 0
+        }]
+      },
+      options: { ...commonOptions, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } } } }
+    });
+
+    // 2. 观看数区间分布
+    new Chart(document.getElementById('viewRangeChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['0-1K','1K-10K','10K-100K','100K-1M','1M+'],
+        datasets: [{
+          data: [1,6,25,52,16],
+          backgroundColor: ['#ecf0f1','#3498db','#2ecc71','#f39c12','#e74c3c'],
+          borderWidth: 0
+        }]
+      },
+      options: { ...commonOptions, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } } } }
+    });
+
+    // 3. 视频时长分布
+    new Chart(document.getElementById('durationChart'), {
+      type: 'bar',
+      data: {
+        labels: ["< 1分钟","1-5分钟","5-15分钟","15-30分钟","> 30分钟"],
+        datasets: [{
+          label: '视频数',
+          data: [0,7,27,31,35],
+          backgroundColor: 'rgba(155, 89, 182, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: barOptions
+    });
+
+    // 4. 点赞率分布
+    new Chart(document.getElementById('likeRateChart'), {
+      type: 'bar',
+      data: {
+        labels: ["< 1%","1-3%","3-5%","5-10%","> 10%"],
+        datasets: [{
+          label: '视频数',
+          data: [8,39,41,11,1],
+          backgroundColor: 'rgba(231, 76, 60, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: barOptions
+    });
+
+    // 5. 每月视频发布趋势
+    new Chart(document.getElementById('uploadTrendChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-04","2025-07","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03"],
+        datasets: [{
+          label: '视频数',
+          data: [1,1,2,7,3,7,6,18,55],
+          borderColor: '#667eea',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#667eea',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { display: false } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 6. 每月观看数量趋势
+    new Chart(document.getElementById('monthlyViewsChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-04","2025-07","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03"],
+        datasets: [{
+          label: '观看数',
+          data: [2232017,882392,21508417,17895651,5202000,7068504,3803914,9450205,11991369],
+          borderColor: '#3498db',
+          backgroundColor: 'rgba(52, 152, 219, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#3498db',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '观看: ' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 7. 每月点赞数量趋势
+    new Chart(document.getElementById('monthlyLikesChart'), {
+      type: 'line',
+      data: {
+        labels: ["2025-04","2025-07","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03"],
+        datasets: [{
+          label: '点赞数',
+          data: [34297,23641,414051,638558,193196,181304,62519,280037,522486],
+          borderColor: '#e74c3c',
+          backgroundColor: 'rgba(231, 76, 60, 0.1)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          pointBackgroundColor: '#e74c3c',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return '点赞: ' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 8 }, maxRotation: 45 } }
+        }
+      }
+    });
+
+    // 8. 年度对比分析
+    new Chart(document.getElementById('yearComparisonChart'), {
+      type: 'bar',
+      data: {
+        labels: ["2025","2026"],
+        datasets: [
+          {
+            label: '视频数',
+            data: [21,79],
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderRadius: 2
+          },
+          {
+            label: '观看数(千)',
+            data: [54789,25245],
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { labels: { font: { size: 9 }, boxWidth: 8 } } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 9. 观看数Top 10
+    new Chart(document.getElementById('viewsChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '观看数',
+          data: [15665664,9888424,5842753,3276500,3160887,2232017,2069896,1926486,1838674,1641990],
+          backgroundColor: 'rgba(102, 126, 234, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const titles = ["The AI Safety Expert: These Ar","It Begins: An AI Literally Att","Godfather of AI WARNS: \"You Ha","POV: What You Would See During","You’re Not Behind (Yet): How t","OpenAI’s Sam Altman Talks Chat","Investigating AI Deepfakes","AI Complete OneShot Course for","Godfather of AI: We Have 2 Yea","Is AI Hiding Its Full Power? W"];
+                return titles[context.dataIndex] + '...';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 10. Top上传者
+    new Chart(document.getElementById('uploaderChart'), {
+      type: 'bar',
+      data: {
+        labels: ["The Diar","AI Revol","Species ","Dan Mart","The Diar","Jimmy Ki","The Tech","CBS News","Apna Col","Raj Phot"],
+        datasets: [{
+          label: '视频数',
+          data: [4,3,3,2,2,2,2,2,2,2],
+          backgroundColor: 'rgba(118, 75, 162, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 11. 高互动率视频
+    new Chart(document.getElementById('engagementChart'), {
+      type: 'bar',
+      data: {
+        labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+        datasets: [{
+          label: '点赞率(%)',
+          data: [12.21,9.96,8.8,8.59,7.96,7.18,6.94,6.93,6.31,5.76],
+          backgroundColor: 'rgba(39, 174, 96, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const titles = ["Justice League VS. AI","Your smile is being tracked, s","Epic Conquest of Mecca in AI -","ai se video kaise banaye | ai ","Cute or Creepy? AI Fruit Babie","AI Killing Fiat 💥 Rotate to H","AI is making CEOs delusional","I almost quit YouTube....","The AI Banned at 3pm Was Selec","Should You Be A Carpenter? [Wa"];
+                return titles[context.dataIndex] + '...';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 12. 频道平均表现
+    new Chart(document.getElementById('channelAvgChart'), {
+      type: 'bar',
+      data: {
+        labels: ["The Diar","Species ","The Diar","Apna Col","Raj Phot","Dan Mart","Jimmy Ki","Vaibhav "],
+        datasets: [{
+          label: '平均观看',
+          data: [4726562,4584179,3398658,1019925,810408,450039,381192,122122],
+          backgroundColor: 'rgba(52, 152, 219, 0.6)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              afterLabel: function(context) {
+                const counts = [4,3,2,2,2,2,2,2];
+                return '视频数: ' + counts[context.dataIndex];
+              }
+            }
+          }
+        },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 13. 热门关键词
+    new Chart(document.getElementById('keywordChart'), {
+      type: 'bar',
+      data: {
+        labels: ["2026","new","video","learn","course","behind","full","agents","yet","minutes","free","google","jobs","coming","intellig"],
+        datasets: [{
+          label: '出现次数',
+          data: [10,9,9,7,7,6,6,5,5,5,5,4,4,4,4],
+          backgroundColor: 'rgba(155, 89, 182, 0.7)',
+          borderRadius: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { 
+          x: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          y: { ticks: { font: { size: 8 } } }
+        }
+      }
+    });
+
+    // 14. 标题长度分布
+    new Chart(document.getElementById('titleLengthChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["很短(<30)","短(30-50)","中等(50-70)","长(70-100)","很长(>100)"],
+        datasets: [{
+          data: [7,20,41,31,1],
+          backgroundColor: ['#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          legend: { 
+            position: 'right', 
+            labels: { font: { size: 8 }, boxWidth: 8 } 
+          } 
+        } 
+      }
+    });
+
+    // 15. 频道观看占比
+    new Chart(document.getElementById('channelShareChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["The Diar","Species ","The Diar","theMITmo","TED","其他"],
+        datasets: [{
+          data: [18906249,13752538,6797315,3160887,2232017,35185463],
+          backgroundColor: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#95a5a6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          legend: { 
+            position: 'right', 
+            labels: { font: { size: 8 }, boxWidth: 8 } 
+          } 
+        } 
+      }
+    });
+
+    // 16. 时长 vs 观看数 散点图
+    new Chart(document.getElementById('durationViewChart'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: '视频',
+          data: [{"x":15,"y":3541,"title":"How to Use Suno AI Better than"},{"x":15,"y":202170,"title":"Why AI Researchers Are Quittin"},{"x":123,"y":698523,"title":"Daniel Priestley: AI Will Make"},{"x":11,"y":23674,"title":"Google’s New AI Just Broke Mat"},{"x":48,"y":2232017,"title":"OpenAI’s Sam Altman Talks Chat"},{"x":19,"y":73331,"title":"The First Crack in the AI Bubb"},{"x":27,"y":587614,"title":"It Begins: An AI Tried to Esca"},{"x":5,"y":59208,"title":"Your smile is being tracked, s"},{"x":2,"y":172054,"title":"Is the Netanyahu café video an"},{"x":14,"y":9888424,"title":"It Begins: An AI Literally Att"},{"x":18,"y":547925,"title":"You’re not behind (yet): How t"},{"x":14,"y":9413,"title":"Sam Altman Just Triggered A Ma"},{"x":16,"y":16587,"title":"10 Claude AI Skills That Will "},{"x":29,"y":882392,"title":"You’re Not Behind (Yet): How t"},{"x":64,"y":93657,"title":"Hannah Fry: The Science Behind"},{"x":88,"y":15665664,"title":"The AI Safety Expert: These Ar"},{"x":94,"y":1641990,"title":"Is AI Hiding Its Full Power? W"},{"x":3,"y":344029,"title":"Justice League VS. AI"},{"x":19,"y":208223,"title":"Essential AI Skills For 2026"},{"x":21,"y":5842753,"title":"Godfather of AI WARNS: \"You Ha"},{"x":57,"y":557754,"title":"Don't learn AI Agents without "},{"x":17,"y":3160887,"title":"You’re Not Behind (Yet): How t"},{"x":42,"y":140591,"title":"What's really going on with AI"},{"x":81,"y":1518012,"title":"Artificial Intelligence in 202"},{"x":37,"y":18694,"title":"AI Tutorial for Beginners 2026"},{"x":93,"y":1366871,"title":"This is Going to be Very Messy"},{"x":18,"y":13268,"title":"Digital Optimus: Elon Musk Rev"},{"x":7,"y":123915,"title":"AI is making CEOs delusional"},{"x":13,"y":377828,"title":"Top 6 AI Trends That Will Defi"},{"x":4,"y":6676,"title":"BREAKING: Netanyahu Really DEA"},{"x":17,"y":1612637,"title":"Unrestricted AI in a robot doe"},{"x":100,"y":1838674,"title":"Godfather of AI: We Have 2 Yea"},{"x":94,"y":367535,"title":"AI is MUTATING: And We Don't K"},{"x":44,"y":492626,"title":"The AI book that's freaking ou"},{"x":13,"y":918662,"title":"AI Fails at 96% of Jobs (New S"},{"x":13,"y":381192,"title":"Zendaya on Tom Holland A.I. We"},{"x":21,"y":14073,"title":"The fall of ChatGPT? Why the p"},{"x":42,"y":22594,"title":"Epic Conquest of Mecca in AI -"},{"x":27,"y":153779,"title":"HOW TO LEARN & Master AI in 20"},{"x":133,"y":87170,"title":"AI Agents Full Course 2026: Ma"},{"x":5,"y":1600,"title":"AI firms, AIPAC invest million"},{"x":14,"y":113363,"title":"How to start AI/ML in 2026 ?"},{"x":265,"y":768385,"title":"State of AI in 2026: LLMs, Cod"},{"x":3,"y":80863,"title":"Cute or Creepy? AI Fruit Babie"},{"x":24,"y":793544,"title":"5 AI CEOs Just Said The Same T"},{"x":36,"y":581432,"title":"A.I Is The Biggest Lie Ever To"},{"x":13,"y":7277,"title":"ai se video kaise banaye | ai "},{"x":8,"y":956,"title":"'Is It AI?': Netanyahu's 'Disa"},{"x":66,"y":1926486,"title":"AI Complete OneShot Course for"},{"x":19,"y":352152,"title":"I Ranked the Best AI Tools to "},{"x":7,"y":810408,"title":"Free AI COURSE for Beginners –"},{"x":98,"y":317368,"title":"How Fast Will A.I. Agents Rip "},{"x":37,"y":311841,"title":"How to Make Full Cartoon Anima"},{"x":9,"y":133511,"title":"The AI Banned at 3pm Was Selec"},{"x":15,"y":328187,"title":"The AI Collapse Is MUCH Worse "},{"x":22,"y":65007,"title":"Man Keeps Reliving the Same Da"},{"x":166,"y":14945,"title":"NVIDIA GTC Keynote 2026 – Jens"},{"x":20,"y":195532,"title":"You’re Not Behind (Yet): How t"},{"x":32,"y":160829,"title":"The Man Behind Every Google AI"},{"x":30,"y":3276500,"title":"POV: What You Would See During"},{"x":14,"y":104375,"title":"Google’s New Gemini Update Sho"},{"x":13,"y":381192,"title":"Zendaya on Tom Holland A.I. We"},{"x":2,"y":1236,"title":"Zendaya Reacts to Tom Holland "},{"x":23,"y":646664,"title":"I almost quit YouTube...."},{"x":11,"y":18493,"title":"NEW OpenClaw AI Browser Agent:"},{"x":17,"y":18951,"title":"Recursive Self-Improving AI: T"},{"x":28,"y":150377,"title":"LinkedIn Founder: Double Your "},{"x":172,"y":1072820,"title":"Artificial Intelligence Full C"},{"x":18,"y":80516,"title":"Grok’s New Update Might Be the"},{"x":3,"y":91102,"title":"Anthropic names jobs vulnerabl"},{"x":6,"y":616389,"title":"7 new open source AI tools you"},{"x":103,"y":703388,"title":"Uber CEO: I Have To Be Honest,"},{"x":34,"y":91013,"title":"AI News: They All Launched the"},{"x":136,"y":163517,"title":"Amazon's $35B AGI Ultimatum to"},{"x":15,"y":86584,"title":"Google Just Dropped Bayesian: "},{"x":15,"y":368696,"title":"The AI Data Center Crisis is W"},{"x":26,"y":57059,"title":"45 People, $200M Revenue. The "},{"x":69,"y":868271,"title":"The AI Tsunami is Here & Socie"},{"x":34,"y":92035,"title":"AI hype is ‘grifting’ the SaaS"},{"x":22,"y":954562,"title":"The REAL Reason No One Knows W"},{"x":17,"y":928217,"title":"AI Is Ruining Christmas..."},{"x":32,"y":148355,"title":"A Peaceful Life in the Country"},{"x":10,"y":527229,"title":"AI has gone too far... and its"},{"x":108,"y":119022,"title":"Should You Be A Carpenter? [Wa"},{"x":15,"y":646438,"title":"ABUSING Sora 2.0 Video AI (aga"},{"x":7,"y":810408,"title":"Free AI COURSE for Beginners –"},{"x":31,"y":1459681,"title":"I BLEW UP a YouTube Channel in"},{"x":3,"y":82098,"title":"Netflix to Pay Up to $600 Mill"},{"x":128,"y":292174,"title":"The AI Super-Cycle Has Begun —"},{"x":17,"y":83415,"title":"GPT-5.4 DESTROYED Anthropic's "},{"x":66,"y":40067,"title":"AI Killing Fiat 💥 Rotate to H"},{"x":5,"y":985724,"title":"Wilika Mada – Ovulavula ni Del"},{"x":34,"y":2069896,"title":"Investigating AI Deepfakes"},{"x":42,"y":508695,"title":"AI Is A Massive Problem. Here'"},{"x":9,"y":347121,"title":"We're Not Ready for What AI Is"},{"x":11,"y":1166046,"title":"Reacting to Satisfying AI Anim"},{"x":15,"y":112881,"title":"My Honest Thoughts on AI and t"},{"x":11,"y":371781,"title":"Is RAG Still Needed? Choosing "},{"x":22,"y":52551,"title":"“Flood The World With Intellig"},{"x":18,"y":108617,"title":"Dario Amodei WARNS: \"You Have "}],
+          backgroundColor: 'rgba(102, 126, 234, 0.5)',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.raw.title + ': ' + context.raw.y.toLocaleString() + ' 观看';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { 
+            title: { display: true, text: '时长(分钟)', font: { size: 9 } },
+            ticks: { font: { size: 9 } }
+          },
+          y: { 
+            title: { display: true, text: '观看数', font: { size: 9 } },
+            ticks: { font: { size: 9 } },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // 17. 情感 vs 平均表现
+    new Chart(document.getElementById('sentimentPerformanceChart'), {
+      type: 'bar',
+      data: {
+        labels: ['正面', '中性', '负面'],
+        datasets: [
+          {
+            label: '平均观看',
+            data: [683175, 703128, 4043458],
+            backgroundColor: 'rgba(102, 126, 234, 0.6)',
+            borderRadius: 2
+          },
+          {
+            label: '平均点赞',
+            data: [23313, 18246, 168081],
+            backgroundColor: 'rgba(231, 76, 60, 0.6)',
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { legend: { labels: { font: { size: 9 }, boxWidth: 8 } } },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+
+    // 18. 长尾分析 - 真实数据
+    const paretoTopViews = Math.round((64459931 / 80034469) * 100);
+    const paretoOtherViews = 100 - paretoTopViews;
+    new Chart(document.getElementById('paretoChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Top ' + 26 + ' 视频', '其他 ' + 74 + ' 视频'],
+        datasets: [{
+          data: [paretoTopViews, paretoOtherViews],
+          backgroundColor: ['#e74c3c', '#95a5a6'],
+          borderWidth: 0
+        }]
+      },
+      options: { 
+        ...commonOptions, 
+        plugins: { 
+          title: { display: true, text: '观看量分布 (真实数据)', font: { size: 10 } },
+          legend: { position: 'bottom', labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + '% 观看量';
+              }
+            }
+          }
+        } 
+      }
+    });
+
+    // 19. 发布星期分布
+    const dayOfWeekData = {"周一":17,"周二":21,"周三":8,"周四":14,"周五":9,"周六":15,"周日":16};
+    new Chart(document.getElementById('hourChart'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(dayOfWeekData),
+        datasets: [{
+          label: '视频数',
+          data: Object.values(dayOfWeekData),
+          backgroundColor: [
+            'rgba(231, 76, 60, 0.7)',   // 周日 - 红
+            'rgba(52, 152, 219, 0.7)',  // 周一 - 蓝
+            'rgba(46, 204, 113, 0.7)',  // 周二 - 绿
+            'rgba(243, 156, 18, 0.7)',  // 周三 - 橙
+            'rgba(155, 89, 182, 0.7)',  // 周四 - 紫
+            'rgba(26, 188, 156, 0.7)',  // 周五 - 青
+            'rgba(231, 76, 60, 0.7)'    // 周六 - 红
+          ],
+          borderRadius: 3
+        }]
+      },
+      options: {
+        ...commonOptions,
+        plugins: { 
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+                const day = days[context.dataIndex];
+                const count = context.parsed.y;
+                const percentage = ((count / 100) * 100).toFixed(1);
+                return day + ': ' + count + '个视频 (' + percentage + '%)';
+              }
+            }
+          }
+        },
+        scales: { 
+          y: { beginAtZero: true, ticks: { font: { size: 9 }, stepSize: 1 } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 20. 高观看低互动 - 带点击查看功能 (混合图表: 柱状图+折线图)
+    const highViewLowEngageData = [{"id":"65CASowfnKs","title":"AI Tutorial for Beginners 2026: How To Use AI & Build ANYTHING","uploader":"Mikey No Code","duration":"2211","viewCount":18694,"likeCount":0,"uploadDate":"2026-03-11","url":"https://www.youtube.com/watch?v=65CASowfnKs","thumbnail":"https://i.ytimg.com/vi/65CASowfnKs/mqdefault.jpg","sentiment":"positive","rate":0},{"id":"wjnWnuIp32Q","title":"Wilika Mada – Ovulavula ni Delaidulevi (AI Cover) | diuz2beri@25 | Tribute to the ClassicAlbum vol1","uploader":"Diuz2beri","duration":"304","viewCount":985724,"likeCount":4566,"uploadDate":"2026-01-12","url":"https://www.youtube.com/watch?v=wjnWnuIp32Q","thumbnail":"https://i.ytimg.com/vi/wjnWnuIp32Q/mqdefault.jpg","sentiment":"neutral","rate":0.4632128263083784},{"id":"HsMnDwBsRxI","title":"Is the Netanyahu café video an AI deepfake after claims he died?","uploader":"The Independent","duration":"124","viewCount":172054,"likeCount":1072,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=HsMnDwBsRxI","thumbnail":"https://i.ytimg.com/vi/HsMnDwBsRxI/mqdefault.jpg","sentiment":"negative","rate":0.6230602020295953},{"id":"AfIGoai7lzg","title":"Netflix to Pay Up to $600 Million for Ben Affleck’s AI Firm","uploader":"Bloomberg Technology","duration":"186","viewCount":82098,"likeCount":606,"uploadDate":"2026-03-12","url":"https://www.youtube.com/watch?v=AfIGoai7lzg","thumbnail":"https://i.ytimg.com/vi/AfIGoai7lzg/mqdefault.jpg","sentiment":"neutral","rate":0.7381422202733319},{"id":"GnUeIX9Ay04","title":"NVIDIA GTC Keynote 2026 – Jensen Huang Announces Next-Gen AI & GPU Technology | 🔴WATCH LIVE","uploader":"Benzinga","duration":"9938","viewCount":14945,"likeCount":134,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=GnUeIX9Ay04","thumbnail":"https://i.ytimg.com/vi/GnUeIX9Ay04/mqdefault.jpg","sentiment":"neutral","rate":0.896620943459351}];
+    new Chart(document.getElementById('highViewLowEngageChart'), {
+      type: 'bar',
+      data: {
+        labels: highViewLowEngageData.map((v, i) => '#' + (i + 1)),
+        datasets: [
+          {
+            label: '观看数',
+            data: highViewLowEngageData.map(v => v.viewCount),
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y',
+            order: 2
+          },
+          {
+            type: 'line',
+            label: '点赞率(%)',
+            data: highViewLowEngageData.map(v => parseFloat(v.rate.toFixed(2))),
+            borderColor: 'rgba(231, 76, 60, 0.8)',
+            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+            yAxisID: 'y1',
+            tension: 0.3,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const videoId = highViewLowEngageData[index].id;
+            scrollToVideo(videoId);
+          }
+        },
+        onHover: (e, elements) => {
+          e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+        plugins: { 
+          legend: { labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const index = context[0].dataIndex;
+                return highViewLowEngageData[index].title.substring(0, 30) + '...';
+              },
+              afterLabel: function() {
+                return '💡 点击查看视频';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', title: { display: true, text: '观看数', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '点赞率%', font: { size: 9 } }, grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+
+    // 21. 低观看高互动 - 带点击查看功能 (混合图表: 柱状图+折线图)
+    const lowViewHighEngageData = [{"id":"QLPHcQdZTFI","title":"AI firms, AIPAC invest millions in Illinois primaries","uploader":"CBS News","duration":"328","viewCount":1600,"likeCount":48,"uploadDate":"2026-03-16","url":"https://www.youtube.com/watch?v=QLPHcQdZTFI","thumbnail":"https://i.ytimg.com/vi/QLPHcQdZTFI/mqdefault.jpg","sentiment":"neutral","rate":3},{"id":"UjCxLv8XWLo","title":"Zendaya Reacts to Tom Holland AI Wedding Photos | E! News","uploader":"E! News","duration":"95","viewCount":1236,"likeCount":37,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=UjCxLv8XWLo","thumbnail":"https://i.ytimg.com/vi/UjCxLv8XWLo/mqdefault.jpg","sentiment":"neutral","rate":2.9935275080906147},{"id":"5vRiVlEgoyU","title":"'Is It AI?': Netanyahu's 'Disappearing' Ring In Latest Video Again Fuels Death Rumours | News18","uploader":"CNN-News18","duration":"497","viewCount":956,"likeCount":8,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=5vRiVlEgoyU","thumbnail":"https://i.ytimg.com/vi/5vRiVlEgoyU/mqdefault.jpg","sentiment":"neutral","rate":0.8368200836820083},{"id":"DrRRvM4oc4w","title":"How to Use Suno AI Better than 99% of People","uploader":"Isa does AI","duration":"923","viewCount":3541,"likeCount":0,"uploadDate":"2026-03-17","url":"https://www.youtube.com/watch?v=DrRRvM4oc4w","thumbnail":"https://i.ytimg.com/vi/DrRRvM4oc4w/mqdefault.jpg","sentiment":"neutral","rate":0}];
+    new Chart(document.getElementById('lowViewHighEngageChart'), {
+      type: 'bar',
+      data: {
+        labels: lowViewHighEngageData.map((v, i) => '#' + (i + 1)),
+        datasets: [
+          {
+            label: '观看数',
+            data: lowViewHighEngageData.map(v => v.viewCount),
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderRadius: 2,
+            yAxisID: 'y',
+            order: 2
+          },
+          {
+            type: 'line',
+            label: '点赞率(%)',
+            data: lowViewHighEngageData.map(v => parseFloat(v.rate.toFixed(2))),
+            borderColor: 'rgba(39, 174, 96, 0.8)',
+            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(39, 174, 96, 1)',
+            yAxisID: 'y1',
+            tension: 0.3,
+            order: 1
+          }
+        ]
+      },
+      options: {
+        ...commonOptions,
+        onClick: (e, elements) => {
+          if (elements.length > 0) {
+            const index = elements[0].index;
+            const videoId = lowViewHighEngageData[index].id;
+            scrollToVideo(videoId);
+          }
+        },
+        onHover: (e, elements) => {
+          e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+        },
+        plugins: { 
+          legend: { labels: { font: { size: 9 }, boxWidth: 8 } },
+          tooltip: {
+            callbacks: {
+              title: function(context) {
+                const index = context[0].dataIndex;
+                return lowViewHighEngageData[index].title.substring(0, 30) + '...';
+              },
+              afterLabel: function() {
+                return '💡 点击查看视频';
+              }
+            }
+          }
+        },
+        scales: {
+          y: { type: 'linear', display: true, position: 'left', title: { display: true, text: '观看数', font: { size: 9 } }, ticks: { font: { size: 9 } } },
+          y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: '点赞率%', font: { size: 9 } }, grid: { drawOnChartArea: false }, ticks: { font: { size: 9 } } },
+          x: { ticks: { font: { size: 9 } } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
