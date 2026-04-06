@@ -91,7 +91,7 @@
     }
 
     .nav-links a {
-      color: var(--text-secondary);
+      color: var(--text-muted);
       text-decoration: none;
       font-size: 0.875rem;
       font-weight: 500;
@@ -159,8 +159,8 @@
     }
 
     .hero-badge svg {
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       fill: var(--accent);
     }
 
@@ -310,6 +310,15 @@
       animation: rainbowShift 3s linear infinite;
     }
 
+    .section-title .rainbow {
+      background: linear-gradient(90deg, #ff0080, #ff8000, #ffff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff0080);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbowShift 3s linear infinite;
+    }
+
     .section-subtitle {
       color: var(--text-secondary);
       font-size: 0.9375rem;
@@ -356,8 +365,8 @@
     }
 
     .platform-icon svg {
-      width: 22px;
-      height: 22px;
+      width: 26px;
+      height: 26px;
       fill: var(--accent);
     }
 
@@ -388,8 +397,8 @@
     }
 
     .platform-tag svg {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       fill: var(--accent);
     }
 
@@ -435,9 +444,9 @@
     }
 
     .step-icon {
-      width: 36px;
-      height: 36px;
-      margin: 0 auto 0.625rem;
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 0.75rem;
     }
 
     .step-icon svg {
@@ -535,9 +544,9 @@
     }
 
     .use-case-icon {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 0.875rem;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -635,8 +644,8 @@
     }
 
     .singapore-icon {
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       flex-shrink: 0;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -740,7 +749,7 @@
     }
 
     .footer-tagline {
-      color: var(--text-secondary);
+      color: var(--text-muted);
       font-size: 0.875rem;
       line-height: 1.6;
     }
@@ -768,7 +777,7 @@
     }
 
     .footer-col a {
-      color: var(--text-secondary);
+      color: var(--text-muted);
       text-decoration: none;
       font-size: 0.875rem;
       transition: color 0.2s;
@@ -791,8 +800,28 @@
     }
 
     .footer-copyright {
-      color: var(--text-muted);
+      color: rgba(245, 245, 247, 0.25);
       font-size: 0.8125rem;
+    }
+
+    .footer-social a {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .footer-social a:hover {
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-color: rgba(0, 212, 212, 0.2);
     }
 
     .footer-social {
@@ -821,8 +850,8 @@
     }
 
     .footer-social svg {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       fill: currentColor;
     }
 
@@ -1053,7 +1082,7 @@
     <div class="container">
       <div class="section-header">
         <div class="section-label animate">Platform</div>
-        <h2 class="section-title animate delay-1">Intelligence at every layer</h2>
+        <h2 class="section-title animate delay-1">Intelligence at every <span class="rainbow">layer</span></h2>
         <p class="section-subtitle animate delay-2">Three AI engines work together to optimize your global connectivity in real-time.</p>
       </div>
 
@@ -1101,7 +1130,7 @@
     <div class="container">
       <div class="section-header">
         <div class="section-label animate">How It Works</div>
-        <h2 class="section-title animate delay-1">From chaos to clarity</h2>
+        <h2 class="section-title animate delay-1">From chaos to <span class="rainbow">clarity</span></h2>
       </div>
 
       <div class="steps-grid">
@@ -1184,7 +1213,7 @@ console.<span class="function">log</span>(connection);
     <div class="container">
       <div class="section-header">
         <div class="section-label animate">Use Cases</div>
-        <h2 class="section-title animate delay-1">Built for enterprise scale</h2>
+        <h2 class="section-title animate delay-1">Built for <span class="rainbow">enterprise scale</span></h2>
       </div>
 
       <div class="use-cases-grid">
@@ -1219,7 +1248,7 @@ console.<span class="function">log</span>(connection);
     <div class="container">
       <div class="section-header">
         <div class="section-label animate">Coverage</div>
-        <h2 class="section-title animate delay-1">One platform. The entire world.</h2>
+        <h2 class="section-title animate delay-1">One platform. <span class="rainbow">The entire world.</span></h2>
       </div>
 
       <div class="coverage-grid">
@@ -1247,7 +1276,7 @@ console.<span class="function">log</span>(connection);
     <div class="container">
       <div class="section-header">
         <div class="section-label animate">Headquarters</div>
-        <h2 class="section-title animate delay-1">The ASEAN connectivity hub</h2>
+        <h2 class="section-title animate delay-1">The ASEAN <span class="rainbow">connectivity hub</span></h2>
       </div>
 
       <div class="singapore-grid">
