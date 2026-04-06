@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LinkWave — AI Connectivity Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0c;
+      --bg-secondary: #0f0f12;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-card-hover: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.1);
+      --text-primary: #f5f5f7;
+      --text-secondary: rgba(245, 245, 247, 0.6);
+      --text-muted: rgba(245, 245, 247, 0.4);
+      --accent: #00d4d4;
+      --accent-dim: rgba(0, 212, 212, 0.06);
+      --accent-glow: rgba(0, 212, 212, 0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.125rem 2rem;
+      background: rgba(10, 10, 12, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-container {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-cta {
+      padding: 0.5rem 1.125rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #0a0a0c;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-cta:hover {
+      background: #00e5e5;
+    }
+
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 7rem 2rem;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 5rem;
+    }
+
+    .hero-content {
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.875rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0, 212, 212, 0.15);
+      border-radius: 9999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--accent);
+      margin-bottom: 1.75rem;
+      letter-spacing: 0.03em;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.25rem, 6vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.035em;
+    }
+
+    .hero h1 .rainbow {
+      background: linear-gradient(90deg, #ff0080, #ff8000, #ffff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff0080);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbowShift 3s linear infinite;
+    }
+
+    @keyframes rainbowShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .hero-subtitle {
+      font-size: 1.0625rem;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto 2rem;
+      line-height: 1.75;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 0.875rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      padding: 0.8125rem 1.625rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      color: #0a0a0c;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      background: #00e5e5;
+    }
+
+    .btn-secondary {
+      padding: 0.8125rem 1.625rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-card);
+      border-color: var(--border-hover);
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 1px;
+      margin-top: 3.5rem;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .stat {
+      flex: 1;
+      background: var(--bg-secondary);
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-label {
+      display: inline-block;
+      padding: 0.3125rem 0.75rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0, 212, 212, 0.12);
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 0.875rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.625rem;
+    }
+
+    .section-title.rainbow {
+      background: linear-gradient(90deg, #ff0080, #ff8000, #ffff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff0080);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbowShift 3s linear infinite;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      max-width: 460px;
+      margin: 0 auto;
+    }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .platform-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.75rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .platform-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(0, 212, 212, 0.25);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .platform-card:hover .platform-icon {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .platform-icon {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .platform-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-dim);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1.125rem;
+    }
+
+    .platform-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .platform-card p {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .platform-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.3125rem 0.625rem;
+      background: var(--accent-dim);
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--accent);
+    }
+
+    .how-it-works {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .step {
+      text-align: center;
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0, 212, 212, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--accent);
+      margin: 0 auto 1rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .step:hover .step-number {
+      transform: scale(1.15) rotate(360deg);
+      background: var(--accent);
+      color: var(--bg-primary);
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .step-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.625rem;
+    }
+
+    .step h3 {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      margin-bottom: 0.375rem;
+    }
+
+    .step p {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      line-height: 1.5;
+    }
+
+    .code-preview {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      max-width: 660px;
+      margin: 0 auto;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.25rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .code-dot.red { background: #ff5f57; }
+    .code-dot.yellow { background: #febc2e; }
+    .code-dot.green { background: #28c840; }
+
+    .code-body {
+      padding: 1.375rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.75;
+      color: rgba(245, 245, 247, 0.7);
+      text-align: left;
+      overflow-x: auto;
+    }
+
+    .code-body .keyword { color: #c084fc; }
+    .code-body .string { color: #4ade80; }
+    .code-body .comment { color: rgba(245, 245, 247, 0.3); }
+    .code-body .function { color: var(--accent); }
+    .code-body .number { color: #facc15; }
+    .code-body .property { color: #fb923c; }
+
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .use-case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.75rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .use-case-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(0, 212, 212, 0.2);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .use-case-card:hover .use-case-icon {
+      transform: scale(1.2);
+    }
+
+    .use-case-icon {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .use-case-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .use-case-card h3 {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      margin-bottom: 0.375rem;
+    }
+
+    .use-case-card p {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      line-height: 1.6;
+    }
+
+    .coverage-section {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .coverage-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .coverage-stat {
+      background: var(--bg-primary);
+      padding: 2.25rem 1.25rem;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .coverage-stat:hover {
+      background: rgba(0, 212, 212, 0.05);
+      transform: scale(1.05);
+    }
+
+    .coverage-stat:hover .coverage-stat-value {
+      text-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .coverage-stat-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .coverage-stat-label {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      margin-top: 0.375rem;
+      font-weight: 500;
+    }
+
+    .singapore-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .singapore-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .singapore-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(0, 212, 212, 0.2);
+      transform: translateX(8px);
+      box-shadow: -10px 0 30px rgba(0, 212, 212, 0.1);
+    }
+
+    .singapore-card:hover .singapore-icon {
+      transform: scale(1.2) rotate(-10deg);
+    }
+
+    .singapore-icon {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .singapore-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .singapore-card h3 {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      margin-bottom: 0.3125rem;
+    }
+
+    .singapore-card p {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      line-height: 1.55;
+    }
+
+    .contact-section {
+      text-align: center;
+    }
+
+    .contact-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3.5rem;
+      max-width: 540px;
+      margin: 0 auto;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .contact-box:hover {
+      border-color: rgba(0, 212, 212, 0.3);
+      box-shadow: 0 0 60px rgba(0, 212, 212, 0.15);
+    }
+
+    .contact-box h2 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 0.625rem;
+      letter-spacing: -0.025em;
+    }
+
+    .contact-box h2.rainbow {
+      background: linear-gradient(90deg, #ff0080, #ff8000, #ffff00, #00ff80, #00ffff, #0080ff, #8000ff, #ff0080);
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbowShift 3s linear infinite;
+    }
+
+    .contact-box p {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .contact-email {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .contact-email:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 3.5rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+
+    .footer-content {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+    }
+
+    .footer-brand {
+      max-width: 260px;
+    }
+
+    .footer-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.625rem;
+    }
+
+    .footer-tagline {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 3.5rem;
+    }
+
+    .footer-col h4 {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col li {
+      margin-bottom: 0.4375rem;
+    }
+
+    .footer-col a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--text-primary);
+    }
+
+    .footer-bottom {
+      max-width: 1080px;
+      margin: 2.5rem auto 0;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-copyright {
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .footer-social a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .footer-social a:hover {
+      color: var(--text-primary);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes flipIn {
+      from {
+        opacity: 0;
+        transform: perspective(400px) rotateX(-15deg);
+      }
+      to {
+        opacity: 1;
+        transform: perspective(400px) rotateX(0);
+      }
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.85);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(0, 212, 212, 0.1);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(0, 212, 212, 0.2);
+      }
+    }
+
+    .animate {
+      animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+
+    .animate-left {
+      animation: fadeInLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+
+    .animate-right {
+      animation: fadeInRight 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+
+    .animate-up {
+      animation: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+
+    .animate-flip {
+      animation: flipIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+
+    .animate-scale {
+      animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+    }
+
+    .animate-glow {
+      animation: glowPulse 2s ease-in-out infinite;
+      animation-delay: 0.6s;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+    .delay-6 { animation-delay: 0.6s; }
+
+    @media (max-width: 1024px) {
+      .platform-grid,
+      .use-cases-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+      }
+      .coverage-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .footer-links {
+        gap: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .platform-grid,
+      .use-cases-grid,
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+      .singapore-grid {
+        grid-template-columns: 1fr;
+      }
+      .coverage-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .stats-row {
+        flex-wrap: wrap;
+      }
+      .stat {
+        min-width: 50%;
+      }
+      .footer-content {
+        flex-direction: column;
+      }
+      .footer-links {
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+      .contact-box {
+        padding: 2.5rem 1.5rem;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles-canvas"></canvas>
+
+  <nav>
+    <div class="nav-container">
+      <a href="#" class="logo">Link<span>Wave</span></a>
+      <ul class="nav-links">
+        <li><a href="#platform">Platform</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#coverage">Coverage</a></li>
+        <li><a href="#singapore">Singapore</a></li>
+      </ul>
+      <a href="#contact" class="nav-cta">Get Started</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge animate">⚡ AI Connectivity Intelligence</div>
+      <h1 class="animate delay-1">The <span class="rainbow">AI Brain</span> for Global Telecom</h1>
+      <p class="hero-subtitle animate delay-2">One intelligence layer above all carriers. Autonomous decisions. Optimal connections. From Singapore to 149+ countries.</p>
+      
+      <div class="hero-buttons animate delay-2">
+        <a href="#contact" class="btn-primary">Request Demo</a>
+        <a href="#platform" class="btn-secondary">View Platform</a>
+      </div>
+
+      <div class="stats-row animate-up delay-3">
+        <div class="stat animate delay-4">
+          <div class="stat-value">149+</div>
+          <div class="stat-label">Countries</div>
+        </div>
+        <div class="stat animate delay-4">
+          <div class="stat-value">300+</div>
+          <div class="stat-label">Carriers</div>
+        </div>
+        <div class="stat animate delay-5">
+          <div class="stat-value">&lt;50ms</div>
+          <div class="stat-label">Switching</div>
+        </div>
+        <div class="stat animate delay-5">
+          <div class="stat-value">99.999%</div>
+          <div class="stat-label">Uptime</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="platform">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label animate">Platform</div>
+        <h2 class="section-title animate delay-1">Intelligence at every layer</h2>
+        <p class="section-subtitle animate delay-2">Three AI engines work together to optimize your global connectivity in real-time.</p>
+      </div>
+
+      <div class="platform-grid">
+        <div class="platform-card animate-left delay-1">
+          <div class="platform-icon animate-scale delay-2">🧠</div>
+          <h3 class="animate delay-3">AI Carrier Intelligence</h3>
+          <p class="animate delay-3">Natural language queries. Instant multi-carrier comparison. Real-time optimal plan recommendation.</p>
+          <div class="platform-tag animate delay-4">⚡ AI Recommended: Singtel — 32% savings</div>
+        </div>
+
+        <div class="platform-card animate-scale delay-2">
+          <div class="platform-icon animate-scale delay-3">📊</div>
+          <h3 class="animate delay-4">Usage Pattern AI</h3>
+          <p class="animate delay-4">Detects waste, predicts trends, auto-recommends plan changes before cost spikes happen.</p>
+          <div class="platform-tag animate delay-5">📉 -30% cost · 24/7 monitoring</div>
+        </div>
+
+        <div class="platform-card animate-right delay-3">
+          <div class="platform-icon animate-scale delay-4">🔒</div>
+          <h3 class="animate delay-5">Anomaly Detection</h3>
+          <p class="animate delay-5">Real-time threat detection. Traffic spike alerts. Auto carrier failover. Zero downtime.</p>
+          <div class="platform-tag animate delay-6">🛡️ Threat detection: active</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label animate">How It Works</div>
+        <h2 class="section-title animate delay-1">From chaos to clarity</h2>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step animate-left delay-1">
+          <div class="step-number animate-scale delay-2">01</div>
+          <div class="step-icon animate delay-2">🔗</div>
+          <h3 class="animate delay-3">Connect</h3>
+          <p class="animate delay-3">Integrate existing eSIM and carrier accounts into LinkWave's unified platform.</p>
+        </div>
+
+        <div class="step animate-up delay-2">
+          <div class="step-number animate-scale delay-3">02</div>
+          <div class="step-icon animate delay-3">🧠</div>
+          <h3 class="animate delay-4">Analyze</h3>
+          <p class="animate delay-4">AI scans all carrier pricing, coverage, and performance across 149+ countries.</p>
+        </div>
+
+        <div class="step animate-up delay-3">
+          <div class="step-number animate-scale delay-4">03</div>
+          <div class="step-icon animate delay-4">⚡</div>
+          <h3 class="animate delay-5">Optimize</h3>
+          <p class="animate delay-5">AI-powered recommendations. Auto-switch carriers, adjust plans, reduce costs.</p>
+        </div>
+
+        <div class="step animate-right delay-4">
+          <div class="step-number animate-scale delay-5">04</div>
+          <div class="step-icon animate delay-5">📡</div>
+          <h3 class="animate delay-6">Monitor</h3>
+          <p class="animate delay-6">24/7 anomaly detection. Auto-alerts. Continuous learning for better decisions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="code">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label animate">Integration</div>
+        <h2 class="section-title rainbow animate delay-1">Simple SDK integration</h2>
+        <p class="section-subtitle animate delay-2">Get started with a few lines of code.</p>
+      </div>
+
+      <div class="code-preview animate-flip delay-3">
+        <div class="code-header">
+          <div class="code-dot red"></div>
+          <div class="code-dot yellow"></div>
+          <div class="code-dot green"></div>
+        </div>
+        <div class="code-body">
+<span class="comment">// Initialize LinkWave SDK</span>
+<span class="keyword">import</span> { LinkWave } <span class="keyword">from</span> <span class="string">'@linkwave/sdk'</span>;
+
+<span class="keyword">const</span> lw = <span class="keyword">new</span> <span class="function">LinkWave</span>({
+  apiKey: process.env.<span class="property">LW_API_KEY</span>
+});
+
+<span class="comment">// Create optimized connection</span>
+<span class="keyword">const</span> connection = <span class="keyword">await</span> lw.connections.<span class="function">create</span>({
+  policy: <span class="string">'ai-optimized'</span>,
+  failover: <span class="keyword">true</span>,
+  maxLatency: <span class="number">50</span>
+});
+
+<span class="comment">// Output: { carrier: "Singtel", latency: 23ms }</span>
+console.<span class="function">log</span>(connection);
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label animate">Use Cases</div>
+        <h2 class="section-title animate delay-1">Built for enterprise scale</h2>
+      </div>
+
+      <div class="use-cases-grid">
+        <div class="use-case-card animate-left delay-1">
+          <div class="use-case-icon animate-scale delay-2">🚛</div>
+          <h3 class="animate delay-3">Smart Logistics</h3>
+          <p class="animate delay-3">Cross-border fleet tracking with AI auto-switching at every border crossing.</p>
+        </div>
+
+        <div class="use-case-card animate-scale delay-2">
+          <div class="use-case-icon animate-scale delay-3">🏭</div>
+          <h3 class="animate delay-4">Industrial IoT</h3>
+          <p class="animate delay-4">Remote sensors in extreme environments. Satellite-cellular hybrid with AI-driven failover.</p>
+        </div>
+
+        <div class="use-case-card animate-right delay-3">
+          <div class="use-case-icon animate-scale delay-4">🏙️</div>
+          <h3 class="animate delay-5">Smart Cities</h3>
+          <p class="animate delay-5">Backbone for urban intelligence. Environmental monitoring, autonomous systems.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="coverage" class="coverage-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label animate">Coverage</div>
+        <h2 class="section-title animate delay-1">One platform. The entire world.</h2>
+      </div>
+
+      <div class="coverage-grid">
+        <div class="coverage-stat animate-left delay-1">
+          <div class="coverage-stat-value animate-scale delay-2">149+</div>
+          <div class="coverage-stat-label animate delay-3">Countries</div>
+        </div>
+        <div class="coverage-stat animate-up delay-2">
+          <div class="coverage-stat-value animate-scale delay-3">300+</div>
+          <div class="coverage-stat-label animate delay-4">Carriers</div>
+        </div>
+        <div class="coverage-stat animate-up delay-3">
+          <div class="coverage-stat-value animate-scale delay-4">99.999%</div>
+          <div class="coverage-stat-label animate delay-5">Uptime</div>
+        </div>
+        <div class="coverage-stat animate-right delay-4">
+          <div class="coverage-stat-value animate-scale delay-5">&lt;50ms</div>
+          <div class="coverage-stat-label animate delay-6">Switching</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="singapore">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label animate">Headquarters</div>
+        <h2 class="section-title animate delay-1">The ASEAN connectivity hub</h2>
+      </div>
+
+      <div class="singapore-grid">
+        <div class="singapore-card animate-left delay-1">
+          <div class="singapore-icon animate-scale delay-2">🇸🇬</div>
+          <div>
+            <h3 class="animate delay-3">Smart Nation 2.0</h3>
+            <p class="animate delay-3">Aligned with Singapore's national AI strategy and digital infrastructure roadmap.</p>
+          </div>
+        </div>
+
+        <div class="singapore-card animate-right delay-2">
+          <div class="singapore-icon animate-scale delay-3">🌏</div>
+          <div>
+            <h3 class="animate delay-4">ASEAN Gateway</h3>
+            <p class="animate delay-4">Strategic hub connecting 700M+ consumers across Southeast Asia's fastest-growing economies.</p>
+          </div>
+        </div>
+
+        <div class="singapore-card animate-left delay-3">
+          <div class="singapore-icon animate-scale delay-4">🤖</div>
+          <div>
+            <h3 class="animate delay-5">AI-First Approach</h3>
+            <p class="animate delay-5">Leveraging Singapore's AI ecosystem, talent pool, and NAIIP government support.</p>
+          </div>
+        </div>
+
+        <div class="singapore-card animate-right delay-4">
+          <div class="singapore-icon animate-scale delay-5">🔒</div>
+          <div>
+            <h3 class="animate delay-6">Enterprise Grade</h3>
+            <p class="animate delay-6">World-class regulatory framework ensures data sovereignty, security, and compliance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact-section">
+    <div class="container">
+      <div class="contact-box animate-glow">
+        <h2 class="rainbow">Start building today</h2>
+        <p>Join leading ASEAN enterprises saving 30% on global connectivity with AI-powered optimization.</p>
+        <a href="mailto:hello@linkwave.technology" class="btn-primary">Request Demo</a>
+        <p style="margin-top: 1.25rem; font-size: 0.875rem; color: var(--text-secondary);">
+          Or email <a href="mailto:hello@linkwave.technology" class="contact-email">hello@linkwave.technology</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="footer-logo">LinkWave</div>
+        <p class="footer-tagline">AI-powered global connectivity intelligence for enterprises.</p>
+      </div>
+      
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#platform">AI Agents</a></li>
+            <li><a href="#platform">Analytics</a></li>
+            <li><a href="#platform">Security</a></li>
+            <li><a href="#coverage">Coverage</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Solutions</h4>
+          <ul>
+            <li><a href="#">Smart Logistics</a></li>
+            <li><a href="#">Industrial IoT</a></li>
+            <li><a href="#">Smart Cities</a></li>
+            <li><a href="#">Enterprise</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#singapore">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="footer-copyright">© 2026 LinkWave Technologies Pte. Ltd. · Singapore</div>
+      <div class="footer-social">
+        <a href="#">GitHub</a>
+        <a href="#">Discord</a>
+        <a href="#">Twitter</a>
+        <a href="#">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.radius = Math.random() * 2 + 1;
+        this.color = this.getRainbowColor();
+        this.pulsePhase = Math.random() * Math.PI * 2;
+        this.pulseSpeed = 0.02 + Math.random() * 0.02;
+      }
+
+      getRainbowColor() {
+        const hue = (Date.now() * 0.05 + this.x * 0.1) % 360;
+        return `hsla(${hue}, 100%, 60%, 0.6)`;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+
+        this.pulsePhase += this.pulseSpeed;
+        this.color = this.getRainbowColor();
+      }
+
+      draw() {
+        const pulse = Math.sin(this.pulsePhase) * 0.5 + 0.5;
+        const currentRadius = this.radius * (0.8 + pulse * 0.4);
+        
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      const particleCount = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function drawConnections() {
+      const maxDistance = 150;
+      
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < maxDistance) {
+            const opacity = (1 - distance / maxDistance) * 0.3;
+            const hue = (Date.now() * 0.03 + (i + j) * 5) % 360;
+            ctx.strokeStyle = `hsla(${hue}, 100%, 60%, ${opacity})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+
+      drawConnections();
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initParticles();
+    });
+
+    resizeCanvas();
+    initParticles();
+    animate();
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate, .animate-left, .animate-right, .animate-up, .animate-scale, .animate-flip').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
